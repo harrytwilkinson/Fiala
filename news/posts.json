@@ -1,0 +1,8 @@
+[
+  {
+    "id": "news-feed-launch",
+    "date": "2026-10-05",
+    "title": "New: peptide news",
+    "summary": "This feed collects new studies from PubMed, clinical trial updates from ClinicalTrials.gov and FDA announcements that mention peptides in the library. It updates every night. Headlines are picked automatically, so check the source, and remember that early, animal or lab studies often don't carry over to people. Tap Follow on a peptide's page to see its news first."
+  }
+]

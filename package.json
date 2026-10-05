@@ -13,7 +13,8 @@
     "native:sync": "npm run build && cap sync",
     "native:sync:store": "npm run build:store && cap sync",
     "ios": "cap open ios",
-    "android": "cap open android"
+    "android": "cap open android",
+    "news": "node --experimental-strip-types --no-warnings scripts/build-news.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",

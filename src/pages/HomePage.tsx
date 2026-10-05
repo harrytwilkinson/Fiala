@@ -140,6 +140,11 @@ export function HomePage() {
           <strong>Tracker</strong>
           <span className="muted small">Dose log, vials and schedules</span>
         </a>
+        <a className="card tile" href={href("news")}>
+          <span className="tile-icon" aria-hidden>📰</span>
+          <strong>News</strong>
+          <span className="muted small">New research, trials and regulatory updates</span>
+        </a>
       </div>
 
       {last && (

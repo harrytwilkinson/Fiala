@@ -11,6 +11,7 @@
 - **Dose log**: log the peptide, dose (mcg, mg or syringe units), the vial it came from, injection site, time and notes. It reminds you which site you used last so you can rotate, and exports to CSV.
 - **Vial inventory**: record each mixed vial (amount, water, date mixed, discard-after days). Remaining peptide and doses left are worked out from the doses logged against it, with warnings when a vial is running low or past its discard date. The converter can save its result straight to a vial.
 - **Schedules and reminders**: weekly ("Mon, Thu") or every-N-days routines with a time, start and end date. "Add to calendar" downloads an `.ics` file, so the phone's own calendar gives recurring reminders even when the app is closed, with no server needed.
+- **News**: a feed of new PubMed studies, ClinicalTrials.gov trial updates and FDA announcements that mention peptides in the library, plus Fiala's own posts. Each item is labelled (e.g. "Randomised trial", "Lab or animal study", "Recruiting · Phase 3") and tagged with its peptides. Follow peptides to see their news first; each library page shows its latest research. The last feed is saved for offline use.
 - **Backup & restore**: save every dose, vial and schedule to one JSON file (via the phone's share sheet where supported, otherwise a download), and restore it on any device. Restores show a preview first, then either merge (keeping existing records) or replace everything. Damaged records are skipped. The home screen nudges you if you haven't backed up in 30 days, and the app requests persistent storage.
 - **Privacy policy and support pages**: standalone pages at `privacy.html` and `support.html` (also used as the App Store / Play URLs), linked from the home screen, walkthrough and backup screen, and available offline.
 - All tracking data stays on the device (localStorage). Data saved before the rename (under `peptide-compass:*` keys) is moved to `fiala:*` automatically, and old backup files still restore.
@@ -25,12 +26,25 @@ dose volume (mL)      = dose mg ÷ concentration
 syringe units         = dose volume × 100   (U-100: 100 units = 1 mL)
 ```
 
+## News feed
+
+`scripts/build-news.ts` (`npm run news`) writes `public/news.json`. It searches each source for every library peptide (search terms come from names and aliases; overly broad aliases are excluded in `src/lib/newsBuild.ts`), merges the results with the currently published feed at getfiala.com, and trims old items. A source that is down for a night is skipped, so the feed never empties. The deploy workflow runs it every night at 05:17 UTC and on every push to `main`.
+
+**Writing a Fiala post:** add an entry to [`news/posts.json`](news/posts.json) and merge it to `main`:
+
+```json
+{ "id": "short-unique-slug", "date": "2026-10-05", "title": "Headline", "summary": "Plain text.", "url": "https://optional-link", "peptides": ["bpc-157"] }
+```
+
+Delete an entry to remove the post. GitHub pauses scheduled workflows after 60 days without any commits; if the feed stops updating, re-enable the workflow from the **Actions** tab.
+
 ## Development
 
 ```bash
 npm install
 npm run dev        # start the dev server
-npm test           # unit tests (converter math, vials, schedules, backup, library data)
+npm test           # unit tests (converter math, vials, schedules, backup, news, library data)
+npm run news       # fetch the news feed into public/news.json
 npm run build      # typecheck + production build to dist/
 npm run native:sync        # build and copy into the iOS/Android projects (see NATIVE.md)
 npm run native:sync:store  # same, without the dose converter

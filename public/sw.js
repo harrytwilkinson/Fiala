@@ -1,9 +1,10 @@
 // Offline support for Fiala.
 // - Page loads: network first, falling back to the cached app shell.
+// - news.json: left to the network; the app keeps its own offline copy.
 // - Other same-origin files (hashed JS/CSS, icons): serve from cache, refresh in the background.
 // Bump CACHE when this file's caching strategy changes.
 
-const CACHE = "fiala-v3";
+const CACHE = "fiala-v4";
 // Paths are relative to this file, so the app works under a subpath (GitHub Pages).
 const SHELL = ["./", "manifest.webmanifest", "fiala.svg", "icons/icon-192.png", "icons/apple-touch-icon.png", "privacy.html", "support.html"];
 
@@ -24,6 +25,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
+  if (new URL(request.url).pathname.endsWith("/news.json")) return;
 
   if (request.mode === "navigate") {
     // The app shell lives at the scope root; other pages (privacy, support) are cached under their own URL
