@@ -6,7 +6,11 @@ A mobile-first web app to **learn about**, **accurately mix**, and **track** pep
 
 - **Library**: a searchable list of common peptides covering what people use them for, how they work in the body, how strong the evidence is, side effects, regulatory status and storage. Content lives in [`src/data/peptides.ts`](src/data/peptides.ts).
 - **Reconstitution calculator**: enter the mg in the vial, the mL of bacteriostatic water and your dose (mcg or mg). It shows the concentration, how many units to draw on a U-100 insulin syringe (with a syringe picture), and doses per vial. It also warns when a dose won't fit the syringe, is too small to measure, or falls between markings. A reverse helper tells you how much water to add so each dose lands on a round number of units.
-- **Dose tracker**: log the peptide, dose, injection site, time and notes. It reminds you which site you used last so you can rotate, and exports to CSV. Data stays on the device (localStorage).
+- **Today**: the home screen lists today's scheduled doses with one-tap "Mark taken", vials that need attention, and what's coming up this week.
+- **Dose log**: log the peptide, dose (mcg, mg or syringe units), the vial it came from, injection site, time and notes. It reminds you which site you used last so you can rotate, and exports to CSV.
+- **Vial inventory**: record each mixed vial (amount, water, date mixed, discard-after days). Remaining peptide and doses left are worked out from the doses logged against it, with warnings when a vial is running low or past its discard date. The calculator can save its result straight to a vial.
+- **Schedules and reminders**: weekly ("Mon, Thu") or every-N-days routines with a time, start and end date. "Add to calendar" downloads an `.ics` file, so the phone's own calendar gives recurring reminders even when the app is closed, with no server needed.
+- All tracking data stays on the device (localStorage).
 - **Installable and offline-ready**: add it to a phone's home screen as "Peptide Compass" and it runs full-screen like a native app. After the first visit it works without a connection (`public/manifest.webmanifest`, `public/sw.js`).
 
 ## Calculator math
@@ -22,7 +26,7 @@ syringe units         = dose volume × 100   (U-100: 100 units = 1 mL)
 ```bash
 npm install
 npm run dev        # start the dev server
-npm test           # unit tests for the calculator math
+npm test           # unit tests (calculator, vials, schedules, library data)
 npm run build      # typecheck + production build to dist/
 ```
 

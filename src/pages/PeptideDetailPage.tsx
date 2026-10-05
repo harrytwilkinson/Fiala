@@ -64,6 +64,9 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
         <a className="button secondary" href={href("tracker", { peptide: peptide.id })}>
           Log a dose
         </a>
+        <a className="button secondary" href={href("tracker/schedules", { peptide: peptide.id })}>
+          Create schedule
+        </a>
       </div>
 
       <p className="muted small">

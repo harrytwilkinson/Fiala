@@ -1,13 +1,13 @@
 import { useState, type FormEvent } from "react";
-import { PEPTIDES, findPeptide } from "../data/peptides";
-import { INJECTION_SITES, lastSiteFor, toCsv, useDoseLog, type DoseEntry, type DoseUnit } from "../lib/doseLog";
+import { PeptideField, choiceId, choiceName, emptyChoice, type PeptideChoice } from "../components/PeptideField";
+import { TrackerNav } from "../components/TrackerNav";
+import { formatDateKey, localDateTimeValue } from "../lib/dates";
+import { INJECTION_SITES, doses, downloadFile, lastSiteFor, toCsv, useDoseLog, type DoseEntry, type DoseUnit } from "../lib/doseLog";
+import { href } from "../lib/router";
+import { schedules } from "../lib/schedules";
+import { defaultVialFor, useVials } from "../lib/vials";
 
-const CUSTOM = "__custom__";
-
-function localDateTimeValue(d = new Date()): string {
-  const offset = d.getTimezoneOffset() * 60_000;
-  return new Date(d.getTime() - offset).toISOString().slice(0, 16);
-}
+const NO_VIAL = "";
 
 function groupByDay(entries: DoseEntry[]): [string, DoseEntry[]][] {
   const groups = new Map<string, DoseEntry[]>();
@@ -18,79 +18,89 @@ function groupByDay(entries: DoseEntry[]): [string, DoseEntry[]][] {
   return [...groups.entries()];
 }
 
-interface Props {
-  prefill: { peptide?: string; amount?: string; unit?: string };
+export interface TrackerPrefill {
+  peptide?: string;
+  amount?: string;
+  unit?: string;
+  schedule?: string;
 }
 
-export function TrackerPage({ prefill }: Props) {
-  const { entries, add, remove } = useDoseLog();
+export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
+  const entries = useDoseLog();
+  const allVials = useVials();
+  const schedule = prefill.schedule ? schedules.get().find((s) => s.id === prefill.schedule) : undefined;
 
-  const [peptideId, setPeptideId] = useState(prefill.peptide && findPeptide(prefill.peptide) ? prefill.peptide : "");
-  const [customName, setCustomName] = useState("");
-  const [amount, setAmount] = useState(prefill.amount ?? "");
-  const [unit, setUnit] = useState<DoseUnit>(prefill.unit === "mg" || prefill.unit === "units" ? prefill.unit : "mcg");
+  const [peptide, setPeptide] = useState<PeptideChoice>(() => {
+    if (schedule && !schedule.peptideId) return { selected: "__custom__", customName: schedule.peptideName };
+    return emptyChoice(schedule?.peptideId ?? prefill.peptide);
+  });
+  const [amount, setAmount] = useState(schedule ? String(schedule.amount) : (prefill.amount ?? ""));
+  const [unit, setUnit] = useState<DoseUnit>(() => {
+    const u = schedule?.unit ?? prefill.unit;
+    return u === "mg" || u === "units" ? u : "mcg";
+  });
   const [site, setSite] = useState("");
   const [takenAt, setTakenAt] = useState(localDateTimeValue());
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
 
-  const peptideName = peptideId === CUSTOM ? customName.trim() : (findPeptide(peptideId)?.name ?? "");
+  const peptideName = choiceName(peptide);
   const previousSite = peptideName ? lastSiteFor(entries, peptideName) : undefined;
+  const vialOptions = allVials.filter((v) => !v.finished && v.peptideName === peptideName);
+  // undefined = follow the default for the chosen peptide; "" = explicitly no vial
+  const [vialChoice, setVialChoice] = useState<string | undefined>(undefined);
+  const vialId = vialChoice ?? defaultVialFor(allVials, peptideName)?.id ?? NO_VIAL;
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const value = parseFloat(amount);
     if (!peptideName) return setError("Choose a peptide or enter a name.");
     if (!Number.isFinite(value) || value <= 0) return setError("Enter a dose greater than 0.");
-    add({
-      peptideId: peptideId === CUSTOM ? null : peptideId,
+    if (unit === "units" && !vialId) return setError("To log in syringe units, pick the vial it came from so the dose can be worked out.");
+    doses.add({
+      peptideId: choiceId(peptide),
       peptideName,
       amount: value,
       unit,
       site: site || undefined,
       takenAt: new Date(takenAt).toISOString(),
       notes: notes.trim() || undefined,
+      vialId: vialId || undefined,
+      scheduleId: schedule && schedule.peptideName === peptideName ? schedule.id : undefined,
     });
     setError("");
     setNotes("");
     setSite("");
     setTakenAt(localDateTimeValue());
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
   };
 
-  const exportCsv = () => {
-    const blob = new Blob([toCsv(entries)], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `peptide-log-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const vialLabel = (id?: string) => {
+    const v = id && allVials.find((x) => x.id === id);
+    return v ? `${v.vialMg} mg vial mixed ${formatDateKey(v.mixedOn)}` : undefined;
   };
 
   return (
     <div className="page">
-      <h1>Dose tracker</h1>
-      <p className="muted">Your log is saved only on this device.</p>
+      <h1>Tracker</h1>
+      <TrackerNav current="tracker" />
+
+      {schedule && (
+        <p className="notice">
+          Logging today's scheduled dose of <strong>{schedule.peptideName}</strong>.
+        </p>
+      )}
 
       <form className="card form" onSubmit={submit}>
-        <label>
-          <span>Peptide</span>
-          <select value={peptideId} onChange={(e) => setPeptideId(e.target.value)}>
-            <option value="">Choose…</option>
-            {PEPTIDES.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-            <option value={CUSTOM}>Other / custom…</option>
-          </select>
-        </label>
-        {peptideId === CUSTOM && (
-          <label>
-            <span>Name</span>
-            <input value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="e.g. Kisspeptin" />
-          </label>
-        )}
+        <PeptideField
+          value={peptide}
+          onChange={(v) => {
+            setPeptide(v);
+            setVialChoice(undefined);
+          }}
+        />
 
         <label>
           <span>Dose</span>
@@ -105,6 +115,25 @@ export function TrackerPage({ prefill }: Props) {
             </div>
           </div>
         </label>
+
+        {peptideName && (
+          <label>
+            <span>From vial</span>
+            <select value={vialId} onChange={(e) => setVialChoice(e.target.value)}>
+              <option value={NO_VIAL}>Not tracked</option>
+              {vialOptions.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {vialLabel(v.id)}
+                </option>
+              ))}
+            </select>
+            {vialOptions.length === 0 && (
+              <small className="hint">
+                No active {peptideName} vials. <a href={href("tracker/vials", { peptide: choiceId(peptide) ?? undefined })}>Add one</a> to track how much is left.
+              </small>
+            )}
+          </label>
+        )}
 
         <label>
           <span>Injection site</span>
@@ -131,18 +160,19 @@ export function TrackerPage({ prefill }: Props) {
 
         {error && <p className="error">{error}</p>}
         <button className="button" type="submit">
-          Save dose
+          {saved ? "Saved ✓" : "Save dose"}
         </button>
       </form>
 
       <div className="row">
         <h2>History</h2>
         {entries.length > 0 && (
-          <button type="button" className="button secondary small" onClick={exportCsv}>
+          <button type="button" className="button secondary small" onClick={() => downloadFile(`peptide-log-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(entries), "text/csv")}>
             Export CSV
           </button>
         )}
       </div>
+      <p className="muted small">Your log is saved only on this device.</p>
 
       {entries.length === 0 && <p className="muted">No doses logged yet.</p>}
       {groupByDay(entries).map(([day, items]) => (
@@ -160,13 +190,14 @@ export function TrackerPage({ prefill }: Props) {
                 <div className="muted small">
                   {new Date(e.takenAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
                   {e.site && <> · {e.site}</>}
+                  {vialLabel(e.vialId) && <> · {vialLabel(e.vialId)}</>}
                 </div>
                 {e.notes && <p className="small">{e.notes}</p>}
                 <button
                   type="button"
                   className="link-button"
                   onClick={() => {
-                    if (confirm(`Delete this ${e.peptideName} entry?`)) remove(e.id);
+                    if (confirm(`Delete this ${e.peptideName} entry?`)) doses.remove(e.id);
                   }}
                 >
                   Delete

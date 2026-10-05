@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { createCollection } from "./store";
 
 // Dose history is kept on-device only (localStorage). Nothing leaves the
-// browser, which matters for health data. A sync backend can replace this
-// module later without touching the UI.
+// browser, which matters for health data. A sync backend can replace the
+// collection later without touching the UI.
 
 export type DoseUnit = "mcg" | "mg" | "units";
 
@@ -29,62 +29,19 @@ export interface DoseEntry {
   /** ISO timestamp of when the dose was taken. */
   takenAt: string;
   notes?: string;
-}
-
-const STORAGE_KEY = "peptide-compass:doses:v1";
-
-function read(): DoseEntry[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function write(entries: DoseEntry[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  } catch {
-    // Storage full or blocked (private mode); the in-memory list still works.
-  }
-}
-
-export function newId(): string {
-  return typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
-
-export function useDoseLog() {
-  const [entries, setEntries] = useState<DoseEntry[]>(read);
-
-  useEffect(() => write(entries), [entries]);
-
-  // Keep multiple tabs in sync.
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY) setEntries(read());
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  const add = useCallback((entry: Omit<DoseEntry, "id">) => {
-    setEntries((prev) => sortByDate([{ ...entry, id: newId() }, ...prev]));
-  }, []);
-
-  const remove = useCallback((id: string) => {
-    setEntries((prev) => prev.filter((e) => e.id !== id));
-  }, []);
-
-  return { entries, add, remove };
+  /** Vial the dose was drawn from, for inventory tracking. */
+  vialId?: string;
+  /** Schedule this dose fulfils, for the Today view. */
+  scheduleId?: string;
 }
 
 export function sortByDate(entries: DoseEntry[]): DoseEntry[] {
   return [...entries].sort((a, b) => b.takenAt.localeCompare(a.takenAt));
 }
+
+export const doses = createCollection<DoseEntry>("peptide-compass:doses:v1", sortByDate);
+
+export const useDoseLog = () => doses.use();
 
 /** Most recently used site for a peptide, so the UI can suggest rotating. */
 export function lastSiteFor(entries: DoseEntry[], peptideName: string): string | undefined {
@@ -96,4 +53,16 @@ export function toCsv(entries: DoseEntry[]): string {
   const esc = (v: string | number | undefined) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const rows = entries.map((e) => [e.takenAt, e.peptideName, e.amount, e.unit, e.site, e.notes].map(esc).join(","));
   return [header.join(","), ...rows].join("\n");
+}
+
+export function downloadFile(filename: string, contents: string, type: string) {
+  const url = URL.createObjectURL(new Blob([contents], { type }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  // Some browsers (Firefox) only honour clicks on links that are in the document.
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
