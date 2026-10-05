@@ -5,7 +5,7 @@
 
 const CACHE = "fiala-v1";
 // Paths are relative to this file, so the app works under a subpath (GitHub Pages).
-const SHELL = ["./", "manifest.webmanifest", "compass.svg", "icons/icon-192.png", "icons/apple-touch-icon.png"];
+const SHELL = ["./", "manifest.webmanifest", "fiala.svg", "icons/icon-192.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));

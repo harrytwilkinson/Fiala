@@ -15,7 +15,7 @@ import { VialsPage } from "./pages/VialsPage";
 const CalculatorPage = __CONVERTER__ ? lazy(() => import("./pages/CalculatorPage").then((m) => ({ default: m.CalculatorPage }))) : null;
 
 const TABS = [
-  { path: "", label: "Home", icon: "🧭" },
+  { path: "", label: "Home", icon: "🏠" },
   { path: "library", label: "Library", icon: "📚" },
   { path: "calculator", label: "Converter", icon: "🧮" },
   { path: "tracker", label: "Tracker", icon: "📈" },

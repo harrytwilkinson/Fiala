@@ -11,7 +11,7 @@ interface Slide {
   art: ReactNode;
 }
 
-const ICON_URL = `${import.meta.env.BASE_URL}compass.svg`;
+const ICON_URL = `${import.meta.env.BASE_URL}fiala.svg`;
 
 const SLIDES: Slide[] = [
   {
