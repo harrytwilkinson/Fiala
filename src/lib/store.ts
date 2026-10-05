@@ -10,6 +10,8 @@ export interface Collection<T extends { id: string }> {
   add(item: Omit<T, "id">): T;
   update(id: string, patch: Partial<Omit<T, "id">>): void;
   remove(id: string): void;
+  /** Replace the whole collection (used by restore). */
+  replaceAll(items: T[]): void;
 }
 
 export function newId(): string {
@@ -85,6 +87,9 @@ export function createCollection<T extends { id: string }>(
     },
     remove(id) {
       set(items.filter((i) => i.id !== id));
+    },
+    replaceAll(next) {
+      set(next);
     },
   };
 }

@@ -1,3 +1,5 @@
+import { backupIsDue } from "../lib/backup";
+import { useLastBackupAt } from "../lib/backupDevice";
 import { addDays, formatDateKey, localDateKey } from "../lib/dates";
 import { doses, useDoseLog } from "../lib/doseLog";
 import { replayOnboarding } from "../lib/onboarding";
@@ -23,6 +25,8 @@ export function HomePage() {
     .map((v) => ({ vial: v, alert: vialAlert(vialStatus(v, entries, today)) }))
     .filter((a) => a.alert);
   const last = entries[0];
+  const lastBackupAt = useLastBackupAt();
+  const showBackupNudge = backupIsDue(lastBackupAt, entries.length + allVials.length + allSchedules.length > 0, today);
 
   const markTaken = (s: Schedule) => {
     const vial = defaultVialFor(vials.get(), s.peptideName);
@@ -97,6 +101,13 @@ export function HomePage() {
         </section>
       )}
 
+      {showBackupNudge && (
+        <a className="alert warn link-alert" href={href("backup")}>
+          <strong>{lastBackupAt ? "It's been a while since your last backup." : "Your log isn't backed up yet."}</strong> Your
+          data lives only on this phone. Tap to save a backup.
+        </a>
+      )}
+
       {upcoming.length > 0 && (
         <section className="card">
           <h2>Coming up</h2>
@@ -140,9 +151,12 @@ export function HomePage() {
         </section>
       )}
 
-      <button type="button" className="link-button neutral center" onClick={replayOnboarding}>
-        How Peptide Compass works
-      </button>
+      <div className="home-links">
+        <button type="button" className="link-button neutral" onClick={replayOnboarding}>
+          How Peptide Compass works
+        </button>
+        <a href={href("backup")}>Backup &amp; restore</a>
+      </div>
 
       <section className="card disclaimer">
         <h2>Important</h2>

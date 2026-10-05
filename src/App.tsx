@@ -2,6 +2,7 @@ import { Onboarding } from "./components/Onboarding";
 import { findPeptide } from "./data/peptides";
 import { useOnboardingOpen } from "./lib/onboarding";
 import { href, useRoute } from "./lib/router";
+import { BackupPage } from "./pages/BackupPage";
 import { CalculatorPage } from "./pages/CalculatorPage";
 import { HomePage } from "./pages/HomePage";
 import { LibraryPage } from "./pages/LibraryPage";
@@ -41,6 +42,9 @@ export function App() {
       else page = <TrackerPage prefill={{ peptide: q("peptide"), amount: q("amount"), unit: q("unit"), schedule: q("schedule") }} />;
       break;
     }
+    case "backup":
+      page = <BackupPage />;
+      break;
     default:
       page = <HomePage />;
   }
