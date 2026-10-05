@@ -31,15 +31,15 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    title: "Mix and measure with the Calculator",
-    body: "Enter the mg in your vial, the bacteriostatic water you add and your dose. It shows exactly how far to draw an insulin syringe, and warns you if something looks off.",
+    title: "Measure accurately with the Converter",
+    body: "Enter the mg in your vial, the bacteriostatic water you add and the dose you've been prescribed. It converts that into units on an insulin syringe, and warns you if something looks off. It never suggests a dose.",
     art: (
       <div className="onb-syringe" aria-hidden>
         <div className="onb-units">
           10 <span>units</span>
         </div>
         <SyringeVisual syringe={SYRINGES[2]} units={10} />
-        <div className="muted small">5 mg vial + 2 mL water → 250 mcg dose</div>
+        <div className="muted small">5 mg vial + 2 mL water, 250 mcg dose</div>
       </div>
     ),
   },

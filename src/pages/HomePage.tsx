@@ -130,8 +130,8 @@ export function HomePage() {
         </a>
         <a className="card tile" href={href("calculator")}>
           <span className="tile-icon" aria-hidden>🧮</span>
-          <strong>Calculator</strong>
-          <span className="muted small">Bacteriostatic water and syringe units</span>
+          <strong>Converter</strong>
+          <span className="muted small">Turn a prescribed dose into syringe units</span>
         </a>
         <a className="card tile" href={href("tracker")}>
           <span className="tile-icon" aria-hidden>📈</span>
