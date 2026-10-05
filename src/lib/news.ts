@@ -1,5 +1,4 @@
 import { useEffect, useSyncExternalStore } from "react";
-import { daysBetween } from "./dates";
 import { parseFeed, type NewsFeed, type NewsItem, type NewsKind } from "./newsFeed";
 import { isNative } from "./platform";
 
@@ -120,11 +119,4 @@ export function filterNews(items: NewsItem[], filter: NewsFilter, followed: stri
     if (filter === "following") return i.peptides.some((p) => followed.includes(p));
     return i.kind === filter;
   });
-}
-
-/** Home screen preview: recent Fiala posts first, then followed peptides, then everything else. */
-export function headlines(items: NewsItem[], followed: string[], count: number, today: string): NewsItem[] {
-  const recentPost = (i: NewsItem) => i.kind === "fiala" && daysBetween(i.date, today) <= 14;
-  const score = (i: NewsItem) => (recentPost(i) ? 2 : i.peptides.some((p) => followed.includes(p)) ? 1 : 0);
-  return [...items].sort((a, b) => score(b) - score(a) || b.date.localeCompare(a.date)).slice(0, count);
 }

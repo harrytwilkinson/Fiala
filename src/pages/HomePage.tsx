@@ -2,13 +2,11 @@ import { backupIsDue } from "../lib/backup";
 import { useLastBackupAt } from "../lib/backupDevice";
 import { addDays, formatDateKey, localDateKey } from "../lib/dates";
 import { doses, useDoseLog } from "../lib/doseLog";
-import { headlines, useFollowing, useNews } from "../lib/news";
 import { replayOnboarding } from "../lib/onboarding";
 import { href, navigate } from "../lib/router";
 import { formatTime, isDueOn, takenOn, useSchedules, type Schedule } from "../lib/schedules";
 import { defaultVialFor, useVials, vialStatus, vials } from "../lib/vials";
 import { vialAlert } from "./VialsPage";
-import { NewsList } from "../components/NewsList";
 
 const UPCOMING_DAYS = 6;
 
@@ -28,9 +26,6 @@ export function HomePage() {
     .filter((a) => a.alert);
   const last = entries[0];
   const lastBackupAt = useLastBackupAt();
-  const { feed } = useNews();
-  const followed = useFollowing();
-  const news = headlines(feed?.items ?? [], followed, 3, today);
   const showBackupNudge = backupIsDue(lastBackupAt, entries.length + allVials.length + allSchedules.length > 0, today);
 
   const markTaken = (s: Schedule) => {
@@ -145,19 +140,12 @@ export function HomePage() {
           <strong>Tracker</strong>
           <span className="muted small">Dose log, vials and schedules</span>
         </a>
+        <a className="card tile" href={href("news")}>
+          <span className="tile-icon" aria-hidden>📰</span>
+          <strong>News</strong>
+          <span className="muted small">New research, trials and regulatory updates</span>
+        </a>
       </div>
-
-      {news.length > 0 && (
-        <section className="card">
-          <div className="row">
-            <h2>Latest news</h2>
-            <a className="small" href={href("news")}>
-              See all
-            </a>
-          </div>
-          <NewsList items={news} />
-        </section>
-      )}
 
       {last && (
         <section className="card">

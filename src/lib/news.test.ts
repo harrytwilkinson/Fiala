@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PEPTIDES } from "../data/peptides";
-import { filterNews, headlines } from "./news";
+import { filterNews } from "./news";
 import {
   cleanText,
   makeMatcher,
@@ -177,9 +177,5 @@ describe("filters", () => {
     expect(filterNews(items, "trial", []).map((i) => i.id)).toEqual(["2"]);
     expect(filterNews(items, "following", ["semaglutide"]).map((i) => i.id)).toEqual(["2"]);
     expect(filterNews(items, "all", [], "bpc-157").map((i) => i.id)).toEqual(["1"]);
-  });
-
-  it("puts recent posts, then followed peptides, first on the home screen", () => {
-    expect(headlines(items, ["semaglutide"], 3, "2026-10-05").map((i) => i.id)).toEqual(["3", "2", "1"]);
   });
 });
