@@ -14,7 +14,7 @@ import { VialsPage } from "./pages/VialsPage";
 const TABS = [
   { path: "", label: "Home", icon: "🧭" },
   { path: "library", label: "Library", icon: "📚" },
-  { path: "calculator", label: "Calculator", icon: "🧮" },
+  { path: "calculator", label: "Converter", icon: "🧮" },
   { path: "tracker", label: "Tracker", icon: "📈" },
 ];
 
@@ -33,7 +33,7 @@ export function App() {
       break;
     }
     case "calculator":
-      page = <CalculatorPage initialPeptideId={query.get("peptide") ?? undefined} />;
+      page = <CalculatorPage />;
       break;
     case "tracker": {
       const q = (k: string) => query.get(k) ?? undefined;

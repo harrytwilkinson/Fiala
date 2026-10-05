@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { SyringeVisual } from "../components/SyringeVisual";
-import { PEPTIDES, findPeptide } from "../data/peptides";
 import {
   SYRINGES,
   calculate,
@@ -14,12 +13,9 @@ import { href } from "../lib/router";
 
 const WATER_PRESETS = [1, 2, 3, 5];
 
-interface Props {
-  initialPeptideId?: string;
-}
-
-export function CalculatorPage({ initialPeptideId }: Props) {
-  const [peptideId, setPeptideId] = useState(initialPeptideId && findPeptide(initialPeptideId) ? initialPeptideId : "");
+// A general-purpose unit converter: it never suggests a dose and isn't tied to
+// any particular compound. The user enters the dose they've been prescribed.
+export function CalculatorPage() {
   const [vialMg, setVialMg] = useState("5");
   const [waterMl, setWaterMl] = useState("2");
   const [dose, setDose] = useState("250");
@@ -44,38 +40,22 @@ export function CalculatorPage({ initialPeptideId }: Props) {
       ? waterForTargetUnits(input.vialMg, input.doseMg, target)
       : NaN;
 
-  const peptide = peptideId ? findPeptide(peptideId) : undefined;
-  const logHref = result
-    ? href("tracker", {
-        peptide: peptide?.id,
-        amount: dose,
-        unit: doseUnit,
-      })
-    : undefined;
+  const logHref = result ? href("tracker", { amount: dose, unit: doseUnit }) : undefined;
 
   return (
     <div className="page">
-      <h1>Reconstitution calculator</h1>
+      <h1>Reconstitution &amp; syringe converter</h1>
       <p className="muted">
-        Work out how much bacteriostatic water to add to a freeze-dried peptide vial, and how far to draw an
-        insulin (U-100) syringe for your dose.
+        Converts a dose into the volume to draw on an insulin (U-100) syringe, based on how much powder is in the
+        vial and how much bacteriostatic water you add.
+      </p>
+      <p className="notice small">
+        Enter the dose your clinician has prescribed. This tool only converts units. It doesn't recommend doses.
       </p>
 
       <section className="card form">
         <label>
-          <span>Peptide (optional)</span>
-          <select value={peptideId} onChange={(e) => setPeptideId(e.target.value)}>
-            <option value="">— Not specified —</option>
-            {PEPTIDES.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          <span>1. Peptide in the vial</span>
+          <span>1. Amount in the vial</span>
           <div className="input-suffix">
             <input inputMode="decimal" value={vialMg} onChange={(e) => setVialMg(e.target.value)} aria-invalid={!!errorFor("vialMg")} />
             <em>mg</em>
@@ -101,7 +81,7 @@ export function CalculatorPage({ initialPeptideId }: Props) {
         </label>
 
         <label>
-          <span>3. Dose per injection</span>
+          <span>3. Prescribed dose per injection</span>
           <div className="input-suffix">
             <input inputMode="decimal" value={dose} onChange={(e) => setDose(e.target.value)} aria-invalid={!!errorFor("doseMg")} />
             <div className="segmented" role="group" aria-label="Dose unit">
@@ -164,13 +144,15 @@ export function CalculatorPage({ initialPeptideId }: Props) {
             </ul>
           )}
 
+          <p className="muted small">Double-check the result, and confirm with your pharmacist or clinician if you're unsure.</p>
+
           <div className="actions">
             {logHref && (
               <a className="button" href={logHref}>
                 Log this dose
               </a>
             )}
-            <a className="button secondary" href={href("tracker/vials", { peptide: peptide?.id, vialMg, waterMl })}>
+            <a className="button secondary" href={href("tracker/vials", { vialMg, waterMl })}>
               Save as a mixed vial
             </a>
           </div>

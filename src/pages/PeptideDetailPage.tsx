@@ -58,10 +58,7 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
       )}
 
       <div className="actions">
-        <a className="button" href={href("calculator", { peptide: peptide.id })}>
-          Open calculator
-        </a>
-        <a className="button secondary" href={href("tracker", { peptide: peptide.id })}>
+        <a className="button" href={href("tracker", { peptide: peptide.id })}>
           Log a dose
         </a>
         <a className="button secondary" href={href("tracker/schedules", { peptide: peptide.id })}>
