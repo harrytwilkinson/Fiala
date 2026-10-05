@@ -9,6 +9,7 @@ import { defaultVialFor, useVials, vialStatus, vials } from "../lib/vials";
 import { vialAlert } from "./VialsPage";
 
 const UPCOMING_DAYS = 6;
+const ICON_URL = `${import.meta.env.BASE_URL}fiala.svg`;
 
 export function HomePage() {
   const entries = useDoseLog();
@@ -44,7 +45,10 @@ export function HomePage() {
 
   return (
     <div className="page">
-      <h1>Fiala</h1>
+      <h1 className="brand">
+        <img src={ICON_URL} alt="" />
+        <span>Fiala</span>
+      </h1>
       <p className="muted">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
 
       <section className="card">
