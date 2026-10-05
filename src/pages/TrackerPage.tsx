@@ -172,7 +172,9 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
           </button>
         )}
       </div>
-      <p className="muted small">Your log is saved only on this device.</p>
+      <p className="muted small">
+        Your log is saved only on this device. <a href={href("backup")}>Back it up</a> so you don't lose it.
+      </p>
 
       {entries.length === 0 && <p className="muted">No doses logged yet.</p>}
       {groupByDay(entries).map(([day, items]) => (

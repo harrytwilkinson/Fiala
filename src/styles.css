@@ -225,4 +225,12 @@ legend { font-weight: 600; font-size: 0.92rem; padding: 0; margin-bottom: 0.3rem
 .dot.active { width: 22px; background: var(--accent); }
 .onb-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
 .button:disabled { opacity: 0.45; cursor: not-allowed; }
-.link-button.center { align-self: center; }
+
+/* backup & restore */
+.restore-preview { display: flex; flex-direction: column; gap: 0.6rem; border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem; background: var(--bg); }
+.restore-preview p { margin: 0; }
+.button.danger { background: transparent; color: var(--error); border: 1px solid var(--error); }
+.home-links { display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap; font-size: 0.9rem; }
+.home-links a { text-decoration: none; font-weight: 500; }
+.link-alert:hover { filter: brightness(0.97); }
+.form > h2, .form > p { margin: 0; }
