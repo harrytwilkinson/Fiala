@@ -2,8 +2,8 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 // appId is permanent once the app is published to a store; change it before the first upload if needed.
 const config: CapacitorConfig = {
-  appId: "com.peptidecompass.app",
-  appName: "Peptide Compass",
+  appId: "app.fiala",
+  appName: "Fiala",
   webDir: "dist",
   ios: {
     contentInset: "never",

@@ -1,9 +1,11 @@
 import { useSyncExternalStore } from "react";
+import { migrateKey } from "./store";
 
 // Remembers whether this device has completed the first-run walkthrough.
 // Bump the version to show an updated walkthrough to everyone again.
 
-export const ONBOARDING_KEY = "peptide-compass:onboarded:v1";
+export const ONBOARDING_KEY = "fiala:onboarded:v1";
+migrateKey("peptide-compass:onboarded:v1", ONBOARDING_KEY);
 
 const listeners = new Set<() => void>();
 let forcedOpen = false;

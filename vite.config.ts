@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => ({
   // Relative base so the build works at any path, e.g. GitHub Pages
-  // (https://<user>.github.io/Peptide-Compass/) or a custom domain root.
+  // (https://<user>.github.io/<repo>/) or a custom domain root.
   base: "./",
   plugins: [react()],
   define: {

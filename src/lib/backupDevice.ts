@@ -3,12 +3,14 @@ import { backupFileName, buildBackup, mergeData, type BackupData } from "./backu
 import { doses } from "./doseLog";
 import { canShareFiles, saveFile, type SaveResult } from "./files";
 import { schedules } from "./schedules";
+import { migrateKey } from "./store";
 import { vials } from "./vials";
 
 // Browser side of backup/restore: reading and writing the live collections,
 // sharing or downloading the file, and remembering when the last backup ran.
 
-const LAST_BACKUP_KEY = "peptide-compass:last-backup";
+const LAST_BACKUP_KEY = "fiala:last-backup";
+migrateKey("peptide-compass:last-backup", LAST_BACKUP_KEY);
 const listeners = new Set<() => void>();
 
 export function currentData(): BackupData {
@@ -52,7 +54,7 @@ export type ExportResult = SaveResult;
 export async function exportBackup(preferShare: boolean): Promise<ExportResult> {
   const now = new Date();
   const json = JSON.stringify(buildBackup(currentData(), now), null, 2);
-  const result = await saveFile(backupFileName(now), json, "application/json", { preferShare, title: "Peptide Compass backup" });
+  const result = await saveFile(backupFileName(now), json, "application/json", { preferShare, title: "Fiala backup" });
   if (result !== "cancelled") markBackedUp(now);
   return result;
 }

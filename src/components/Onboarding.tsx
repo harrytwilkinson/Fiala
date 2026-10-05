@@ -15,7 +15,7 @@ const ICON_URL = `${import.meta.env.BASE_URL}compass.svg`;
 
 const SLIDES: Slide[] = [
   {
-    title: "Welcome to Peptide Compass",
+    title: "Welcome to Fiala",
     body: "Learn what peptides do, mix them accurately and keep track of every dose, all in one place.",
     art: <img className="onb-icon" src={ICON_URL} alt="" width={112} height={112} />,
   },
@@ -174,7 +174,7 @@ export function Onboarding() {
             <label className="onb-agree">
               <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
               <span>
-                I understand Peptide Compass is for education and record-keeping only, is <strong>not medical advice</strong>, and that I should speak to a qualified healthcare professional before using any peptide.
+                I understand Fiala is for education and record-keeping only, is <strong>not medical advice</strong>, and that I should speak to a qualified healthcare professional before using any peptide.
               </span>
             </label>
           )}

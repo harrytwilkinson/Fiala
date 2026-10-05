@@ -45,7 +45,7 @@ export function SchedulesPage({ prefill }: { prefill: { peptide?: string } }) {
 const PERMISSION_TEXT: Record<ReminderPermission, string> = {
   granted: "Reminders are on. You'll get a notification at each scheduled time.",
   prompt: "Turn on reminders to get a notification at each scheduled time.",
-  denied: "Notifications are turned off for Peptide Compass. To get reminders, allow notifications in your phone's Settings app.",
+  denied: "Notifications are turned off for Fiala. To get reminders, allow notifications in your phone's Settings app.",
   unavailable: "",
 };
 

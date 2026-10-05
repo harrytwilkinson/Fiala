@@ -1,4 +1,4 @@
-package com.peptidecompass.app;
+package app.fiala;
 
 import com.getcapacitor.BridgeActivity;
 

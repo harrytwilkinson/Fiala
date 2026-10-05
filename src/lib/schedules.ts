@@ -26,8 +26,10 @@ export interface Schedule {
 export const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const ICS_DAYS = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
-export const schedules = createCollection<Schedule>("peptide-compass:schedules:v1", (items) =>
-  [...items].sort((a, b) => Number(b.active) - Number(a.active) || a.time.localeCompare(b.time)),
+export const schedules = createCollection<Schedule>(
+  "fiala:schedules:v1",
+  (items) => [...items].sort((a, b) => Number(b.active) - Number(a.active) || a.time.localeCompare(b.time)),
+  "peptide-compass:schedules:v1",
 );
 
 export const useSchedules = () => schedules.use();
@@ -87,16 +89,16 @@ export function toIcs(schedule: Schedule, now = new Date()): string {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Peptide Compass//Dose schedule//EN",
+    "PRODID:-//Fiala//Dose schedule//EN",
     "CALSCALE:GREGORIAN",
     "BEGIN:VEVENT",
-    `UID:${schedule.id}@peptide-compass`,
+    `UID:${schedule.id}@fiala`,
     `DTSTAMP:${stamp}`,
     `DTSTART:${dtStart}`,
     "DURATION:PT5M",
     `RRULE:${rrule}`,
     `SUMMARY:${escapeIcs(summary)}`,
-    `DESCRIPTION:${escapeIcs(`Scheduled dose from Peptide Compass.${schedule.notes ? ` ${schedule.notes}` : ""}`)}`,
+    `DESCRIPTION:${escapeIcs(`Scheduled dose from Fiala.${schedule.notes ? ` ${schedule.notes}` : ""}`)}`,
     "BEGIN:VALARM",
     "ACTION:DISPLAY",
     `DESCRIPTION:${escapeIcs(summary)}`,

@@ -24,8 +24,10 @@ export const DEFAULT_DISCARD_DAYS = 28;
 export const EXPIRY_WARNING_DAYS = 3;
 export const LOW_DOSES_WARNING = 2;
 
-export const vials = createCollection<Vial>("peptide-compass:vials:v1", (items) =>
-  [...items].sort((a, b) => Number(a.finished) - Number(b.finished) || b.mixedOn.localeCompare(a.mixedOn)),
+export const vials = createCollection<Vial>(
+  "fiala:vials:v1",
+  (items) => [...items].sort((a, b) => Number(a.finished) - Number(b.finished) || b.mixedOn.localeCompare(a.mixedOn)),
+  "peptide-compass:vials:v1",
 );
 
 export const useVials = () => vials.use();

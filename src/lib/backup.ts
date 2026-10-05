@@ -7,7 +7,9 @@ import type { Vial } from "./vials";
 // email) and inspected by a person. Restores validate every record and skip
 // anything malformed rather than letting a bad file corrupt the app.
 
-export const BACKUP_APP = "peptide-compass";
+export const BACKUP_APP = "fiala";
+/** Backups made before the app was renamed from Peptide Compass. */
+const LEGACY_BACKUP_APPS = ["peptide-compass"];
 export const BACKUP_VERSION = 1;
 export const BACKUP_REMINDER_DAYS = 30;
 
@@ -38,7 +40,7 @@ export function buildBackup(data: BackupData, now = new Date()): BackupFile {
 }
 
 export function backupFileName(now = new Date()): string {
-  return `peptide-compass-backup-${localDateKey(now)}.json`;
+  return `fiala-backup-${localDateKey(now)}.json`;
 }
 
 export function countRecords(d: BackupData): number {
@@ -50,13 +52,13 @@ export function parseBackup(text: string): ParsedBackup {
   try {
     raw = JSON.parse(text);
   } catch {
-    throw new BackupError("This file isn't a Peptide Compass backup (it couldn't be read as JSON).");
+    throw new BackupError("This file isn't a Fiala backup (it couldn't be read as JSON).");
   }
-  if (!isObject(raw) || raw.app !== BACKUP_APP || !isObject(raw.data)) {
-    throw new BackupError("This file isn't a Peptide Compass backup.");
+  if (!isObject(raw) || !(raw.app === BACKUP_APP || LEGACY_BACKUP_APPS.includes(raw.app as string)) || !isObject(raw.data)) {
+    throw new BackupError("This file isn't a Fiala backup.");
   }
   if (typeof raw.version !== "number" || raw.version > BACKUP_VERSION) {
-    throw new BackupError("This backup was made by a newer version of Peptide Compass. Refresh the app to update it, then try again.");
+    throw new BackupError("This backup was made by a newer version of Fiala. Refresh the app to update it, then try again.");
   }
 
   let skipped = 0;

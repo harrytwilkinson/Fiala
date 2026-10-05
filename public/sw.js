@@ -1,9 +1,9 @@
-// Offline support for Peptide Compass.
+// Offline support for Fiala.
 // - Page loads: network first, falling back to the cached app shell.
 // - Other same-origin files (hashed JS/CSS, icons): serve from cache, refresh in the background.
 // Bump CACHE when this file's caching strategy changes.
 
-const CACHE = "peptide-compass-v2";
+const CACHE = "fiala-v1";
 // Paths are relative to this file, so the app works under a subpath (GitHub Pages).
 const SHELL = ["./", "manifest.webmanifest", "compass.svg", "icons/icon-192.png", "icons/apple-touch-icon.png"];
 

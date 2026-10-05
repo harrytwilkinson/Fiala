@@ -39,7 +39,7 @@ export function sortByDate(entries: DoseEntry[]): DoseEntry[] {
   return [...entries].sort((a, b) => b.takenAt.localeCompare(a.takenAt));
 }
 
-export const doses = createCollection<DoseEntry>("peptide-compass:doses:v1", sortByDate);
+export const doses = createCollection<DoseEntry>("fiala:doses:v1", sortByDate, "peptide-compass:doses:v1");
 
 export const useDoseLog = () => doses.use();
 

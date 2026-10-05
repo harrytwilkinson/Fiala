@@ -168,7 +168,7 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
       <div className="row">
         <h2>History</h2>
         {entries.length > 0 && (
-          <button type="button" className="button secondary small" onClick={() => saveFile(`peptide-log-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(entries), "text/csv", { title: "Peptide Compass dose log" })}>
+          <button type="button" className="button secondary small" onClick={() => saveFile(`fiala-dose-log-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(entries), "text/csv", { title: "Fiala dose log" })}>
             Export CSV
           </button>
         )}

@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.peptidecompass.app"
+    namespace = "app.fiala"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.peptidecompass.app"
+        applicationId "app.fiala"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

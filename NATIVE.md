@@ -1,6 +1,6 @@
 # Native apps (iOS & Android)
 
-Peptide Compass ships as a website **and** as native iOS/Android apps built with
+Fiala ships as a website **and** as native iOS/Android apps built with
 [Capacitor](https://capacitorjs.com). The native apps run the same web code
 inside a native shell, plus a few native-only features:
 
@@ -63,10 +63,11 @@ Notification permission is requested the first time you save a schedule, or from
 
 ## Before publishing to the stores
 
-- [ ] **App ID**: `com.peptidecompass.app` in `capacitor.config.ts`. It can't be
-      changed after the first upload; change it now if you'd prefer another
-      (then update `ios/App/App.xcodeproj` and `android/app/build.gradle`, or
-      re-create the platforms).
+- [ ] **App ID**: `app.fiala` in `capacitor.config.ts` (matches the domain
+      `fiala.app` if you register it). It can't be changed after the first
+      upload; to change it, edit `capacitor.config.ts`, delete `ios/` and
+      `android/`, then run `npx cap add ios`, `npx cap add android` and the icon
+      command below.
 - [ ] **Developer accounts**: Apple Developer Program (US$99/year) and Google Play
       Console (US$25 one-time).
 - [ ] **Privacy policy URL** (required by both stores). The app collects no data;

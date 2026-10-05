@@ -116,7 +116,7 @@ export function BackupPage() {
 
       <section className="card form">
         <h2>Restore</h2>
-        <p className="muted small">Open a Peptide Compass backup file. You'll see what's in it before anything changes.</p>
+        <p className="muted small">Open a Fiala backup file. You'll see what's in it before anything changes.</p>
         <input ref={fileInput} type="file" accept="application/json,.json" onChange={onFile} hidden />
         <button type="button" className="button secondary" onClick={() => fileInput.current?.click()}>
           Choose backup file…
@@ -157,7 +157,7 @@ export function BackupPage() {
         <h2>Keeping your data safe</h2>
         <ul className="small">
           <li>
-            <strong>Add Peptide Compass to your home screen.</strong> Some browsers, including Safari, may clear data
+            <strong>Add Fiala to your home screen.</strong> Some browsers, including Safari, may clear data
             for websites you haven't opened in a while. Apps on the home screen are kept.
           </li>
           <li>
