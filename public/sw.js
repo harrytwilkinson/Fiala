@@ -4,7 +4,8 @@
 // Bump CACHE when this file's caching strategy changes.
 
 const CACHE = "peptide-compass-v1";
-const SHELL = ["/", "/manifest.webmanifest", "/compass.svg", "/icons/icon-192.png", "/icons/apple-touch-icon.png"];
+// Paths are relative to this file, so the app works under a subpath (GitHub Pages).
+const SHELL = ["./", "manifest.webmanifest", "compass.svg", "icons/icon-192.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
@@ -29,10 +30,10 @@ self.addEventListener("fetch", (event) => {
       fetch(request)
         .then((response) => {
           const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put("/", copy));
+          caches.open(CACHE).then((cache) => cache.put("./", copy));
           return response;
         })
-        .catch(() => caches.match("/")),
+        .catch(() => caches.match("./")),
     );
     return;
   }
