@@ -20,14 +20,14 @@ describe("backup round trip", () => {
   });
 
   it("names files by local date", () => {
-    expect(backupFileName(new Date(2026, 9, 5, 23, 30))).toBe("peptide-compass-backup-2026-10-05.json");
+    expect(backupFileName(new Date(2026, 9, 5, 23, 30))).toBe("fiala-backup-2026-10-05.json");
   });
 });
 
 describe("parseBackup validation", () => {
   it("rejects files that aren't backups", () => {
     expect(() => parseBackup("not json")).toThrow(BackupError);
-    expect(() => parseBackup(JSON.stringify({ hello: "world" }))).toThrow(/isn't a Peptide Compass backup/);
+    expect(() => parseBackup(JSON.stringify({ hello: "world" }))).toThrow(/isn't a Fiala backup/);
     expect(() => parseBackup(JSON.stringify([1, 2]))).toThrow(BackupError);
   });
 
@@ -50,8 +50,14 @@ describe("parseBackup validation", () => {
     expect(parsed.data).toEqual(data);
   });
 
+  it("still restores backups made under the app's old name", () => {
+    const legacy = { ...buildBackup(data), app: "peptide-compass" };
+    expect(parseBackup(JSON.stringify(legacy)).data).toEqual(data);
+    expect(() => parseBackup(JSON.stringify({ ...legacy, app: "something-else" }))).toThrow(BackupError);
+  });
+
   it("treats missing lists as empty", () => {
-    const parsed = parseBackup(JSON.stringify({ app: "peptide-compass", version: 1, data: { doses: data.doses } }));
+    const parsed = parseBackup(JSON.stringify({ app: "fiala", version: 1, data: { doses: data.doses } }));
     expect(parsed.data.vials).toEqual([]);
     expect(parsed.data.schedules).toEqual([]);
   });

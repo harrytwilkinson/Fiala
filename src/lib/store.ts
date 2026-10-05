@@ -12,6 +12,8 @@ export interface Collection<T extends { id: string }> {
   remove(id: string): void;
   /** Replace the whole collection (used by restore). */
   replaceAll(items: T[]): void;
+  /** Listen for changes outside React; returns an unsubscribe function. */
+  subscribe(listener: () => void): () => void;
 }
 
 export function newId(): string {
@@ -28,11 +30,30 @@ function hasStorage(): boolean {
   }
 }
 
+/**
+ * One-time move of a value from an old storage key to a new one (e.g. after
+ * the app was renamed), so existing users keep their data. Never overwrites
+ * data already saved under the new key.
+ */
+export function migrateKey(fromKey: string, toKey: string) {
+  if (!hasStorage()) return;
+  try {
+    const old = localStorage.getItem(fromKey);
+    if (old === null) return;
+    if (localStorage.getItem(toKey) === null) localStorage.setItem(toKey, old);
+    localStorage.removeItem(fromKey);
+  } catch {
+    // Storage blocked: nothing to migrate.
+  }
+}
+
 export function createCollection<T extends { id: string }>(
   key: string,
   normalize: (items: T[]) => T[] = (items) => items,
+  legacyKey?: string,
 ): Collection<T> {
   const listeners = new Set<() => void>();
+  if (legacyKey) migrateKey(legacyKey, key);
 
   const read = (): T[] => {
     if (!hasStorage()) return [];
@@ -91,5 +112,6 @@ export function createCollection<T extends { id: string }>(
     replaceAll(next) {
       set(next);
     },
+    subscribe,
   };
 }

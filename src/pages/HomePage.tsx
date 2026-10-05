@@ -44,7 +44,7 @@ export function HomePage() {
 
   return (
     <div className="page">
-      <h1>Peptide Compass</h1>
+      <h1>Fiala</h1>
       <p className="muted">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
 
       <section className="card">
@@ -128,11 +128,13 @@ export function HomePage() {
           <strong>Library</strong>
           <span className="muted small">What each peptide does and what the evidence says</span>
         </a>
-        <a className="card tile" href={href("calculator")}>
-          <span className="tile-icon" aria-hidden>🧮</span>
-          <strong>Converter</strong>
-          <span className="muted small">Turn a prescribed dose into syringe units</span>
-        </a>
+        {__CONVERTER__ && (
+          <a className="card tile" href={href("calculator")}>
+            <span className="tile-icon" aria-hidden>🧮</span>
+            <strong>Converter</strong>
+            <span className="muted small">Turn a prescribed dose into syringe units</span>
+          </a>
+        )}
         <a className="card tile" href={href("tracker")}>
           <span className="tile-icon" aria-hidden>📈</span>
           <strong>Tracker</strong>
@@ -153,7 +155,7 @@ export function HomePage() {
 
       <div className="home-links">
         <button type="button" className="link-button neutral" onClick={replayOnboarding}>
-          How Peptide Compass works
+          How Fiala works
         </button>
         <a href={href("backup")}>Backup &amp; restore</a>
       </div>
@@ -161,7 +163,7 @@ export function HomePage() {
       <section className="card disclaimer">
         <h2>Important</h2>
         <p className="small">
-          Peptide Compass is for education and personal record-keeping only and is not medical advice. Many peptides
+          Fiala is for education and personal record-keeping only and is not medical advice. Many peptides
           sold online are not approved for human use and may be impure or mislabeled. Always talk to a qualified
           healthcare professional before using any peptide, and double-check every calculation before you inject.
         </p>

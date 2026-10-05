@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs>
+    <linearGradient id="abg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2dd4bf"/><stop offset="0.5" stop-color="#0d9488"/><stop offset="1" stop-color="#3730a3"/></linearGradient>
+    <linearGradient id="aliq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ccfbf1"/><stop offset="1" stop-color="#5eead4"/></linearGradient>
+    <linearGradient id="acap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#99f6e4"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient>
+    
+    <clipPath id="abody"><path d="M180 214 Q180 196 200 196 H312 Q332 196 332 214 V372 a36 36 0 0 1 -36 36 H216 a36 36 0 0 1 -36 -36 Z"/></clipPath>
+    <filter id="ash" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1e1b4b" flood-opacity="0.4"/></filter></defs>
+    <rect width="512" height="512" rx="112" fill="url(#abg)"/>
+    
+    <g transform="translate(256 256) scale(1) translate(-256 -256)" filter="url(#ash)">
+      <g clip-path="url(#abody)"><path d="M170 300 Q256 284 342 300 V420 H170 Z" fill="url(#aliq)"/></g>
+      <path d="M180 214 Q180 196 200 196 H312 Q332 196 332 214 V372 a36 36 0 0 1 -36 36 H216 a36 36 0 0 1 -36 -36 Z" fill="rgba(255,255,255,.10)" stroke="#ffffff" stroke-width="10" stroke-linejoin="round"/>
+      <rect x="222" y="172" width="68" height="28" fill="rgba(255,255,255,.10)" stroke="#ffffff" stroke-width="10"/>
+      <rect x="200" y="134" width="112" height="44" rx="6" fill="#ffffff"/>
+      <line x1="206" y1="156" x2="306" y2="156" stroke="#cbd5e1" stroke-width="4"/>
+      <rect x="212" y="106" width="88" height="32" rx="12" fill="url(#acap)" stroke="#ffffff" stroke-width="6"/>
+      <g stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity=".85"><line x1="296" y1="236" x2="314" y2="236"/><line x1="304" y1="264" x2="314" y2="264"/><line x1="296" y1="292" x2="314" y2="292"/><line x1="304" y1="320" x2="314" y2="320"/><line x1="296" y1="348" x2="314" y2="348"/></g>
+      <rect x="200" y="222" width="14" height="64" rx="7" fill="#ffffff" opacity=".35"/>
+    </g></svg>

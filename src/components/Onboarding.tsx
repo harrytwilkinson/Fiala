@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode, type TouchEvent } from "react";
 import { STATUS_LABEL } from "../data/peptides";
 import { completeOnboarding, hasCompletedOnboarding } from "../lib/onboarding";
+import { isNative } from "../lib/platform";
 import { SYRINGES } from "../lib/reconstitution";
 import { SyringeVisual } from "./SyringeVisual";
 
@@ -10,11 +11,11 @@ interface Slide {
   art: ReactNode;
 }
 
-const ICON_URL = `${import.meta.env.BASE_URL}compass.svg`;
+const ICON_URL = `${import.meta.env.BASE_URL}fiala.svg`;
 
 const SLIDES: Slide[] = [
   {
-    title: "Welcome to Peptide Compass",
+    title: "Welcome to Fiala",
     body: "Learn what peptides do, mix them accurately and keep track of every dose, all in one place.",
     art: <img className="onb-icon" src={ICON_URL} alt="" width={112} height={112} />,
   },
@@ -30,25 +31,37 @@ const SLIDES: Slide[] = [
       </div>
     ),
   },
-  {
-    title: "Measure accurately with the Converter",
-    body: "Enter the mg in your vial, the bacteriostatic water you add and the dose you've been prescribed. It converts that into units on an insulin syringe, and warns you if something looks off. It never suggests a dose.",
-    art: (
-      <div className="onb-syringe" aria-hidden>
-        <div className="onb-units">
-          10 <span>units</span>
-        </div>
-        <SyringeVisual syringe={SYRINGES[2]} units={10} />
-        <div className="muted small">5 mg vial + 2 mL water, 250 mcg dose</div>
-      </div>
-    ),
-  },
+  // Compiled out of store builds along with the converter itself.
+  ...(__CONVERTER__
+    ? [
+        {
+          title: "Measure accurately with the Converter",
+          body: "Enter the mg in your vial, the bacteriostatic water you add and the dose you've been prescribed. It converts that into units on an insulin syringe, and warns you if something looks off. It never suggests a dose.",
+          art: (
+            <div className="onb-syringe" aria-hidden>
+              <div className="onb-units">
+                10 <span>units</span>
+              </div>
+              <SyringeVisual syringe={SYRINGES[2]} units={10} />
+              <div className="muted small">5 mg vial + 2 mL water, 250 mcg dose</div>
+            </div>
+          ),
+        },
+      ]
+    : []),
   {
     title: "Stay on track",
     body: (
       <>
         The <strong>Tracker</strong> logs each dose and injection site, counts down what's left in each vial, and
-        holds your schedules. Tap <strong>Add to calendar</strong> to get reminders on your phone.
+        holds your schedules.{" "}
+        {isNative ? (
+          <>Turn on reminders to get a notification when each dose is due.</>
+        ) : (
+          <>
+            Tap <strong>Add to calendar</strong> to get reminders on your phone.
+          </>
+        )}
       </>
     ),
     art: (
@@ -161,7 +174,7 @@ export function Onboarding() {
             <label className="onb-agree">
               <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
               <span>
-                I understand Peptide Compass is for education and record-keeping only, is <strong>not medical advice</strong>, and that I should speak to a qualified healthcare professional before using any peptide.
+                I understand Fiala is for education and record-keeping only, is <strong>not medical advice</strong>, and that I should speak to a qualified healthcare professional before using any peptide.
               </span>
             </label>
           )}

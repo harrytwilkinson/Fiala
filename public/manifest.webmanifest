@@ -1,7 +1,7 @@
 {
-  "name": "Peptide Compass",
-  "short_name": "Peptide Compass",
-  "description": "Learn about peptides, calculate reconstitution and syringe doses, and track your use.",
+  "name": "Fiala: Peptide Tracker",
+  "short_name": "Fiala",
+  "description": "Learn about peptides, convert prescribed doses into syringe units, and track your use.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

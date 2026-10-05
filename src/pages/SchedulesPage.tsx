@@ -2,7 +2,10 @@ import { useState, type FormEvent } from "react";
 import { PeptideField, choiceId, choiceName, emptyChoice, type PeptideChoice } from "../components/PeptideField";
 import { TrackerNav } from "../components/TrackerNav";
 import { formatDateKey, localDateKey } from "../lib/dates";
-import { downloadFile, type DoseUnit } from "../lib/doseLog";
+import type { DoseUnit } from "../lib/doseLog";
+import { saveFile } from "../lib/files";
+import { requestReminderPermission, useReminderPermission, type ReminderPermission } from "../lib/nativeReminders";
+import { isNative } from "../lib/platform";
 import { WEEKDAYS, describeFrequency, formatTime, schedules, toIcs, useSchedules, type Frequency, type Schedule } from "../lib/schedules";
 
 export function SchedulesPage({ prefill }: { prefill: { peptide?: string } }) {
@@ -13,10 +16,14 @@ export function SchedulesPage({ prefill }: { prefill: { peptide?: string } }) {
     <div className="page">
       <h1>Tracker</h1>
       <TrackerNav current="tracker/schedules" />
-      <p className="muted small">
-        Set up a routine and it will show on your Today screen. Tap <strong>Add to calendar</strong> to get reminders
-        on your phone, even when the app is closed.
-      </p>
+      {isNative ? (
+        <ReminderStatus />
+      ) : (
+        <p className="muted small">
+          Set up a routine and it will show on your Today screen. Tap <strong>Add to calendar</strong> to get reminders
+          on your phone, even when the app is closed.
+        </p>
+      )}
 
       {showForm ? (
         <ScheduleForm prefill={prefill} onDone={() => setShowForm(false)} canCancel={all.length > 0} />
@@ -31,6 +38,29 @@ export function SchedulesPage({ prefill }: { prefill: { peptide?: string } }) {
           <ScheduleCard key={s.id} schedule={s} />
         ))}
       </ul>
+    </div>
+  );
+}
+
+const PERMISSION_TEXT: Record<ReminderPermission, string> = {
+  granted: "Reminders are on. You'll get a notification at each scheduled time.",
+  prompt: "Turn on reminders to get a notification at each scheduled time.",
+  denied: "Notifications are turned off for Fiala. To get reminders, allow notifications in your phone's Settings app.",
+  unavailable: "",
+};
+
+function ReminderStatus() {
+  const permission = useReminderPermission();
+  return (
+    <div className={permission === "granted" ? "notice small" : "alert warn"}>
+      {PERMISSION_TEXT[permission]}
+      {permission === "prompt" && (
+        <div style={{ marginTop: "0.5rem" }}>
+          <button type="button" className="button small" onClick={() => void requestReminderPermission()}>
+            Turn on reminders
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -54,9 +84,11 @@ function ScheduleCard({ schedule: s }: { schedule: Schedule }) {
       </div>
       {s.notes && <p className="small">{s.notes}</p>}
       <div className="actions">
-        <button type="button" className="button small" onClick={() => downloadFile(fileName, toIcs(s), "text/calendar")}>
-          📅 Add to calendar
-        </button>
+        {!isNative && (
+          <button type="button" className="button small" onClick={() => saveFile(fileName, toIcs(s), "text/calendar", { title: `${s.peptideName} schedule` })}>
+            📅 Add to calendar
+          </button>
+        )}
         <button type="button" className="button secondary small" onClick={() => schedules.update(s.id, { active: !s.active })}>
           {s.active ? "Pause" : "Resume"}
         </button>
@@ -112,6 +144,8 @@ function ScheduleForm({ prefill, onDone, canCancel }: { prefill: { peptide?: str
       active: true,
       notes: notes.trim() || undefined,
     });
+    // In the app, ask for notification permission the first time a schedule is saved.
+    if (isNative) void requestReminderPermission();
     onDone();
   };
 

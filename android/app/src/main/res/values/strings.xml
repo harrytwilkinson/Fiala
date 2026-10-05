@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Fiala</string>
+    <string name="title_activity_main">Fiala</string>
+    <string name="package_name">app.fiala</string>
+    <string name="custom_url_scheme">app.fiala</string>
+</resources>
