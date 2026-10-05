@@ -63,19 +63,17 @@ Notification permission is requested the first time you save a schedule, or from
 
 ## Before publishing to the stores
 
-- [ ] **App ID**: `com.getfiala.app` in `capacitor.config.ts` (reverse-DNS of
-      `getfiala.com`; register the domain before launch so the ID and your
-      website match). It can't be changed after the first
+- [x] **App ID**: `com.getfiala.app` in `capacitor.config.ts` (reverse-DNS of
+      `getfiala.com`, which is registered). It can't be changed after the first
       upload; to change it, edit `capacitor.config.ts`, delete `ios/` and
       `android/`, then run `npx cap add ios`, `npx cap add android` and the icon
       command below.
 - [ ] **Developer accounts**: Apple Developer Program (US$99/year) and Google Play
       Console (US$25 one-time).
 - [x] **Privacy policy URL** (required by both stores):
-      `https://harrytwilkinson.github.io/Fiala/privacy.html` (source:
-      `public/privacy.html`). Move to getfiala.com once registered.
+      `https://getfiala.com/privacy.html` (source: `public/privacy.html`).
 - [x] **Support URL** (required by Apple):
-      `https://harrytwilkinson.github.io/Fiala/support.html` (source:
+      `https://getfiala.com/support.html` (source:
       `public/support.html`; contact is via GitHub Issues). Add a support email
       once you have one.
 - [ ] **Version numbers**: bump `CFBundleShortVersionString` / build number in

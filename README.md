@@ -43,9 +43,9 @@ Stack: React 19, TypeScript, Vite and Vitest, with no backend; Capacitor 8 for t
 Every push to `main` runs the tests, builds the app and publishes it to GitHub Pages via
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml):
 
-**https://harrytwilkinson.github.io/Fiala/**
+**https://getfiala.com/** (custom domain; `harrytwilkinson.github.io/Fiala/` redirects there)
 
-(The repository was renamed from `Peptide-Compass`. Saved data carries over because both addresses share the `harrytwilkinson.github.io` origin, but home-screen installs of the old address need re-adding.)
+The custom domain is set in **Settings → Pages → Custom domain** (an Actions-deployed site needs no `CNAME` file), with DNS at Cloudflare pointing to GitHub Pages. Saved data is per website address, so data from the old github.io address doesn't carry over: back it up there and restore it on getfiala.com.
 
 One-time setup: in the repo go to **Settings → Pages → Build and deployment → Source** and pick **GitHub Actions**.
 Pull requests run the tests and build via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
