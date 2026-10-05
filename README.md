@@ -8,6 +8,8 @@ A mobile-first web app to **learn about**, **accurately mix**, and **track** pep
 - **Reconstitution calculator**: enter the mg in the vial, the mL of bacteriostatic water and your dose (mcg or mg). It shows the concentration, how many units to draw on a U-100 insulin syringe (with a syringe picture), and doses per vial. It also warns when a dose won't fit the syringe, is too small to measure, or falls between markings. A reverse helper tells you how much water to add so each dose lands on a round number of units.
 - **Dose tracker**: log the peptide, dose, injection site, time and notes. It reminds you which site you used last so you can rotate, and exports to CSV. Data stays on the device (localStorage).
 
+- **Installable and offline-ready**: add it to a phone's home screen as "Peptide Compass" and it runs full-screen like a native app. After the first visit it works without a connection (`public/manifest.webmanifest`, `public/sw.js`).
+
 ## Calculator math
 
 ```
