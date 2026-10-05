@@ -138,7 +138,7 @@ input[aria-invalid="true"] { border-color: var(--error); }
 .tabbar {
   position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around;
   background: var(--surface); border-top: 1px solid var(--border);
-  padding: 0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));
+  padding: 0.4rem 0 calc(0.4rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom)));
 }
 .tabbar a { display: flex; flex-direction: column; align-items: center; font-size: 0.72rem; text-decoration: none; color: var(--muted); padding: 0.2rem 0.6rem; }
 .tabbar a span { font-size: 1.25rem; filter: grayscale(1); opacity: 0.7; }
@@ -234,3 +234,8 @@ legend { font-weight: 600; font-size: 0.92rem; padding: 0; margin-bottom: 0.3rem
 .home-links a { text-decoration: none; font-weight: 500; }
 .link-alert:hover { filter: brightness(0.97); }
 .form > h2, .form > p { margin: 0; }
+
+/* Native app: keep content clear of the status bar / notch. Capacitor sets --safe-area-inset-* on Android;
+   iOS and modern browsers provide env(); both are 0 in a normal browser tab. */
+.page { padding-top: max(1rem, calc(var(--safe-area-inset-top, env(safe-area-inset-top)) + 0.5rem)); }
+.onb-backdrop { padding-top: max(16px, var(--safe-area-inset-top, env(safe-area-inset-top))); padding-bottom: max(16px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom))); }

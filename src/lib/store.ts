@@ -12,6 +12,8 @@ export interface Collection<T extends { id: string }> {
   remove(id: string): void;
   /** Replace the whole collection (used by restore). */
   replaceAll(items: T[]): void;
+  /** Listen for changes outside React; returns an unsubscribe function. */
+  subscribe(listener: () => void): () => void;
 }
 
 export function newId(): string {
@@ -91,5 +93,6 @@ export function createCollection<T extends { id: string }>(
     replaceAll(next) {
       set(next);
     },
+    subscribe,
   };
 }

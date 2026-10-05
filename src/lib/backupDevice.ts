@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { backupFileName, buildBackup, mergeData, type BackupData } from "./backup";
-import { doses, downloadFile } from "./doseLog";
+import { doses } from "./doseLog";
+import { canShareFiles, saveFile, type SaveResult } from "./files";
 import { schedules } from "./schedules";
 import { vials } from "./vials";
 
@@ -42,41 +43,21 @@ export function useLastBackupAt(): string | null {
   );
 }
 
-export type ExportResult = "shared" | "downloaded" | "cancelled";
+export type ExportResult = SaveResult;
 
 /**
  * Prefer the system share sheet (Save to Files, iCloud Drive, AirDrop, email)
- * where the browser supports sharing files; otherwise download the file.
+ * where available; otherwise download the file.
  */
 export async function exportBackup(preferShare: boolean): Promise<ExportResult> {
   const now = new Date();
   const json = JSON.stringify(buildBackup(currentData(), now), null, 2);
-  const name = backupFileName(now);
-
-  if (preferShare && canShareFiles()) {
-    const file = new File([json], name, { type: "application/json" });
-    try {
-      await navigator.share({ files: [file], title: "Peptide Compass backup" });
-      markBackedUp(now);
-      return "shared";
-    } catch (e) {
-      if (e instanceof DOMException && e.name === "AbortError") return "cancelled";
-      // Share failed for another reason: fall back to a download.
-    }
-  }
-  downloadFile(name, json, "application/json");
-  markBackedUp(now);
-  return "downloaded";
+  const result = await saveFile(backupFileName(now), json, "application/json", { preferShare, title: "Peptide Compass backup" });
+  if (result !== "cancelled") markBackedUp(now);
+  return result;
 }
 
-export function canShareFiles(): boolean {
-  try {
-    const probe = new File(["{}"], "probe.json", { type: "application/json" });
-    return typeof navigator.canShare === "function" && navigator.canShare({ files: [probe] });
-  } catch {
-    return false;
-  }
-}
+export { canShareFiles };
 
 export function restoreBackup(incoming: BackupData, mode: "merge" | "replace"): number {
   const next = mode === "replace" ? { data: incoming, added: incoming.doses.length + incoming.vials.length + incoming.schedules.length } : mergeData(currentData(), incoming);

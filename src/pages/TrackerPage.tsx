@@ -2,7 +2,8 @@ import { useState, type FormEvent } from "react";
 import { PeptideField, choiceId, choiceName, emptyChoice, type PeptideChoice } from "../components/PeptideField";
 import { TrackerNav } from "../components/TrackerNav";
 import { formatDateKey, localDateTimeValue } from "../lib/dates";
-import { INJECTION_SITES, doses, downloadFile, lastSiteFor, toCsv, useDoseLog, type DoseEntry, type DoseUnit } from "../lib/doseLog";
+import { INJECTION_SITES, doses, lastSiteFor, toCsv, useDoseLog, type DoseEntry, type DoseUnit } from "../lib/doseLog";
+import { saveFile } from "../lib/files";
 import { href } from "../lib/router";
 import { schedules } from "../lib/schedules";
 import { defaultVialFor, useVials } from "../lib/vials";
@@ -167,7 +168,7 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
       <div className="row">
         <h2>History</h2>
         {entries.length > 0 && (
-          <button type="button" className="button secondary small" onClick={() => downloadFile(`peptide-log-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(entries), "text/csv")}>
+          <button type="button" className="button secondary small" onClick={() => saveFile(`peptide-log-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(entries), "text/csv", { title: "Peptide Compass dose log" })}>
             Export CSV
           </button>
         )}

@@ -54,15 +54,3 @@ export function toCsv(entries: DoseEntry[]): string {
   const rows = entries.map((e) => [e.takenAt, e.peptideName, e.amount, e.unit, e.site, e.notes].map(esc).join(","));
   return [header.join(","), ...rows].join("\n");
 }
-
-export function downloadFile(filename: string, contents: string, type: string) {
-  const url = URL.createObjectURL(new Blob([contents], { type }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  // Some browsers (Firefox) only honour clicks on links that are in the document.
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}

@@ -13,6 +13,7 @@ A mobile-first web app to **learn about**, **accurately mix**, and **track** pep
 - **Schedules and reminders**: weekly ("Mon, Thu") or every-N-days routines with a time, start and end date. "Add to calendar" downloads an `.ics` file, so the phone's own calendar gives recurring reminders even when the app is closed, with no server needed.
 - **Backup & restore**: save every dose, vial and schedule to one JSON file (via the phone's share sheet where supported, otherwise a download), and restore it on any device. Restores show a preview first, then either merge (keeping existing records) or replace everything. Damaged records are skipped. The home screen nudges you if you haven't backed up in 30 days, and the app requests persistent storage.
 - All tracking data stays on the device (localStorage).
+- **Native iOS & Android apps** (Capacitor): real dose-reminder notifications, native share sheet for backups and exports, native icons and splash screens, and a store build that compiles out the converter. See [NATIVE.md](NATIVE.md).
 - **Installable and offline-ready**: add it to a phone's home screen as "Peptide Compass" and it runs full-screen like a native app. After the first visit it works without a connection (`public/manifest.webmanifest`, `public/sw.js`).
 
 ## Converter math
@@ -30,9 +31,11 @@ npm install
 npm run dev        # start the dev server
 npm test           # unit tests (converter math, vials, schedules, backup, library data)
 npm run build      # typecheck + production build to dist/
+npm run native:sync        # build and copy into the iOS/Android projects (see NATIVE.md)
+npm run native:sync:store  # same, without the dose converter
 ```
 
-Stack: React 19, TypeScript, Vite and Vitest, with no backend.
+Stack: React 19, TypeScript, Vite and Vitest, with no backend; Capacitor 8 for the native apps.
 
 ## Deployment
 

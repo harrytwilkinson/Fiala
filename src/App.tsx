@@ -1,9 +1,9 @@
 import { Onboarding } from "./components/Onboarding";
+import { lazy, Suspense } from "react";
 import { findPeptide } from "./data/peptides";
 import { useOnboardingOpen } from "./lib/onboarding";
 import { href, useRoute } from "./lib/router";
 import { BackupPage } from "./pages/BackupPage";
-import { CalculatorPage } from "./pages/CalculatorPage";
 import { HomePage } from "./pages/HomePage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { PeptideDetailPage } from "./pages/PeptideDetailPage";
@@ -11,12 +11,15 @@ import { SchedulesPage } from "./pages/SchedulesPage";
 import { TrackerPage } from "./pages/TrackerPage";
 import { VialsPage } from "./pages/VialsPage";
 
+// Loaded lazily, and compiled out completely in store builds (__CONVERTER__ is a build-time constant).
+const CalculatorPage = __CONVERTER__ ? lazy(() => import("./pages/CalculatorPage").then((m) => ({ default: m.CalculatorPage }))) : null;
+
 const TABS = [
   { path: "", label: "Home", icon: "🧭" },
   { path: "library", label: "Library", icon: "📚" },
   { path: "calculator", label: "Converter", icon: "🧮" },
   { path: "tracker", label: "Tracker", icon: "📈" },
-];
+].filter((t) => t.path !== "calculator" || __CONVERTER__);
 
 export function App() {
   const { path, query } = useRoute();
@@ -33,7 +36,7 @@ export function App() {
       break;
     }
     case "calculator":
-      page = <CalculatorPage />;
+      page = __CONVERTER__ && CalculatorPage ? <CalculatorPage /> : <HomePage />;
       break;
     case "tracker": {
       const q = (k: string) => query.get(k) ?? undefined;
@@ -53,7 +56,7 @@ export function App() {
     <>
       {/* inert: keep focus and screen readers inside the walkthrough while it is open */}
       <main key={key} inert={onboardingOpen}>
-        {page}
+        <Suspense fallback={null}>{page}</Suspense>
       </main>
       <nav className="tabbar" aria-label="Main" inert={onboardingOpen}>
         {TABS.map((t) => (

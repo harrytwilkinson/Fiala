@@ -128,11 +128,13 @@ export function HomePage() {
           <strong>Library</strong>
           <span className="muted small">What each peptide does and what the evidence says</span>
         </a>
-        <a className="card tile" href={href("calculator")}>
-          <span className="tile-icon" aria-hidden>🧮</span>
-          <strong>Converter</strong>
-          <span className="muted small">Turn a prescribed dose into syringe units</span>
-        </a>
+        {__CONVERTER__ && (
+          <a className="card tile" href={href("calculator")}>
+            <span className="tile-icon" aria-hidden>🧮</span>
+            <strong>Converter</strong>
+            <span className="muted small">Turn a prescribed dose into syringe units</span>
+          </a>
+        )}
         <a className="card tile" href={href("tracker")}>
           <span className="tile-icon" aria-hidden>📈</span>
           <strong>Tracker</strong>
