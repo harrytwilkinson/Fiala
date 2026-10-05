@@ -42,9 +42,9 @@ Stack: React 19, TypeScript, Vite and Vitest, with no backend; Capacitor 8 for t
 Every push to `main` runs the tests, builds the app and publishes it to GitHub Pages via
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml):
 
-**https://harrytwilkinson.github.io/Peptide-Compass/**
+**https://harrytwilkinson.github.io/Fiala/**
 
-(The address follows the GitHub repository name. Renaming the repository to `Fiala` in its settings changes it to `…github.io/Fiala/`; GitHub redirects git operations, but not the old Pages address.)
+(The repository was renamed from `Peptide-Compass`. Saved data carries over because both addresses share the `harrytwilkinson.github.io` origin, but home-screen installs of the old address need re-adding.)
 
 One-time setup: in the repo go to **Settings → Pages → Build and deployment → Source** and pick **GitHub Actions**.
 Pull requests run the tests and build via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).

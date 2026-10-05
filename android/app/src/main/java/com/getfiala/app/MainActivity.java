@@ -1,4 +1,4 @@
-package app.fiala;
+package com.getfiala.app;
 
 import com.getcapacitor.BridgeActivity;
 
