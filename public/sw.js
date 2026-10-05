@@ -3,9 +3,9 @@
 // - Other same-origin files (hashed JS/CSS, icons): serve from cache, refresh in the background.
 // Bump CACHE when this file's caching strategy changes.
 
-const CACHE = "fiala-v1";
+const CACHE = "fiala-v2";
 // Paths are relative to this file, so the app works under a subpath (GitHub Pages).
-const SHELL = ["./", "manifest.webmanifest", "fiala.svg", "icons/icon-192.png", "icons/apple-touch-icon.png"];
+const SHELL = ["./", "manifest.webmanifest", "fiala.svg", "icons/icon-192.png", "icons/apple-touch-icon.png", "privacy.html", "support.html"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
@@ -26,14 +26,19 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
+    // The app shell lives at the scope root; other pages (privacy, support) are cached under their own URL
+    // so visiting them never replaces the app shell.
+    const isShell = new URL(request.url).pathname === new URL("./", self.registration.scope).pathname || request.url.endsWith("/index.html");
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put("./", copy));
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(isShell ? "./" : request, copy));
+          }
           return response;
         })
-        .catch(() => caches.match("./")),
+        .catch(async () => (await caches.match(request, { ignoreSearch: true })) ?? caches.match("./")),
     );
     return;
   }

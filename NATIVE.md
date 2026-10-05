@@ -71,8 +71,13 @@ Notification permission is requested the first time you save a schedule, or from
       command below.
 - [ ] **Developer accounts**: Apple Developer Program (US$99/year) and Google Play
       Console (US$25 one-time).
-- [ ] **Privacy policy URL** (required by both stores). The app collects no data;
-      everything stays on the device.
+- [x] **Privacy policy URL** (required by both stores):
+      `https://harrytwilkinson.github.io/Fiala/privacy.html` (source:
+      `public/privacy.html`). Move to getfiala.com once registered.
+- [x] **Support URL** (required by Apple):
+      `https://harrytwilkinson.github.io/Fiala/support.html` (source:
+      `public/support.html`; contact is via GitHub Issues). Add a support email
+      once you have one.
 - [ ] **Version numbers**: bump `CFBundleShortVersionString` / build number in
       Xcode and `versionName` / `versionCode` in `android/app/build.gradle` for
       each release.

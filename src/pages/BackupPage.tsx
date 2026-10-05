@@ -172,7 +172,9 @@ export function BackupPage() {
               <>checking…</>
             )}
           </li>
-          <li>Backups contain your health records. Store them somewhere private.</li>
+          <li>
+            Backups contain your health records. Store them somewhere private. See the <a href="privacy.html">privacy policy</a>.
+          </li>
         </ul>
       </section>
     </div>
