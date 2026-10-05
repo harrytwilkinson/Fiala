@@ -4,7 +4,9 @@ import { CalculatorPage } from "./pages/CalculatorPage";
 import { HomePage } from "./pages/HomePage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { PeptideDetailPage } from "./pages/PeptideDetailPage";
+import { SchedulesPage } from "./pages/SchedulesPage";
 import { TrackerPage } from "./pages/TrackerPage";
+import { VialsPage } from "./pages/VialsPage";
 
 const TABS = [
   { path: "", label: "Home", icon: "🧭" },
@@ -29,17 +31,13 @@ export function App() {
     case "calculator":
       page = <CalculatorPage initialPeptideId={query.get("peptide") ?? undefined} />;
       break;
-    case "tracker":
-      page = (
-        <TrackerPage
-          prefill={{
-            peptide: query.get("peptide") ?? undefined,
-            amount: query.get("amount") ?? undefined,
-            unit: query.get("unit") ?? undefined,
-          }}
-        />
-      );
+    case "tracker": {
+      const q = (k: string) => query.get(k) ?? undefined;
+      if (id === "vials") page = <VialsPage prefill={{ peptide: q("peptide"), vialMg: q("vialMg"), waterMl: q("waterMl") }} />;
+      else if (id === "schedules") page = <SchedulesPage prefill={{ peptide: q("peptide") }} />;
+      else page = <TrackerPage prefill={{ peptide: q("peptide"), amount: q("amount"), unit: q("unit"), schedule: q("schedule") }} />;
       break;
+    }
     default:
       page = <HomePage />;
   }

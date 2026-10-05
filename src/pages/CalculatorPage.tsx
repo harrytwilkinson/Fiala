@@ -164,11 +164,16 @@ export function CalculatorPage({ initialPeptideId }: Props) {
             </ul>
           )}
 
-          {logHref && (
-            <a className="button" href={logHref}>
-              Log this dose
+          <div className="actions">
+            {logHref && (
+              <a className="button" href={logHref}>
+                Log this dose
+              </a>
+            )}
+            <a className="button secondary" href={href("tracker/vials", { peptide: peptide?.id, vialMg, waterMl })}>
+              Save as a mixed vial
             </a>
-          )}
+          </div>
         </section>
       )}
 

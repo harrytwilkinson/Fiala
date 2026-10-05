@@ -11,7 +11,10 @@ export type Category =
   | "Skin & cosmetic"
   | "Sexual health"
   | "Cognitive & mood"
-  | "Longevity & immune";
+  | "Hormonal & fertility"
+  | "Sleep"
+  | "Immune & inflammation"
+  | "Longevity & cellular health";
 
 export type ApprovalStatus = "approved" | "approved-elsewhere" | "investigational" | "research-only";
 
@@ -284,7 +287,7 @@ export const PEPTIDES: Peptide[] = [
     id: "epitalon",
     name: "Epitalon",
     aliases: ["Epithalon", "AEDG peptide"],
-    category: "Longevity & immune",
+    category: "Longevity & cellular health",
     status: "research-only",
     summary: "Synthetic four-amino-acid peptide researched for anti-aging effects.",
     commonUses: ["Longevity and anti-aging (popular use)", "Sleep and circadian rhythm (research)"],
@@ -299,7 +302,7 @@ export const PEPTIDES: Peptide[] = [
     id: "mots-c",
     name: "MOTS-c",
     aliases: [],
-    category: "Longevity & immune",
+    category: "Longevity & cellular health",
     status: "research-only",
     summary: "Mitochondria-derived peptide studied for metabolism and exercise capacity.",
     commonUses: ["Metabolic health and insulin sensitivity (research)", "Exercise performance (popular use)"],
@@ -314,7 +317,7 @@ export const PEPTIDES: Peptide[] = [
     id: "thymosin-alpha-1",
     name: "Thymosin Alpha-1",
     aliases: ["Thymalfasin", "Zadaxin", "Tα1"],
-    category: "Longevity & immune",
+    category: "Immune & inflammation",
     status: "approved-elsewhere",
     summary: "Thymus-derived immune-modulating peptide approved in several countries.",
     commonUses: ["Chronic hepatitis B and C (approved in some countries)", "Immune support (popular use)"],
@@ -325,9 +328,262 @@ export const PEPTIDES: Peptide[] = [
     sideEffects: ["Injection-site discomfort", "Generally well tolerated in trials"],
     storage: STANDARD_STORAGE,
   },
+  {
+    id: "liraglutide",
+    name: "Liraglutide",
+    aliases: ["Victoza", "Saxenda"],
+    category: "Metabolic & weight",
+    status: "approved",
+    summary: "Once-daily GLP-1 receptor agonist; the predecessor of semaglutide.",
+    commonUses: ["Type 2 diabetes", "Chronic weight management (adults and adolescents)", "Cardiovascular risk reduction in type 2 diabetes"],
+    mechanism:
+      "Like semaglutide, it mimics GLP-1: it boosts insulin release when blood sugar is high, lowers glucagon, slows stomach emptying and reduces appetite. Its half-life of about 13 hours means it is injected daily rather than weekly.",
+    evidence: "Strong: large randomized controlled trials (LEAD, SCALE, LEADER).",
+    regulatory: "FDA-approved as Victoza (diabetes) and Saxenda (weight management). Generic versions are available in the US.",
+    sideEffects: [
+      "Nausea, diarrhea, vomiting, constipation",
+      "Gallbladder problems and pancreatitis (uncommon)",
+      "Boxed warning for thyroid C-cell tumors (GLP-1 class warning)",
+      "Increased heart rate",
+    ],
+  },
+  {
+    id: "cagrilintide",
+    name: "Cagrilintide",
+    aliases: ["CagriSema (with semaglutide)"],
+    category: "Metabolic & weight",
+    status: "investigational",
+    summary: "Long-acting amylin analog being studied for weight loss, mainly combined with semaglutide.",
+    commonUses: ["Obesity and weight loss (clinical trials)", "Type 2 diabetes (clinical trials)"],
+    mechanism:
+      "Mimics amylin, a hormone released with insulin after meals. Amylin signals fullness to the brain, slows stomach emptying and lowers glucagon. Its effects add to those of GLP-1, which is why it is being tested alongside semaglutide.",
+    evidence: "Moderate and growing: phase 2 and phase 3 trials of the semaglutide combination (REDEFINE program) showed large weight reductions.",
+    regulatory: "Not approved. Under regulatory review in combination with semaglutide; check current status.",
+    sideEffects: ["Nausea, vomiting, constipation, diarrhea", "Fatigue", "Long-term safety still being established"],
+  },
+  {
+    id: "mazdutide",
+    name: "Mazdutide",
+    aliases: ["IBI362", "LY3305677"],
+    category: "Metabolic & weight",
+    status: "approved-elsewhere",
+    summary: "Once-weekly dual GLP-1 and glucagon receptor agonist for weight management.",
+    commonUses: ["Chronic weight management", "Type 2 diabetes"],
+    mechanism:
+      "Combines GLP-1 activity (appetite, insulin) with glucagon-receptor activity, which is thought to raise energy expenditure and help burn liver fat. It is related to the oxyntomodulin hormone, which naturally hits both receptors.",
+    evidence: "Moderate: phase 3 trials in China (GLORY, DREAMS programs).",
+    regulatory: "Approved in China for weight management and type 2 diabetes. Not approved in the US or EU.",
+    sideEffects: ["Nausea, diarrhea, vomiting, reduced appetite", "Increased heart rate", "Limited data outside Chinese populations"],
+  },
+  {
+    id: "hexarelin",
+    name: "Hexarelin",
+    aliases: ["Examorelin"],
+    category: "Growth hormone axis",
+    status: "research-only",
+    summary: "Potent synthetic growth hormone secretagogue related to GHRP-6.",
+    commonUses: ["Raising growth hormone (popular use)", "Heart protection (animal research)"],
+    mechanism:
+      "Activates the ghrelin receptor (GHS-R1a) to trigger a strong pulse of growth hormone. It also binds CD36, a receptor in the heart, which may explain protective cardiac effects seen in animal studies. The GH response tends to fade with continued use (tachyphylaxis).",
+    evidence: "Limited: small human studies of GH release; cardiac findings mostly in animals.",
+    regulatory: "Not approved. Prohibited in sport by WADA.",
+    sideEffects: ["Raised cortisol and prolactin", "Increased hunger", "Water retention", "Diminishing effect with ongoing use"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "ghrp-2",
+    name: "GHRP-2",
+    aliases: ["Pralmorelin"],
+    category: "Growth hormone axis",
+    status: "approved-elsewhere",
+    summary: "Synthetic growth hormone–releasing peptide used in Japan as a diagnostic test.",
+    commonUses: ["Diagnosing growth hormone deficiency (Japan)", "Raising growth hormone (popular use)"],
+    mechanism:
+      "Activates the ghrelin receptor in the pituitary and hypothalamus, causing a burst of growth hormone release. It is more potent than GHRP-6 and causes less hunger, but still raises cortisol and prolactin somewhat.",
+    evidence: "Moderate for diagnostic use; limited for long-term use.",
+    regulatory: "Approved in Japan as a single-dose diagnostic agent. Not approved in the US. Prohibited in sport by WADA.",
+    sideEffects: ["Increased hunger", "Raised cortisol and prolactin", "Flushing", "Water retention"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "ghrp-6",
+    name: "GHRP-6",
+    aliases: [],
+    category: "Growth hormone axis",
+    status: "research-only",
+    summary: "First-generation growth hormone–releasing hexapeptide known for strong hunger effects.",
+    commonUses: ["Raising growth hormone (popular use)", "Appetite stimulation"],
+    mechanism:
+      "One of the first synthetic ghrelin-receptor agonists. It triggers growth hormone release and, because ghrelin is the body's main hunger hormone, causes marked increases in appetite.",
+    evidence: "Limited: older small human studies.",
+    regulatory: "Not approved. Prohibited in sport by WADA.",
+    sideEffects: ["Strong hunger", "Raised cortisol and prolactin", "Water retention", "Possible effects on blood sugar"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "igf-1-lr3",
+    name: "IGF-1 LR3",
+    aliases: ["Long R3 IGF-1"],
+    category: "Growth hormone axis",
+    status: "research-only",
+    summary: "Modified, longer-acting form of insulin-like growth factor 1.",
+    commonUses: ["Muscle growth and recovery (popular use)", "Cell culture research"],
+    mechanism:
+      "IGF-1 is the hormone that carries out many of growth hormone's effects on muscle, bone and other tissues. The LR3 version has an extra 13 amino acids and one substitution, so it binds poorly to IGF-binding proteins and stays active much longer than natural IGF-1.",
+    evidence: "Very limited in humans: developed mainly as a laboratory reagent. (Mecasermin, a natural-sequence IGF-1, is approved for children with severe IGF-1 deficiency.)",
+    regulatory: "Not approved. Prohibited in sport by WADA.",
+    sideEffects: ["Low blood sugar (hypoglycemia)", "Joint pain, swelling", "Theoretical risk of promoting tumor growth", "Unknown long-term effects"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "kisspeptin-10",
+    name: "Kisspeptin-10",
+    aliases: ["Kisspeptin", "Metastin (45-54)"],
+    category: "Hormonal & fertility",
+    status: "research-only",
+    summary: "Short form of kisspeptin, the hormone that switches on the reproductive axis.",
+    commonUses: ["Fertility and IVF research", "Low testosterone and hypothalamic amenorrhea (research)", "Libido (research)"],
+    mechanism:
+      "Kisspeptin activates GnRH neurons in the hypothalamus. These release GnRH, which tells the pituitary to release LH and FSH, the hormones that drive testosterone, estrogen and egg or sperm production.",
+    evidence: "Moderate in clinical research: human studies show reliable LH rises, and longer forms have been trialled to trigger egg maturation in IVF.",
+    regulatory: "Not approved.",
+    sideEffects: ["Generally well tolerated in short studies", "Injection-site reactions", "Continuous exposure may blunt its effect"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "gonadorelin",
+    name: "Gonadorelin",
+    aliases: ["GnRH", "LHRH", "Factrel"],
+    category: "Hormonal & fertility",
+    status: "research-only",
+    summary: "Synthetic version of gonadotropin-releasing hormone (GnRH).",
+    commonUses: ["Maintaining natural testosterone and fertility during TRT (popular use)", "Testing pituitary function (historic use)"],
+    mechanism:
+      "Identical to natural GnRH. Given in pulses, it stimulates the pituitary to release LH and FSH. Given continuously, it has the opposite effect: the pituitary becomes desensitised and hormone output falls, which is how longer-acting GnRH drugs are used to suppress hormones.",
+    evidence: "Established physiology; limited trial data for its popular use alongside TRT.",
+    regulatory: "Previously FDA-approved products were discontinued in the US. Mainly available through compounding pharmacies.",
+    sideEffects: ["Injection-site reactions", "Headache, flushing", "Rare allergic reactions"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "oxytocin",
+    name: "Oxytocin",
+    aliases: ["Pitocin", "Syntocinon"],
+    category: "Hormonal & fertility",
+    status: "approved",
+    summary: "Natural hormone that drives labor and milk let-down, also studied for social bonding.",
+    commonUses: ["Inducing or strengthening labor (approved, hospital use)", "Reducing bleeding after birth (approved)", "Social connection, anxiety and autism (research, nasal spray)"],
+    mechanism:
+      "Made in the hypothalamus and released by the pituitary. It makes the uterus contract and triggers milk release. In the brain it acts on circuits involved in trust, bonding and stress.",
+    evidence: "Strong for obstetric uses; mixed and mostly disappointing for psychiatric and social uses in larger trials.",
+    regulatory: "FDA-approved as an IV/IM injection for obstetric use in hospitals. Nasal sprays are not approved in the US.",
+    sideEffects: ["Excessive uterine contractions (obstetric use)", "Water retention and low sodium at high doses", "Headache, nausea (nasal use)"],
+  },
+  {
+    id: "dsip",
+    name: "DSIP",
+    aliases: ["Delta sleep-inducing peptide"],
+    category: "Sleep",
+    status: "research-only",
+    summary: "Nine-amino-acid peptide originally linked to deep (delta-wave) sleep.",
+    commonUses: ["Sleep quality (popular use)", "Stress and withdrawal symptoms (older research)"],
+    mechanism:
+      "First isolated in 1977 from rabbits in induced sleep. How it works is still unclear: it has been reported to affect sleep patterns, stress hormones and pain signalling, but no dedicated receptor has been identified.",
+    evidence: "Weak: small, older studies with inconsistent results.",
+    regulatory: "Not approved.",
+    sideEffects: ["Headache", "Grogginess", "Injection-site reactions", "Limited safety data"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "ll-37",
+    name: "LL-37",
+    aliases: ["Cathelicidin", "CAMP"],
+    category: "Immune & inflammation",
+    status: "research-only",
+    summary: "The only human cathelicidin: an antimicrobial peptide made by the immune system.",
+    commonUses: ["Chronic wounds and leg ulcers (clinical research)", "Infections and immune support (popular use)"],
+    mechanism:
+      "Produced by white blood cells and skin cells. It can punch holes in bacterial membranes, disrupt biofilms, neutralise bacterial toxins and recruit immune cells. It also promotes wound healing, but too much is linked to inflammatory skin conditions like psoriasis and rosacea.",
+    evidence: "Limited: lab and animal data plus small human trials (e.g. topical use for venous leg ulcers).",
+    regulatory: "Not approved.",
+    sideEffects: ["Injection-site pain and redness", "Possible worsening of inflammatory skin conditions", "Unknown long-term effects"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "kpv",
+    name: "KPV",
+    aliases: ["Lysine-proline-valine", "α-MSH (11-13)"],
+    category: "Immune & inflammation",
+    status: "research-only",
+    summary: "Anti-inflammatory tripeptide taken from the end of alpha-MSH.",
+    commonUses: ["Gut inflammation and colitis (animal research)", "Skin inflammation (research)"],
+    mechanism:
+      "The last three amino acids of alpha-melanocyte-stimulating hormone. It keeps alpha-MSH's anti-inflammatory activity, reducing NF-κB signalling inside cells, but does not cause tanning. In animal models it calmed inflammation in the bowel.",
+    evidence: "Weak: cell and animal studies; no meaningful human trials.",
+    regulatory: "Not approved.",
+    sideEffects: ["Limited human safety data"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "vip",
+    name: "VIP",
+    aliases: ["Vasoactive intestinal peptide", "Aviptadil"],
+    category: "Immune & inflammation",
+    status: "approved-elsewhere",
+    summary: "Neuropeptide that relaxes blood vessels and calms immune responses.",
+    commonUses: ["Erectile dysfunction (with phentolamine, some countries)", "Lung inflammation (clinical research)", "Chronic inflammatory response syndrome (compounded nasal spray, popular use)"],
+    mechanism:
+      "Found throughout the gut, lungs and brain. It widens blood vessels, relaxes smooth muscle in the airways and gut, and dampens inflammatory immune signalling.",
+    evidence: "Limited to moderate depending on use; a large trial in COVID-19 respiratory failure did not lead to approval.",
+    regulatory: "Approved in some European countries in combination with phentolamine for erectile dysfunction. Not approved in the US.",
+    sideEffects: ["Flushing", "Low blood pressure, dizziness", "Diarrhea", "Fast heart rate"],
+    storage: STANDARD_STORAGE,
+  },
+  {
+    id: "elamipretide",
+    name: "Elamipretide",
+    aliases: ["SS-31", "Forzinity", "Bendavia"],
+    category: "Longevity & cellular health",
+    status: "approved",
+    summary: "Mitochondria-targeting peptide approved for the rare genetic disorder Barth syndrome.",
+    commonUses: ["Barth syndrome (approved use)", "Mitochondrial disease and heart failure (research)", "Healthy ageing and energy (popular use)"],
+    mechanism:
+      "A small peptide that travels to the inner membrane of mitochondria, the cell's power plants, and binds cardiolipin, a fat that holds the energy-producing machinery together. This is thought to stabilise that machinery, improve energy production and reduce oxidative stress.",
+    evidence: "Moderate for Barth syndrome (approved on surrogate endpoints); mixed results in other mitochondrial and heart conditions.",
+    regulatory: "FDA-approved (accelerated approval) as Forzinity for Barth syndrome. Other uses are not approved.",
+    sideEffects: ["Injection-site reactions (very common)", "Headache", "Dizziness"],
+  },
+  {
+    id: "dihexa",
+    name: "Dihexa",
+    aliases: ["PNB-0408"],
+    category: "Cognitive & mood",
+    status: "research-only",
+    summary: "Experimental compound derived from angiotensin IV, studied in animals for memory.",
+    commonUses: ["Memory and cognition (popular use)", "Alzheimer's disease (animal research)"],
+    mechanism:
+      "Strengthens signalling by hepatocyte growth factor (HGF) through its receptor, c-Met. In animal studies this encouraged new connections between neurons and improved performance in memory tasks.",
+    evidence: "Very weak: animal studies only; no published human trials.",
+    regulatory: "Not approved.",
+    sideEffects: ["Unknown in humans", "Theoretical cancer concern, because the HGF/c-Met pathway can drive tumor growth"],
+  },
 ];
 
-export const CATEGORIES: Category[] = [...new Set(PEPTIDES.map((p) => p.category))];
+const CATEGORY_ORDER: Category[] = [
+  "Metabolic & weight",
+  "Growth hormone axis",
+  "Tissue repair",
+  "Skin & cosmetic",
+  "Sexual health",
+  "Hormonal & fertility",
+  "Cognitive & mood",
+  "Sleep",
+  "Immune & inflammation",
+  "Longevity & cellular health",
+];
+
+/** Categories that have at least one peptide, in display order. */
+export const CATEGORIES: Category[] = CATEGORY_ORDER.filter((c) => PEPTIDES.some((p) => p.category === c));
 
 export function findPeptide(id: string): Peptide | undefined {
   return PEPTIDES.find((p) => p.id === id);
