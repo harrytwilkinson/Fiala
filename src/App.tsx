@@ -6,6 +6,7 @@ import { href, useRoute } from "./lib/router";
 import { BackupPage } from "./pages/BackupPage";
 import { HomePage } from "./pages/HomePage";
 import { LibraryPage } from "./pages/LibraryPage";
+import { NewsPage } from "./pages/NewsPage";
 import { PeptideDetailPage } from "./pages/PeptideDetailPage";
 import { SchedulesPage } from "./pages/SchedulesPage";
 import { TrackerPage } from "./pages/TrackerPage";
@@ -18,6 +19,7 @@ const TABS = [
   { path: "", label: "Home", icon: "🏠" },
   { path: "library", label: "Library", icon: "📚" },
   { path: "calculator", label: "Converter", icon: "🧮" },
+  { path: "news", label: "News", icon: "📰" },
   { path: "tracker", label: "Tracker", icon: "📈" },
 ].filter((t) => t.path !== "calculator" || __CONVERTER__);
 
@@ -45,6 +47,9 @@ export function App() {
       else page = <TrackerPage prefill={{ peptide: q("peptide"), amount: q("amount"), unit: q("unit"), schedule: q("schedule") }} />;
       break;
     }
+    case "news":
+      page = <NewsPage peptideId={query.get("peptide") ?? undefined} />;
+      break;
     case "backup":
       page = <BackupPage />;
       break;

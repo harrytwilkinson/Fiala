@@ -1,8 +1,17 @@
 import type { Peptide } from "../data/peptides";
+import { NewsDisclaimer, NewsList } from "../components/NewsList";
+import { filterNews, toggleFollow, useFollowing, useNews } from "../lib/news";
 import { href } from "../lib/router";
 import { StatusBadge } from "./LibraryPage";
 
+const NEWS_PREVIEW = 4;
+
 export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
+  const { feed } = useNews();
+  const followed = useFollowing();
+  const isFollowing = followed.includes(peptide.id);
+  const news = filterNews(feed?.items ?? [], "all", followed, peptide.id);
+
   return (
     <div className="page">
       <a className="back" href={href("library")}>
@@ -14,6 +23,14 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
         <StatusBadge peptide={peptide} />
         <span className="badge">{peptide.category}</span>
       </div>
+      <button
+        type="button"
+        className={isFollowing ? "button small follow" : "button secondary small follow"}
+        aria-pressed={isFollowing}
+        onClick={() => toggleFollow(peptide.id)}
+      >
+        {isFollowing ? "✓ Following" : "+ Follow news"}
+      </button>
 
       <p className="lead">{peptide.summary}</p>
 
@@ -56,6 +73,25 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
           <p>{peptide.storage}</p>
         </section>
       )}
+
+      <section className="card">
+        <div className="row">
+          <h2>Latest research &amp; news</h2>
+          {news.length > NEWS_PREVIEW && (
+            <a className="small" href={href("news", { peptide: peptide.id })}>
+              See all {news.length}
+            </a>
+          )}
+        </div>
+        {news.length > 0 ? (
+          <>
+            <NewsList items={news.slice(0, NEWS_PREVIEW)} showPeptides={false} />
+            <NewsDisclaimer />
+          </>
+        ) : (
+          <p className="muted small">{feed ? "No recent stories about this peptide." : "News will appear here once it has loaded."}</p>
+        )}
+      </section>
 
       <div className="actions">
         <a className="button" href={href("tracker", { peptide: peptide.id })}>

@@ -14,4 +14,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      # Checks the news sources still respond and parse; it only fails on a broken news/posts.json.
+      - name: Build news feed
+        run: npm run news
       - run: npm run build
