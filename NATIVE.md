@@ -74,8 +74,8 @@ Notification permission is requested the first time you save a schedule, or from
       `https://getfiala.com/privacy.html` (source: `public/privacy.html`).
 - [x] **Support URL** (required by Apple):
       `https://getfiala.com/support.html` (source:
-      `public/support.html`; contact is via GitHub Issues). Add a support email
-      once you have one.
+      `public/support.html`; contact is support@getfiala.com, forwarded by
+      Cloudflare Email Routing, with GitHub Issues as a public alternative).
 - [ ] **Version numbers**: bump `CFBundleShortVersionString` / build number in
       Xcode and `versionName` / `versionCode` in `android/app/build.gradle` for
       each release.
