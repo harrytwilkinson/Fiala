@@ -1,5 +1,6 @@
 import { addDays, formatDateKey, localDateKey } from "../lib/dates";
 import { doses, useDoseLog } from "../lib/doseLog";
+import { replayOnboarding } from "../lib/onboarding";
 import { href, navigate } from "../lib/router";
 import { formatTime, isDueOn, takenOn, useSchedules, type Schedule } from "../lib/schedules";
 import { defaultVialFor, useVials, vialStatus, vials } from "../lib/vials";
@@ -138,6 +139,10 @@ export function HomePage() {
           </p>
         </section>
       )}
+
+      <button type="button" className="link-button neutral center" onClick={replayOnboarding}>
+        How Peptide Compass works
+      </button>
 
       <section className="card disclaimer">
         <h2>Important</h2>

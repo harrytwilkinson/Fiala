@@ -1,4 +1,6 @@
+import { Onboarding } from "./components/Onboarding";
 import { findPeptide } from "./data/peptides";
+import { useOnboardingOpen } from "./lib/onboarding";
 import { href, useRoute } from "./lib/router";
 import { CalculatorPage } from "./pages/CalculatorPage";
 import { HomePage } from "./pages/HomePage";
@@ -17,6 +19,7 @@ const TABS = [
 
 export function App() {
   const { path, query } = useRoute();
+  const onboardingOpen = useOnboardingOpen();
   const [section = "", id] = path;
   // Remount pages when the query changes so prefilled values are applied.
   const key = `${path.join("/")}?${query.toString()}`;
@@ -44,8 +47,11 @@ export function App() {
 
   return (
     <>
-      <main key={key}>{page}</main>
-      <nav className="tabbar" aria-label="Main">
+      {/* inert: keep focus and screen readers inside the walkthrough while it is open */}
+      <main key={key} inert={onboardingOpen}>
+        {page}
+      </main>
+      <nav className="tabbar" aria-label="Main" inert={onboardingOpen}>
         {TABS.map((t) => (
           <a key={t.path} href={href(t.path)} className={section === t.path ? "active" : ""} aria-current={section === t.path ? "page" : undefined}>
             <span aria-hidden>{t.icon}</span>
@@ -53,6 +59,7 @@ export function App() {
           </a>
         ))}
       </nav>
+      {onboardingOpen && <Onboarding />}
     </>
   );
 }
