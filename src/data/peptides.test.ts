@@ -1,0 +1,32 @@
+import { describe, expect, it } from "vitest";
+import { CATEGORIES, PEPTIDES, findPeptide } from "./peptides";
+
+describe("peptide library", () => {
+  it("has unique, URL-safe ids", () => {
+    const ids = PEPTIDES.map((p) => p.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) expect(id).toMatch(/^[a-z0-9-]+$/);
+  });
+
+  it("has every section filled in for every entry", () => {
+    for (const p of PEPTIDES) {
+      expect(p.name, p.id).not.toBe("");
+      expect(p.summary, p.id).not.toBe("");
+      expect(p.mechanism, p.id).not.toBe("");
+      expect(p.evidence, p.id).not.toBe("");
+      expect(p.regulatory, p.id).not.toBe("");
+      expect(p.commonUses.length, p.id).toBeGreaterThan(0);
+      expect(p.sideEffects.length, p.id).toBeGreaterThan(0);
+    }
+  });
+
+  it("lists every used category exactly once", () => {
+    const used = new Set(PEPTIDES.map((p) => p.category));
+    expect(new Set(CATEGORIES)).toEqual(used);
+  });
+
+  it("looks peptides up by id", () => {
+    expect(findPeptide("bpc-157")?.name).toBe("BPC-157");
+    expect(findPeptide("nope")).toBeUndefined();
+  });
+});

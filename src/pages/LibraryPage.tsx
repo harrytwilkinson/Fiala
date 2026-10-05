@@ -18,7 +18,7 @@ export function LibraryPage() {
         p.name.toLowerCase().includes(q) ||
         p.aliases.some((a) => a.toLowerCase().includes(q)) ||
         p.commonUses.some((u) => u.toLowerCase().includes(q))),
-  );
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="page">
