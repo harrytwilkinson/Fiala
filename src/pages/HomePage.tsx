@@ -158,6 +158,8 @@ export function HomePage() {
           How Fiala works
         </button>
         <a href={href("backup")}>Backup &amp; restore</a>
+        <a href="support.html">Help &amp; support</a>
+        <a href="privacy.html">Privacy</a>
       </div>
 
       <section className="card disclaimer">

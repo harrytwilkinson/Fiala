@@ -83,7 +83,12 @@ const SLIDES: Slide[] = [
   },
   {
     title: "Your data, your device",
-    body: "Everything you log stays on this phone. There's no account and nothing is uploaded. Clearing your browser data will erase it.",
+    body: (
+      <>
+        Everything you log stays on this phone. There's no account and nothing is uploaded. Clearing your browser data
+        will erase it. <a href="privacy.html">Privacy policy</a>
+      </>
+    ),
     art: (
       <div className="onb-lock" aria-hidden>
         🔒

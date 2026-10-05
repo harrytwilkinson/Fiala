@@ -12,6 +12,7 @@
 - **Vial inventory**: record each mixed vial (amount, water, date mixed, discard-after days). Remaining peptide and doses left are worked out from the doses logged against it, with warnings when a vial is running low or past its discard date. The converter can save its result straight to a vial.
 - **Schedules and reminders**: weekly ("Mon, Thu") or every-N-days routines with a time, start and end date. "Add to calendar" downloads an `.ics` file, so the phone's own calendar gives recurring reminders even when the app is closed, with no server needed.
 - **Backup & restore**: save every dose, vial and schedule to one JSON file (via the phone's share sheet where supported, otherwise a download), and restore it on any device. Restores show a preview first, then either merge (keeping existing records) or replace everything. Damaged records are skipped. The home screen nudges you if you haven't backed up in 30 days, and the app requests persistent storage.
+- **Privacy policy and support pages**: standalone pages at `privacy.html` and `support.html` (also used as the App Store / Play URLs), linked from the home screen, walkthrough and backup screen, and available offline.
 - All tracking data stays on the device (localStorage). Data saved before the rename (under `peptide-compass:*` keys) is moved to `fiala:*` automatically, and old backup files still restore.
 - **Native iOS & Android apps** (Capacitor): real dose-reminder notifications, native share sheet for backups and exports, native icons and splash screens, and a store build that compiles out the converter. See [NATIVE.md](NATIVE.md).
 - **Installable and offline-ready**: add it to a phone's home screen as "Fiala" and it runs full-screen like a native app. After the first visit it works without a connection (`public/manifest.webmanifest`, `public/sw.js`).
@@ -42,9 +43,9 @@ Stack: React 19, TypeScript, Vite and Vitest, with no backend; Capacitor 8 for t
 Every push to `main` runs the tests, builds the app and publishes it to GitHub Pages via
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml):
 
-**https://harrytwilkinson.github.io/Peptide-Compass/**
+**https://getfiala.com/** (custom domain; `harrytwilkinson.github.io/Fiala/` redirects there)
 
-(The address follows the GitHub repository name. Renaming the repository to `Fiala` in its settings changes it to `…github.io/Fiala/`; GitHub redirects git operations, but not the old Pages address.)
+The custom domain is set in **Settings → Pages → Custom domain** (an Actions-deployed site needs no `CNAME` file), with DNS at Cloudflare pointing to GitHub Pages. Saved data is per website address, so data from the old github.io address doesn't carry over: back it up there and restore it on getfiala.com.
 
 One-time setup: in the repo go to **Settings → Pages → Build and deployment → Source** and pick **GitHub Actions**.
 Pull requests run the tests and build via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).

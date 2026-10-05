@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f766e" />
+    <meta name="description" content="Help and support for Fiala: installing, backups, reminders and contact." />
+    <link rel="icon" href="fiala.svg" type="image/svg+xml" />
+    <title>Support · Fiala</title>
+    <style>
+      :root { --bg: #f6f7f9; --surface: #fff; --text: #13201f; --muted: #5b6b6a; --border: #dfe5e4; --accent: #0f766e; --warn-bg: #fff7ed; --warn-border: #fdba74; --warn-text: #7c2d12; color-scheme: light; }
+      @media (prefers-color-scheme: dark) { :root { --bg: #0d1413; --surface: #151f1e; --text: #e6efee; --muted: #93a3a1; --border: #283533; --accent: #2dd4bf; --warn-bg: #2a1a0c; --warn-border: #9a3412; --warn-text: #fed7aa; color-scheme: dark; } }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+      main { max-width: 720px; margin: 0 auto; padding: max(1.25rem, env(safe-area-inset-top)) 16px 3rem; }
+      header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+      header img { width: 44px; height: 44px; border-radius: 10px; }
+      a { color: var(--accent); }
+      h1 { font-size: 1.7rem; margin: 0; line-height: 1.2; }
+      h2 { font-size: 1.15rem; margin: 2rem 0 0.5rem; }
+      p, li { margin: 0.4rem 0; }
+      .muted { color: var(--muted); }
+      .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.1rem; margin: 1rem 0; }
+      .urgent { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+      details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1rem; margin: 0.6rem 0; }
+      summary { font-weight: 600; cursor: pointer; }
+      details[open] summary { margin-bottom: 0.4rem; }
+      .back { display: inline-block; margin-bottom: 1rem; text-decoration: none; font-weight: 600; }
+      .button { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; padding: 0.65rem 1rem; border-radius: 10px; }
+      @media (prefers-color-scheme: dark) { .button { color: #042f2e; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="back" href="./">← Back to Fiala</a>
+      <header>
+        <img src="icons/icon-192.png" alt="" />
+        <div>
+          <h1>Fiala Support</h1>
+          <div class="muted">Help with using the app, and how to reach us</div>
+        </div>
+      </header>
+
+      <div class="card urgent">
+        <strong>Medical emergency?</strong> Fiala cannot help with urgent medical problems. If you think you have taken
+        too much of something or feel unwell, contact your local emergency number or a doctor straight away.
+      </div>
+
+      <h2>Contact</h2>
+      <p>Found a bug, spotted something wrong in the library, or have a suggestion? Open an issue on GitHub and describe what happened, which device you use, and the steps to repeat it.</p>
+      <p><a class="button" href="https://github.com/harrytwilkinson/Fiala/issues/new">Report a problem or send feedback</a></p>
+      <p class="muted">Please don't include personal health details in a public report.</p>
+
+      <h2>Common questions</h2>
+
+      <details>
+        <summary>What is Fiala?</summary>
+        <p>Fiala helps you learn about peptides, convert a prescribed dose into units on an insulin syringe, and keep a private log of doses, vials and schedules. It is for education and record-keeping only. It is not medical advice and never recommends doses.</p>
+      </details>
+
+      <details>
+        <summary>How do I add Fiala to my home screen?</summary>
+        <p><strong>iPhone (Safari):</strong> open the Fiala website, tap the Share button, then <em>Add to Home Screen</em>.</p>
+        <p><strong>Android (Chrome):</strong> open the Fiala website, tap the ⋮ menu, then <em>Install app</em> or <em>Add to Home screen</em>.</p>
+      </details>
+
+      <details>
+        <summary>Where is my data stored? Can you see it?</summary>
+        <p>Only on your device. Fiala has no accounts or servers that receive your data, so nobody else can see it. See the <a href="privacy.html">privacy policy</a> for details.</p>
+      </details>
+
+      <details>
+        <summary>How do I back up my log or move it to a new phone?</summary>
+        <p>On the home screen, tap <strong>Backup &amp; restore</strong>, then <strong>Save backup</strong> and choose somewhere safe such as Files, iCloud Drive, Google Drive or email. On the new phone, open Fiala, go to <strong>Backup &amp; restore</strong>, tap <strong>Choose backup file</strong> and pick that file. You'll see what's in it before anything changes.</p>
+      </details>
+
+      <details>
+        <summary>My data disappeared. Can I get it back?</summary>
+        <p>Data can be erased if you clear your browser's site data, or if your browser removes data for websites you haven't used in a while (Safari can do this). Fiala keeps no copy, so the only way back is a backup file. To prevent this, add Fiala to your home screen and save a backup regularly; the app reminds you if you haven't backed up in 30 days.</p>
+      </details>
+
+      <details>
+        <summary>I'm not getting dose reminders</summary>
+        <p><strong>iPhone and Android app:</strong> open <strong>Tracker → Schedules</strong> and check that reminders are on. If it says notifications are off, allow notifications for Fiala in your phone's Settings. Open the app at least every couple of weeks so it can schedule upcoming reminders, and check the schedule isn't paused.</p>
+        <p><strong>Website:</strong> reminders come from your phone's calendar. On a schedule, tap <strong>Add to calendar</strong> and add the event to your calendar app.</p>
+      </details>
+
+      <details>
+        <summary>How does the converter work?</summary>
+        <p>It divides the amount of peptide in the vial by the water you add to get the concentration, works out the volume that holds your prescribed dose, and shows it in units on a U-100 insulin syringe (100 units = 1 mL). It warns you if the dose won't fit the syringe or falls between markings. Always double-check the result and confirm with your pharmacist or clinician if you're unsure.</p>
+      </details>
+
+      <details>
+        <summary>Something in the library looks wrong</summary>
+        <p>Please report it using the button above, and include a source if you have one. Library content is updated as regulations and evidence change.</p>
+      </details>
+
+      <details>
+        <summary>How do I delete all my data?</summary>
+        <p>Delete the app (iPhone or Android), or clear Fiala's site data in your browser settings (website). This can't be undone unless you have a backup file.</p>
+      </details>
+
+      <p class="muted" style="margin-top:2rem">Fiala is for education and personal record-keeping only and is not medical advice. · <a href="privacy.html">Privacy policy</a></p>
+    </main>
+  </body>
+</html>

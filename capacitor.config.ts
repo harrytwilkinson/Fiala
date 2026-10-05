@@ -1,8 +1,9 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
-// appId is permanent once the app is published to a store; change it before the first upload if needed.
+// appId is permanent once the app is published to a store. It follows the reverse-DNS convention for
+// getfiala.com (the intended domain); change it before the first upload if a different domain is used.
 const config: CapacitorConfig = {
-  appId: "app.fiala",
+  appId: "com.getfiala.app",
   appName: "Fiala",
   webDir: "dist",
   ios: {
