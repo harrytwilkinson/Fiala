@@ -1,29 +1,28 @@
 import { useSyncExternalStore } from "react";
-import { platform } from "./platform";
+import { verifyCode, type PlusClaim } from "./plusToken";
 import { PLUS } from "./site";
 
-// Fiala Plus licence. Bought through Lemon Squeezy, which emails a licence key.
-// The key is checked with Lemon Squeezy's licence API when it's entered and
-// about once a week after that. Fiala keeps working offline in between, and a
-// failed network check never locks someone out: only a definite "invalid" does.
+// Fiala Plus unlock. Bought on Stripe Checkout, which sends the buyer back to
+// #/plus?session_id=… . The app swaps that for a signed unlock code from the
+// Fiala unlock service (worker/), then keeps Plus unlocked offline for good:
+// the code is checked on the device against the public key built into the app.
 
-const API = "https://api.lemonsqueezy.com/v1/licenses";
-const KEY = "fiala:plus:v1";
-const REVALIDATE_MS = 7 * 86_400_000;
+/** Ed25519 public key for unlock codes, injected at build time (see scripts/plus-public-key.ts). */
+export const PLUS_PUBLIC_KEY: string = import.meta.env.VITE_PLUS_PUBLIC_KEY ?? "";
+export const CLAIM_URL = "https://plus.getfiala.com/claim";
+const KEY = "fiala:plus:v2";
 
 export interface PlusLicence {
-  key: string;
-  instanceId: string;
-  activatedAt: string;
-  checkedAt: string;
-  /** Email the purchase was made with, as Lemon Squeezy reports it (shown to the user only). */
-  customerEmail?: string;
+  code: string;
+  claim: PlusClaim;
+  unlockedAt: string;
 }
 
 function read(): PlusLicence | null {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) ?? "null");
-    return raw && typeof raw.key === "string" && typeof raw.instanceId === "string" ? raw : null;
+    const claim = raw && typeof raw.code === "string" ? verifyCode(raw.code, PLUS_PUBLIC_KEY) : null;
+    return claim ? { code: raw.code, claim, unlockedAt: String(raw.unlockedAt ?? "") } : null;
   } catch {
     return null;
   }
@@ -35,7 +34,7 @@ const listeners = new Set<() => void>();
 function save(next: PlusLicence | null) {
   licence = next;
   try {
-    if (next) localStorage.setItem(KEY, JSON.stringify(next));
+    if (next) localStorage.setItem(KEY, JSON.stringify({ code: next.code, unlockedAt: next.unlockedAt }));
     else localStorage.removeItem(KEY);
   } catch {
     // Storage blocked: the unlock lasts for this session.
@@ -54,85 +53,39 @@ export function usePlus(): PlusLicence | null {
 }
 
 export const hasPlus = () => licence !== null;
-export const plusAvailable = () => PLUS.checkoutUrl !== "";
+/** Plus can be bought only once checkout and the public key are both set up. */
+export const plusAvailable = () => PLUS.checkoutUrl !== "" && PLUS_PUBLIC_KEY !== "";
 
 export class LicenceError extends Error {}
 
-interface LicenceResponse {
-  activated?: boolean;
-  valid?: boolean;
-  error?: string | null;
-  license_key?: { status?: string };
-  instance?: { id?: string } | null;
-  meta?: { store_id?: number; product_id?: number; customer_email?: string };
+/** Unlock with a code (pasted, or returned by the unlock service). */
+export function unlockWithCode(code: string): PlusLicence {
+  const claim = verifyCode(code, PLUS_PUBLIC_KEY);
+  if (!claim) throw new LicenceError("That unlock code isn't valid. Copy the whole code, starting with FIALA1.");
+  const next = { code: code.trim().replace(/\s+/g, ""), claim, unlockedAt: new Date().toISOString() };
+  save(next);
+  return next;
 }
 
-async function call(action: "activate" | "validate" | "deactivate", body: Record<string, string>): Promise<LicenceResponse & { status: number }> {
-  const res = await fetch(`${API}/${action}`, {
-    method: "POST",
-    headers: { Accept: "application/json", "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(body),
-  });
-  // Lemon Squeezy answers 4xx with a JSON body explaining the problem.
-  const json = (await res.json().catch(() => ({}))) as LicenceResponse;
-  // Rate limits and server errors aren't answers about the key.
-  if (res.status === 429 || res.status >= 500 || (!res.ok && !json.error)) throw new Error(`HTTP ${res.status}`);
-  return { ...json, status: res.status };
-}
+const CLAIM_ERRORS: Record<string, string> = {
+  unpaid: "That payment hasn't completed yet. If you've just paid, wait a moment and try again.",
+  unknown_session: "We couldn't find that purchase. If you were charged, email support@getfiala.com.",
+  wrong_product: "That purchase isn't for Fiala Plus.",
+  bad_session: "That link isn't a valid purchase link.",
+};
 
-/** True when the key belongs to this store and product (when those are configured). */
-export function isFialaPlusKey(meta: LicenceResponse["meta"]): boolean {
-  if (PLUS.storeId && meta?.store_id !== PLUS.storeId) return false;
-  if (PLUS.productId && meta?.product_id !== PLUS.productId) return false;
-  return true;
-}
-
-export async function activatePlus(rawKey: string): Promise<void> {
-  const key = rawKey.trim();
-  if (!/^[A-Za-z0-9-]{8,}$/.test(key)) throw new LicenceError("That doesn't look like a licence key. Copy it from your purchase email.");
-  let res: LicenceResponse;
+/** Turn a Stripe Checkout session id (from the post-payment redirect) into an unlock. */
+export async function claimPurchase(sessionId: string, fetchImpl: typeof fetch = fetch): Promise<PlusLicence> {
+  let res: Response;
   try {
-    res = await call("activate", { license_key: key, instance_name: `Fiala on ${platform}` });
+    res = await fetchImpl(`${CLAIM_URL}?session_id=${encodeURIComponent(sessionId)}`);
   } catch {
-    throw new LicenceError("Couldn't reach the licence server. Check your connection and try again.");
+    throw new LicenceError("Couldn't reach the unlock service. Check your connection and try again; you won't be charged twice.");
   }
-  if (!res.activated || !res.instance?.id) {
-    const msg = res.error ?? "";
-    if (/limit/i.test(msg)) throw new LicenceError("This key is already in use on the maximum number of devices. Remove it from another device first.");
-    throw new LicenceError(msg ? `That key couldn't be activated: ${msg}` : "That key couldn't be activated.");
-  }
-  if (!isFialaPlusKey(res.meta)) {
-    await call("deactivate", { license_key: key, instance_id: res.instance.id }).catch(() => undefined);
-    throw new LicenceError("That key is for a different product.");
-  }
-  const now = new Date().toISOString();
-  save({ key, instanceId: res.instance.id, activatedAt: now, checkedAt: now, customerEmail: res.meta?.customer_email });
+  const body = (await res.json().catch(() => ({}))) as { code?: string; error?: string };
+  if (res.ok && body.code) return unlockWithCode(body.code);
+  throw new LicenceError(CLAIM_ERRORS[body.error ?? ""] ?? "Something went wrong unlocking Plus. Please try again, or email support@getfiala.com.");
 }
 
-/** Re-check the key about once a week. Network failures keep Plus unlocked. */
-export async function revalidatePlus(force = false): Promise<void> {
-  const current = licence;
-  if (!current) return;
-  if (!force && Date.now() - Date.parse(current.checkedAt) < REVALIDATE_MS) return;
-  let res: LicenceResponse;
-  try {
-    res = await call("validate", { license_key: current.key, instance_id: current.instanceId });
-  } catch {
-    return; // offline or server trouble: try again next time
-  }
-  // A definite answer from Lemon Squeezy: refunded, disabled, or removed from this device.
-  if (res.valid === false) save(null);
-  else if (res.valid) save({ ...current, checkedAt: new Date().toISOString() });
-}
-
-/** Free up this device's activation so the key can be used elsewhere. */
-export async function deactivatePlus(): Promise<void> {
-  const current = licence;
-  if (!current) return;
-  try {
-    await call("deactivate", { license_key: current.key, instance_id: current.instanceId });
-  } catch {
-    throw new LicenceError("Couldn't reach the licence server, so this device is still counted. Try again when you're online.");
-  }
-  save(null);
-}
+/** Forget the unlock on this device (the code still works elsewhere). */
+export const removePlus = () => save(null);

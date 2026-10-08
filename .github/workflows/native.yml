@@ -34,6 +34,10 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: npm ci
+      - name: Fiala Plus public key
+        env:
+          PLUS_SIGNING_SECRET: ${{ secrets.PLUS_SIGNING_SECRET }}
+        run: echo "VITE_PLUS_PUBLIC_KEY=$(npm run -s plus-key)" >> "$GITHUB_ENV"
       - name: Build web app
         run: npm run ${{ matrix.variant == 'store' && 'build:store' || 'build' }}
       - run: npx cap sync android
@@ -56,6 +60,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Fiala Plus public key
+        env:
+          PLUS_SIGNING_SECRET: ${{ secrets.PLUS_SIGNING_SECRET }}
+        run: echo "VITE_PLUS_PUBLIC_KEY=$(npm run -s plus-key)" >> "$GITHUB_ENV"
       - run: npm run build
       - run: npx cap sync ios
       - name: Build for iOS Simulator (unsigned)

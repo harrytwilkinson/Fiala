@@ -366,3 +366,4 @@ a.news-title:hover { text-decoration: underline; }
   .report { border: 0; padding: 0; }
   .report section, .report tr { break-inside: avoid; }
 }
+.code-box { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.75rem; word-break: break-all; }

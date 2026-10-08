@@ -1,7 +1,6 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { DoseEntry } from "./doseLog";
 import { adherence, doseChanges, spend } from "./insights";
-import { LicenceError, activatePlus, deactivatePlus, hasPlus, revalidatePlus } from "./plus";
 import type { Schedule } from "./schedules";
 import type { Vial } from "./vials";
 
@@ -65,51 +64,5 @@ describe("spend", () => {
     // 0.5 mg and 1 mg from a £40, 10 mg vial = £2 and £4, so £3 on average.
     expect(s.perDose).toEqual([{ peptideName: "BPC-157", cost: 3, doses: 2 }]);
     expect(spend(vials, entries, "2026-10-01").total).toBe(50);
-  });
-});
-
-describe("Fiala Plus licence", () => {
-  afterEach(() => vi.unstubAllGlobals());
-  const reply = (status: number, body: object) => vi.fn(async () => new Response(JSON.stringify(body), { status }));
-
-  it("rejects keys that don't look like keys without calling the server", async () => {
-    const fetch = reply(200, {});
-    vi.stubGlobal("fetch", fetch);
-    await expect(activatePlus("nope")).rejects.toBeInstanceOf(LicenceError);
-    expect(fetch).not.toHaveBeenCalled();
-  });
-
-  it("explains activation errors", async () => {
-    vi.stubGlobal("fetch", reply(400, { activated: false, error: "This license key has reached the activation limit." }));
-    await expect(activatePlus("AAAA-BBBB-CCCC")).rejects.toThrow(/maximum number of devices/);
-    expect(hasPlus()).toBe(false);
-  });
-
-  it("unlocks, survives offline checks, and locks only on a definite invalid answer", async () => {
-    vi.stubGlobal("fetch", reply(200, { activated: true, instance: { id: "i1" }, meta: { store_id: 1, product_id: 2, customer_email: "a@b.c" } }));
-    await activatePlus(" AAAA-BBBB-CCCC ");
-    expect(hasPlus()).toBe(true);
-
-    vi.stubGlobal("fetch", vi.fn(async () => Promise.reject(new TypeError("offline"))));
-    await revalidatePlus(true);
-    expect(hasPlus()).toBe(true);
-
-    vi.stubGlobal("fetch", reply(500, {}));
-    await revalidatePlus(true);
-    expect(hasPlus()).toBe(true);
-
-    vi.stubGlobal("fetch", reply(404, { valid: false, error: "license_key not found." }));
-    await revalidatePlus(true);
-    expect(hasPlus()).toBe(false);
-  });
-
-  it("deactivates the device", async () => {
-    vi.stubGlobal("fetch", reply(200, { activated: true, instance: { id: "i2" }, meta: {} }));
-    await activatePlus("AAAA-BBBB-CCCC");
-    const fetch = reply(200, { deactivated: true });
-    vi.stubGlobal("fetch", fetch);
-    await deactivatePlus();
-    expect(hasPlus()).toBe(false);
-    expect(String((fetch.mock.calls[0] as unknown[])[0])).toBe("https://api.lemonsqueezy.com/v1/licenses/deactivate");
   });
 });

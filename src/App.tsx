@@ -67,7 +67,7 @@ export function App() {
       break;
     }
     case "plus":
-      page = id === "report" ? <ReportPage /> : id === "insights" ? <InsightsPage /> : id === "spend" ? <SpendPage /> : <PlusPage />;
+      page = id === "report" ? <ReportPage /> : id === "insights" ? <InsightsPage /> : id === "spend" ? <SpendPage /> : <PlusPage sessionId={query.get("session_id") ?? undefined} />;
       break;
     case "glossary":
       page = <GlossaryPage />;

@@ -14,12 +14,11 @@ export const peptidePageUrl = (id: string) => `${SITE_URL}/peptides/${id}/`;
 export const stackPageUrl = (id: string) => `${SITE_URL}/stacks/${id}/`;
 
 /**
- * Fiala Plus (Lemon Squeezy). Leave CHECKOUT_URL empty to show Plus as "coming soon".
- * STORE_ID and PRODUCT_ID make sure a licence key belongs to Fiala Plus and not another product.
+ * Fiala Plus (Stripe). Leave checkoutUrl empty to show Plus as "coming soon".
+ * checkoutUrl is the Stripe Payment Link; set its "After payment" redirect to
+ * https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}
  */
 export const PLUS = {
   checkoutUrl: "",
-  storeId: 0,
-  productId: 0,
   price: "£12.99",
 };
