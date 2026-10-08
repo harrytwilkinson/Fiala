@@ -21,7 +21,8 @@ describe("static library pages", () => {
       expect(html).toContain(`<h1>${esc(p.name)}</h1>`);
       expect(html).toContain(`href="../../#/library/${p.id}"`);
       expect(html).toContain(esc(p.mechanism));
-      const description = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "";
+      const escaped = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "";
+      const description = escaped.replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"');
       expect(description.length).toBeGreaterThan(50);
       expect(description.length).toBeLessThanOrEqual(160);
     }

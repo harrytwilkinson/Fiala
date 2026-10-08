@@ -1,4 +1,5 @@
 import { PEPTIDES, findPeptide } from "../data/peptides";
+import { STACKS, findStack } from "../data/stacks";
 
 export const CUSTOM_PEPTIDE = "__custom__";
 
@@ -8,16 +9,23 @@ export interface PeptideChoice {
   customName: string;
 }
 
+/** Stacks are offered as "stack:<id>"; they're saved by name, like a custom entry. */
+const STACK_PREFIX = "stack:";
+const stackFor = (value: string) => (value.startsWith(STACK_PREFIX) ? findStack(value.slice(STACK_PREFIX.length)) : undefined);
+
 export function emptyChoice(peptideId?: string | null): PeptideChoice {
-  return { selected: peptideId && findPeptide(peptideId) ? peptideId : "", customName: "" };
+  const known = peptideId && (findPeptide(peptideId) || stackFor(peptideId));
+  return { selected: known ? peptideId : "", customName: "" };
 }
 
 export function choiceName(c: PeptideChoice): string {
-  return c.selected === CUSTOM_PEPTIDE ? c.customName.trim() : (findPeptide(c.selected)?.name ?? "");
+  if (c.selected === CUSTOM_PEPTIDE) return c.customName.trim();
+  return stackFor(c.selected)?.name ?? findPeptide(c.selected)?.name ?? "";
 }
 
+/** Library peptide id, or null for custom entries and stacks. */
 export function choiceId(c: PeptideChoice): string | null {
-  return c.selected && c.selected !== CUSTOM_PEPTIDE ? c.selected : null;
+  return c.selected && c.selected !== CUSTOM_PEPTIDE && !stackFor(c.selected) ? c.selected : null;
 }
 
 interface Props {
@@ -34,13 +42,22 @@ export function PeptideField({ value, onChange, label = "Peptide" }: Props) {
         <span>{label}</span>
         <select value={value.selected} onChange={(e) => onChange({ ...value, selected: e.target.value })}>
           <option value="">Choose…</option>
-          {[...PEPTIDES]
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
+          <optgroup label="Peptides">
+            {[...PEPTIDES]
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+          </optgroup>
+          <optgroup label="Stacks & blends">
+            {STACKS.map((s) => (
+              <option key={s.id} value={`${STACK_PREFIX}${s.id}`}>
+                {s.name}
               </option>
             ))}
+          </optgroup>
           <option value={CUSTOM_PEPTIDE}>Other / custom…</option>
         </select>
       </label>

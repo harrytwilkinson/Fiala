@@ -272,3 +272,23 @@ a.news-title:hover { text-decoration: underline; }
 .small-chip { font-size: 0.75rem; padding: 0.15rem 0.6rem; text-decoration: none; }
 .card .news-list .news-item:last-child { padding-bottom: 0; }
 .follow { align-self: flex-start; }
+
+/* blend converter */
+.segmented.wide-buttons { display: flex; width: 100%; }
+.segmented.wide-buttons button { flex: 1; }
+.field-label { display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.35rem; }
+.blend-rows { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.blend-rows legend { font-weight: 600; font-size: 0.92rem; padding: 0; margin-bottom: 0.35rem; }
+.blend-row { display: grid; grid-template-columns: 1fr 7.5rem auto; gap: 0.5rem; align-items: center; }
+.blend-row .link-button { align-self: center; font-size: 1rem; padding: 0 0.25rem; }
+.blend-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.blend-table th, .blend-table td { text-align: left; padding: 0.4rem 0.25rem; border-bottom: 1px solid var(--border); }
+.blend-table thead th { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+.blend-table tr.basis th, .blend-table tr.basis td:first-of-type { color: var(--accent); }
+.badge-supplement { background: #fce7f3; color: #831843; }
+.badge.not-peptide { background: var(--accent-soft); color: var(--text); }
+.badge-group { display: inline-flex; gap: 0.35rem; flex-wrap: wrap; justify-content: flex-end; }
+.facts { display: grid; gap: 0.5rem; margin: 0; }
+.facts dt { font-size: 0.8rem; color: var(--muted); }
+.facts dd { margin: 0; }
+.component-list { gap: 0.45rem; }

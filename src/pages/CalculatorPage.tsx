@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BlendConverter } from "../components/BlendConverter";
 import { SyringeVisual } from "../components/SyringeVisual";
 import {
   SYRINGES,
@@ -15,7 +16,28 @@ const WATER_PRESETS = [1, 2, 3, 5];
 
 // A general-purpose unit converter: it never suggests a dose and isn't tied to
 // any particular compound. The user enters the dose they've been prescribed.
-export function CalculatorPage() {
+export function CalculatorPage({ blend }: { blend?: string }) {
+  const [mode, setMode] = useState<"single" | "blend">(blend ? "blend" : "single");
+  return (
+    <div className="page">
+      <h1>Reconstitution &amp; syringe converter</h1>
+      <div className="segmented wide-buttons" role="group" aria-label="Vial type">
+        <button type="button" className={mode === "single" ? "active" : ""} aria-pressed={mode === "single"} onClick={() => setMode("single")}>
+          Single peptide
+        </button>
+        <button type="button" className={mode === "blend" ? "active" : ""} aria-pressed={mode === "blend"} onClick={() => setMode("blend")}>
+          Blend (several in one vial)
+        </button>
+      </div>
+      <p className="notice small">
+        Enter the dose your clinician has prescribed. This tool only converts units. It doesn't recommend doses.
+      </p>
+      {mode === "single" ? <SingleConverter /> : <BlendConverter initialStack={blend} />}
+    </div>
+  );
+}
+
+function SingleConverter() {
   const [vialMg, setVialMg] = useState("5");
   const [waterMl, setWaterMl] = useState("2");
   const [dose, setDose] = useState("250");
@@ -43,14 +65,10 @@ export function CalculatorPage() {
   const logHref = result ? href("tracker", { amount: dose, unit: doseUnit }) : undefined;
 
   return (
-    <div className="page">
-      <h1>Reconstitution &amp; syringe converter</h1>
+    <>
       <p className="muted">
         Converts a dose into the volume to draw on an insulin (U-100) syringe, based on how much powder is in the
         vial and how much bacteriostatic water you add.
-      </p>
-      <p className="notice small">
-        Enter the dose your clinician has prescribed. This tool only converts units. It doesn't recommend doses.
       </p>
 
       <section className="card form">
@@ -206,6 +224,6 @@ export function CalculatorPage() {
           <li>Never share needles or reuse syringes.</li>
         </ul>
       </section>
-    </div>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Peptide } from "../data/peptides";
+import { stacksWith } from "../data/stacks";
 import { shareLink } from "../lib/files";
 import { peptidePageUrl } from "../lib/site";
 import { NewsDisclaimer, NewsList } from "../components/NewsList";
@@ -85,6 +86,40 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
         <h2>Regulatory status</h2>
         <p>{peptide.regulatory}</p>
       </section>
+
+      {(peptide.route || peptide.halfLife) && (
+        <section className="card">
+          <h2>How it's taken</h2>
+          <dl className="facts">
+            {peptide.route && (
+              <div>
+                <dt>Route</dt>
+                <dd>{peptide.route}</dd>
+              </div>
+            )}
+            {peptide.halfLife && (
+              <div>
+                <dt>How long it lasts (half-life)</dt>
+                <dd>{peptide.halfLife}</dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      )}
+
+      {stacksWith(peptide.id).length > 0 && (
+        <section className="card">
+          <h2>Found in these stacks</h2>
+          <ul className="list component-list">
+            {stacksWith(peptide.id).map((s) => (
+              <li key={s.id}>
+                <a href={href(`stacks/${s.id}`)}>{s.name}</a>
+                <span className="muted small"> · {s.summary}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {peptide.storage && (
         <section className="card">

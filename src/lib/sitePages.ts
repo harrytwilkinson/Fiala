@@ -5,7 +5,8 @@
 
 import { CATEGORIES, STATUS_LABEL, type Peptide } from "../data/peptides.ts";
 import { KIND_LABEL, type NewsItem } from "./newsFeed.ts";
-import { SITE_URL, SUPPORT_URL, peptidePageUrl } from "./site.ts";
+import { BLEND_LABEL_NOTE, STACKS, STACK_KIND_LABEL, componentName, stacksWith, type Stack } from "../data/stacks.ts";
+import { SITE_URL, SUPPORT_URL, peptidePageUrl, stackPageUrl } from "./site.ts";
 
 export const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -36,7 +37,7 @@ h2{font-size:1.15rem;margin:0 0 .5rem}
 .lead{font-size:1.08rem}
 .badges{display:flex;gap:.4rem;flex-wrap:wrap;margin:.5rem 0 .75rem}
 .badge{font-size:.75rem;font-weight:600;padding:.15rem .55rem;border-radius:999px;background:var(--border);color:var(--text)}
-.s-approved{background:#dcfce7;color:#14532d}.s-approved-elsewhere{background:#dbeafe;color:#1e3a8a}.s-investigational{background:#ede9fe;color:#4c1d95}.s-research-only{background:#fef3c7;color:#78350f}
+.s-approved{background:#dcfce7;color:#14532d}.s-approved-elsewhere{background:#dbeafe;color:#1e3a8a}.s-investigational{background:#ede9fe;color:#4c1d95}.s-research-only{background:#fef3c7;color:#78350f}.s-supplement{background:#fce7f3;color:#831843}.s-not-peptide{background:var(--accent-soft);color:var(--text)}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem 1.1rem;margin:1rem 0}
 .card ul{margin:.25rem 0;padding-left:1.2rem}
 .cta{border-color:var(--accent);background:var(--accent-soft)}
@@ -138,7 +139,7 @@ export function peptidePage(p: Peptide, all: Peptide[], news: NewsItem[] = []): 
       <p class="crumbs"><a href="${root}peptides/">Peptide library</a> › ${esc(p.category)}</p>
       <h1>${esc(p.name)}</h1>
       ${p.aliases.length ? `<p class="muted">Also known as ${esc(p.aliases.join(", "))}</p>` : ""}
-      <div class="badges"><span class="badge s-${p.status}">${esc(STATUS_LABEL[p.status])}</span><span class="badge">${esc(p.category)}</span></div>
+      <div class="badges"><span class="badge s-${p.status}">${esc(STATUS_LABEL[p.status])}</span>${p.notPeptide ? `<span class="badge s-not-peptide">Not a peptide</span>` : ""}<span class="badge">${esc(p.category)}</span></div>
       <p class="lead">${esc(p.summary)}</p>
 
       <section class="card"><h2>What people use it for</h2>${list(p.commonUses)}</section>
@@ -146,7 +147,21 @@ export function peptidePage(p: Peptide, all: Peptide[], news: NewsItem[] = []): 
       <section class="card"><h2>Strength of evidence</h2><p>${esc(p.evidence)}</p></section>
       <section class="card"><h2>Reported side effects &amp; risks</h2>${list(p.sideEffects)}</section>
       <section class="card"><h2>Regulatory status</h2><p>${esc(p.regulatory)}</p></section>
+      ${
+        p.route || p.halfLife
+          ? `<section class="card"><h2>How it's taken</h2>${p.route ? `<p><strong>Route:</strong> ${esc(p.route)}</p>` : ""}${
+              p.halfLife ? `<p><strong>How long it lasts (half-life):</strong> ${esc(p.halfLife)}</p>` : ""
+            }</section>`
+          : ""
+      }
       ${p.storage ? `<section class="card"><h2>Storage</h2><p>${esc(p.storage)}</p></section>` : ""}
+      ${
+        stacksWith(p.id).length
+          ? `<section class="card"><h2>Found in these stacks</h2><ul>${stacksWith(p.id)
+              .map((s) => `<li><a href="${root}stacks/${esc(s.id)}/">${esc(s.name)}</a>: ${esc(s.summary)}</li>`)
+              .join("")}</ul></section>`
+          : ""
+      }
 ${newsSection(news)}
       <section class="card cta">
         <h2>Keep track of ${esc(p.name)} privately</h2>
@@ -200,7 +215,9 @@ export function libraryIndexPage(all: Peptide[]): string {
         <p>Fiala is a free, private app to learn about peptides, convert a prescribed dose into syringe units, and log doses, vials and schedules. Nothing leaves your phone.</p>
         <a class="button" href="${root}">Open Fiala</a>
       </section>
-${sections}`;
+${sections}
+      <h2 style="margin-top:1.75rem">Stacks &amp; blends</h2>
+      <ul class="grid">${STACKS.map((st) => `<li><a href="${root}stacks/${esc(st.id)}/"><strong>${esc(st.name)}</strong><span>${esc(st.summary)}</span></a></li>`).join("")}</ul>`;
   return page({
     title: "Peptide library: uses, evidence and side effects · Fiala",
     description: metaDescription(`Plain-English guide to ${all.length} peptides including semaglutide, tirzepatide, BPC-157 and TB-500: uses, how they work, evidence, side effects and regulatory status.`),
@@ -210,8 +227,56 @@ ${sections}`;
   });
 }
 
+export function stackPage(st: Stack): string {
+  const root = "../../";
+  const ingredients = st.components.map((c) => componentName(c.peptideId));
+  const body = `
+      <p class="crumbs"><a href="${root}peptides/">Peptide library</a> › Stacks &amp; blends</p>
+      <h1>${esc(st.name)}</h1>
+      ${st.aliases.length ? `<p class="muted">Also known as ${esc(st.aliases.join(", "))}</p>` : ""}
+      <div class="badges"><span class="badge s-${st.status.tone}">${esc(st.status.label)}</span><span class="badge">${esc(STACK_KIND_LABEL[st.kind])}</span></div>
+      <p class="lead">${esc(st.summary)}</p>
+
+      <section class="card"><h2>What's in it</h2><ul>${st.components
+        .map((c) => `<li><a href="${root}peptides/${esc(c.peptideId)}/">${esc(componentName(c.peptideId))}</a>: ${esc(c.role)}</li>`)
+        .join("")}</ul></section>
+      ${
+        st.exampleVial
+          ? `<section class="card"><h2>Typical vial label</h2><p>${st.exampleVial.totalMg} mg: ${esc(
+              st.exampleVial.contents.map((c) => `${c.mg} mg ${componentName(c.peptideId)}`).join(", "),
+            )}</p><p class="muted" style="font-size:.88rem">${esc(BLEND_LABEL_NOTE)}</p></section>`
+          : ""
+      }
+      <section class="card"><h2>Why people combine them</h2><p>${esc(st.whyCombined)}</p></section>
+      <section class="card"><h2>Strength of evidence</h2><p>${esc(st.evidence)}</p></section>
+      <section class="card"><h2>Risks</h2>${list(st.risks)}</section>
+      <section class="card"><h2>Regulatory status</h2><p>${esc(st.regulatory)}</p></section>
+
+      <section class="card cta">
+        <h2>Track ${esc(st.name)} privately</h2>
+        <p>Fiala's free converter handles blends: enter what's in your vial and your prescribed dose of one peptide, and it shows the units to draw and how much of each peptide that draw contains. Everything stays on your phone.</p>
+        <a class="button" href="${root}#/stacks/${esc(st.id)}">Open ${esc(st.name)} in Fiala</a>
+      </section>
+
+      <section class="card warn"><strong>Not medical advice.</strong> This page is general education. Talk to a qualified clinician before starting, stopping or changing any treatment.</section>`;
+  return page({
+    title: `${st.name} (${ingredients.join(" + ")}): what's in it, evidence and risks · Fiala`,
+    description: metaDescription(`${st.name}: ${st.summary} What's in it, why people combine them, the evidence, risks and regulatory status.`),
+    canonical: stackPageUrl(st.id),
+    root,
+    body,
+  });
+}
+
 export function sitemap(all: Peptide[]): string {
-  const urls = [`${SITE_URL}/`, `${SITE_URL}/peptides/`, ...all.map((p) => peptidePageUrl(p.id)), `${SITE_URL}/support.html`, `${SITE_URL}/privacy.html`];
+  const urls = [
+    `${SITE_URL}/`,
+    `${SITE_URL}/peptides/`,
+    ...all.map((p) => peptidePageUrl(p.id)),
+    ...STACKS.map((st) => stackPageUrl(st.id)),
+    `${SITE_URL}/support.html`,
+    `${SITE_URL}/privacy.html`,
+  ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join("\n")}

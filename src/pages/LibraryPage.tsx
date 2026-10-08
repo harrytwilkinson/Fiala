@@ -1,9 +1,15 @@
 import { useState } from "react";
+import { LibraryNav } from "../components/LibraryNav";
 import { CATEGORIES, PEPTIDES, STATUS_LABEL, type Category, type Peptide } from "../data/peptides";
 import { href } from "../lib/router";
 
 export function StatusBadge({ peptide }: { peptide: Peptide }) {
-  return <span className={`badge badge-${peptide.status}`}>{STATUS_LABEL[peptide.status]}</span>;
+  return (
+    <span className="badge-group">
+      <span className={`badge badge-${peptide.status}`}>{STATUS_LABEL[peptide.status]}</span>
+      {peptide.notPeptide && <span className="badge not-peptide">Not a peptide</span>}
+    </span>
+  );
 }
 
 export function LibraryPage() {
@@ -23,6 +29,7 @@ export function LibraryPage() {
   return (
     <div className="page">
       <h1>Peptide library</h1>
+      <LibraryNav active="peptides" />
       <p className="muted">What each peptide is, what people use it for, and what it does in the body.</p>
 
       <input
