@@ -5,16 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run pages",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "test": "vitest run",
-    "build:store": "tsc -b && vite build --mode store",
+    "build:store": "tsc -b && vite build --mode store && npm run pages",
     "native:sync": "npm run build && cap sync",
     "native:sync:store": "npm run build:store && cap sync",
     "ios": "cap open ios",
     "android": "cap open android",
-    "news": "node --experimental-strip-types --no-warnings scripts/build-news.ts"
+    "news": "node --experimental-strip-types --no-warnings scripts/build-news.ts",
+    "pages": "node --experimental-strip-types --no-warnings scripts/build-pages.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",

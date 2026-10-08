@@ -3,6 +3,8 @@ import { useLastBackupAt } from "../lib/backupDevice";
 import { addDays, formatDateKey, localDateKey } from "../lib/dates";
 import { doses, useDoseLog } from "../lib/doseLog";
 import { replayOnboarding } from "../lib/onboarding";
+import { isNative } from "../lib/platform";
+import { SUPPORT_URL } from "../lib/site";
 import { href, navigate } from "../lib/router";
 import { formatTime, isDueOn, takenOn, useSchedules, type Schedule } from "../lib/schedules";
 import { defaultVialFor, useVials, vialStatus, vials } from "../lib/vials";
@@ -169,6 +171,12 @@ export function HomePage() {
         <a href={href("backup")}>Backup &amp; restore</a>
         <a href="support.html">Help &amp; support</a>
         <a href="privacy.html">Privacy</a>
+        {/* Tip jar on the website only: app stores require their own payment systems for tips. */}
+        {SUPPORT_URL && !isNative && (
+          <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer">
+            Support Fiala ♥
+          </a>
+        )}
       </div>
 
       <section className="card disclaimer">

@@ -55,3 +55,24 @@ export async function saveFile(filename: string, contents: string, type: string,
   setTimeout(() => URL.revokeObjectURL(url), 1000);
   return "downloaded";
 }
+
+export type LinkShareResult = "shared" | "copied" | "cancelled" | "failed";
+
+/** Share a link with the phone's share sheet, or copy it where sharing isn't available. */
+export async function shareLink(url: string, title: string): Promise<LinkShareResult> {
+  try {
+    if (isNative) {
+      const { Share } = await import("@capacitor/share");
+      await Share.share({ title, url });
+      return "shared";
+    }
+    if (typeof navigator.share === "function") {
+      await navigator.share({ title, url });
+      return "shared";
+    }
+    await navigator.clipboard.writeText(url);
+    return "copied";
+  } catch (err) {
+    return isAbort(err) ? "cancelled" : "failed";
+  }
+}
