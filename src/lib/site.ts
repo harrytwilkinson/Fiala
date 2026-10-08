@@ -5,7 +5,7 @@
 export const SITE_URL = "https://getfiala.com";
 
 /** Tip jar (e.g. a Ko-fi page). Leave empty to hide every "Support Fiala" link. */
-export const SUPPORT_URL = "";
+export const SUPPORT_URL = "https://buymeacoffee.com/htwilkinson";
 
 /** Public, search-friendly page for a peptide. */
 export const peptidePageUrl = (id: string) => `${SITE_URL}/peptides/${id}/`;
