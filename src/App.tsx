@@ -9,6 +9,9 @@ import { LibraryPage } from "./pages/LibraryPage";
 import { NewsPage } from "./pages/NewsPage";
 import { PeptideDetailPage } from "./pages/PeptideDetailPage";
 import { SchedulesPage } from "./pages/SchedulesPage";
+import { StackDetailPage } from "./pages/StackDetailPage";
+import { StacksPage } from "./pages/StacksPage";
+import { findStack } from "./data/stacks";
 import { TrackerPage } from "./pages/TrackerPage";
 import { VialsPage } from "./pages/VialsPage";
 
@@ -27,6 +30,8 @@ export function App() {
   const { path, query } = useRoute();
   const onboardingOpen = useOnboardingOpen();
   const [section = "", id] = path;
+  // Stacks live under the Library tab.
+  const tab = section === "stacks" ? "library" : section;
   // Remount pages when the query changes so prefilled values are applied.
   const key = `${path.join("/")}?${query.toString()}`;
 
@@ -37,8 +42,13 @@ export function App() {
       page = peptide ? <PeptideDetailPage peptide={peptide} /> : <LibraryPage />;
       break;
     }
+    case "stacks": {
+      const stack = id ? findStack(id) : undefined;
+      page = stack ? <StackDetailPage stack={stack} /> : <StacksPage />;
+      break;
+    }
     case "calculator":
-      page = __CONVERTER__ && CalculatorPage ? <CalculatorPage /> : <HomePage />;
+      page = __CONVERTER__ && CalculatorPage ? <CalculatorPage blend={query.get("blend") ?? undefined} /> : <HomePage />;
       break;
     case "tracker": {
       const q = (k: string) => query.get(k) ?? undefined;
@@ -65,7 +75,7 @@ export function App() {
       </main>
       <nav className="tabbar" aria-label="Main" inert={onboardingOpen}>
         {TABS.map((t) => (
-          <a key={t.path} href={href(t.path)} className={section === t.path ? "active" : ""} aria-current={section === t.path ? "page" : undefined}>
+          <a key={t.path} href={href(t.path)} className={tab === t.path ? "active" : ""} aria-current={tab === t.path ? "page" : undefined}>
             <span aria-hidden>{t.icon}</span>
             {t.label}
           </a>

@@ -14,9 +14,11 @@ export type Category =
   | "Hormonal & fertility"
   | "Sleep"
   | "Immune & inflammation"
-  | "Longevity & cellular health";
+  | "Longevity & cellular health"
+  | "Muscle & performance"
+  | "Bone health";
 
-export type ApprovalStatus = "approved" | "approved-elsewhere" | "investigational" | "research-only";
+export type ApprovalStatus = "approved" | "approved-elsewhere" | "investigational" | "research-only" | "supplement";
 
 export interface Peptide {
   id: string;
@@ -36,6 +38,12 @@ export interface Peptide {
   sideEffects: string[];
   /** Typical lyophilized-storage / reconstituted-storage notes. */
   storage?: string;
+  /** How it's taken, e.g. "Injection under the skin, once weekly". */
+  route?: string;
+  /** How long it lasts in the body, in plain language. */
+  halfLife?: string;
+  /** Not a peptide, but commonly tracked alongside them (e.g. MK-677). */
+  notPeptide?: boolean;
 }
 
 export const STATUS_LABEL: Record<ApprovalStatus, string> = {
@@ -43,6 +51,7 @@ export const STATUS_LABEL: Record<ApprovalStatus, string> = {
   "approved-elsewhere": "Approved outside the US",
   investigational: "In clinical trials",
   "research-only": "Research compound",
+  supplement: "Dietary supplement",
 };
 
 const STANDARD_STORAGE =
@@ -567,12 +576,359 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved.",
     sideEffects: ["Unknown in humans", "Theoretical cancer concern, because the HGF/c-Met pathway can drive tumor growth"],
   },
+  // ---- Added October 2026 (pending medical review) ----
+  {
+    id: "survodutide",
+    name: "Survodutide",
+    aliases: ["BI 456906"],
+    category: "Metabolic & weight",
+    status: "investigational",
+    summary: "Experimental once-weekly dual glucagon and GLP-1 receptor agonist being studied for obesity and fatty liver disease.",
+    commonUses: ["Obesity and weight management (clinical trials)", "MASH, a form of fatty liver disease (clinical trials)"],
+    mechanism:
+      "Activates GLP-1 receptors, which reduce appetite and slow stomach emptying, and glucagon receptors, which increase energy use and fat breakdown in the liver. The glucagon effect is why it is being studied for liver fat as well as weight.",
+    evidence: "Moderate and growing: phase 2 trials showed substantial weight loss and improvements in liver fat; larger phase 3 programmes are under way.",
+    regulatory: "Not approved anywhere; in phase 3 trials (Boehringer Ingelheim with Zealand Pharma).",
+    sideEffects: ["Nausea, vomiting, diarrhoea and constipation", "Increased heart rate", "Reduced appetite"],
+    route: "Injection under the skin, once a week (in trials)",
+    halfLife: "Long-acting, designed for weekly dosing",
+  },
+  {
+    id: "dulaglutide",
+    name: "Dulaglutide",
+    aliases: ["Trulicity"],
+    category: "Metabolic & weight",
+    status: "approved",
+    summary: "Once-weekly GLP-1 receptor agonist approved for type 2 diabetes.",
+    commonUses: ["Type 2 diabetes (blood-sugar control)", "Reducing cardiovascular risk in adults with type 2 diabetes"],
+    mechanism:
+      "A GLP-1 analogue fused to part of an antibody, which makes it last about a week. Like other GLP-1 drugs it boosts glucose-dependent insulin release, lowers glucagon, slows stomach emptying and reduces appetite.",
+    evidence: "Strong: large randomised trials (the AWARD programme and the REWIND cardiovascular outcomes trial).",
+    regulatory: "Approved as Trulicity in the US, UK and EU for type 2 diabetes. It is not licensed for weight loss.",
+    sideEffects: [
+      "Nausea, vomiting, diarrhoea (most common)",
+      "Pancreatitis and gallbladder problems (uncommon)",
+      "Boxed warning: thyroid C-cell tumours in rodents; not for people with a personal or family history of medullary thyroid cancer or MEN2",
+      "Low blood sugar when combined with insulin or sulfonylureas",
+    ],
+    storage: "Pens: refrigerate; may be kept at room temperature for a limited time. Follow the patient leaflet.",
+    route: "Prefilled pen, injection under the skin once a week",
+    halfLife: "About 5 days",
+  },
+  {
+    id: "exenatide",
+    name: "Exenatide",
+    aliases: ["Byetta", "Bydureon"],
+    category: "Metabolic & weight",
+    status: "approved",
+    summary: "The first GLP-1 receptor agonist, originally found in Gila monster venom, approved for type 2 diabetes.",
+    commonUses: ["Type 2 diabetes (blood-sugar control)"],
+    mechanism:
+      "A synthetic version of exendin-4, a hormone from the Gila monster lizard that mimics human GLP-1 but resists breakdown. It increases insulin release when blood sugar is high, reduces glucagon and slows stomach emptying. Byetta is short-acting; Bydureon is an extended-release form.",
+    evidence: "Strong for blood-sugar control; its cardiovascular outcomes trial (EXSCEL) showed safety but not a clear benefit.",
+    regulatory: "Approved for type 2 diabetes as Byetta (twice daily) and Bydureon (weekly) in many countries. Availability of individual brands varies by country.",
+    sideEffects: [
+      "Nausea and vomiting (common, especially early on)",
+      "Lumps or nodules at the injection site (extended-release form)",
+      "Pancreatitis (uncommon); use with caution in kidney disease",
+      "Low blood sugar when combined with insulin or sulfonylureas",
+    ],
+    storage: "Pens: refrigerate before first use; follow the patient leaflet.",
+    route: "Injection under the skin, twice daily (Byetta) or weekly (Bydureon)",
+    halfLife: "About 2–3 hours (short-acting form)",
+  },
+  {
+    id: "pramlintide",
+    name: "Pramlintide",
+    aliases: ["Symlin"],
+    category: "Metabolic & weight",
+    status: "approved",
+    summary: "Synthetic version of the hormone amylin, used with mealtime insulin in diabetes.",
+    commonUses: ["Type 1 and type 2 diabetes alongside mealtime insulin (approved use)", "Weight management (research interest)"],
+    mechanism:
+      "Amylin is released with insulin after meals. Pramlintide mimics it: it slows stomach emptying, suppresses glucagon after meals and increases fullness, which smooths blood-sugar spikes and can reduce food intake.",
+    evidence: "Moderate: randomised trials showed modest improvements in blood-sugar control and small weight loss.",
+    regulatory: "FDA-approved as Symlin (US) as an add-on to mealtime insulin. Not widely available outside the US.",
+    sideEffects: [
+      "Boxed warning: severe low blood sugar when used with insulin, especially in type 1 diabetes",
+      "Nausea (common)",
+      "Reduced appetite, headache",
+    ],
+    storage: "Pens: refrigerate before first use; follow the patient leaflet.",
+    route: "Injection under the skin before major meals",
+    halfLife: "About 50 minutes",
+  },
+  {
+    id: "setmelanotide",
+    name: "Setmelanotide",
+    aliases: ["Imcivree"],
+    category: "Metabolic & weight",
+    status: "approved",
+    summary: "MC4R agonist approved for rare genetic causes of severe obesity.",
+    commonUses: [
+      "Obesity caused by POMC, PCSK1 or LEPR deficiency (approved use)",
+      "Obesity and hunger in Bardet-Biedl syndrome (approved use)",
+    ],
+    mechanism:
+      "Activates the melanocortin-4 receptor (MC4R) in the brain, a key switch in the pathway that controls hunger and energy use. In certain genetic conditions this pathway is broken upstream, and setmelanotide restores the signal.",
+    evidence: "Strong for the approved rare conditions (phase 3 trials); not studied as a general weight-loss drug.",
+    regulatory: "Approved as Imcivree in the US, UK and EU for specific genetic obesity disorders, confirmed by genetic testing or diagnosis.",
+    sideEffects: [
+      "Darkening of the skin and moles",
+      "Injection-site reactions, nausea",
+      "Spontaneous erections",
+      "Depression and suicidal thoughts (monitoring advised)",
+    ],
+    route: "Injection under the skin, once daily",
+    halfLife: "About 11 hours",
+  },
+  {
+    id: "igf-1-des",
+    name: "IGF-1 DES",
+    aliases: ["DES(1-3)IGF-1"],
+    category: "Growth hormone axis",
+    status: "research-only",
+    summary: "Shortened, fast-acting form of insulin-like growth factor 1 sold as a research chemical.",
+    commonUses: ["Localised muscle growth (popular use)", "Cell-culture research"],
+    mechanism:
+      "IGF-1 missing its first three amino acids. This stops it binding well to the proteins that normally carry and restrain IGF-1, so it acts more strongly but for a much shorter time than ordinary IGF-1.",
+    evidence: "Very weak: cell and animal research only; no human trials.",
+    regulatory: "Not approved. Prohibited in sport by WADA (growth factors).",
+    sideEffects: ["Low blood sugar", "Unknown long-term effects", "Theoretical concern about promoting cancer growth, as with other IGF-1 products"],
+    storage: STANDARD_STORAGE,
+    route: "Injection (popular use)",
+    halfLife: "Minutes (short-acting)",
+  },
+  {
+    id: "mk-677",
+    name: "MK-677",
+    aliases: ["Ibutamoren", "MK-0677"],
+    category: "Growth hormone axis",
+    status: "research-only",
+    notPeptide: true,
+    summary: "Oral growth hormone secretagogue. It is not a peptide, but is commonly tracked alongside them.",
+    commonUses: ["Raising growth hormone and IGF-1 (popular use)", "Muscle, sleep and recovery (popular claims)", "Age-related muscle loss (past clinical research)"],
+    mechanism:
+      "A small molecule that mimics ghrelin, the hunger hormone, at its receptor in the brain and pituitary gland. This triggers growth hormone release and raises IGF-1 levels for as long as it is taken.",
+    evidence: "Limited: small clinical trials showed raised GH and IGF-1 and some changes in body composition, but no clear functional benefit; development as a medicine did not go ahead.",
+    regulatory: "Not approved anywhere. Sold online as a 'research chemical'. Prohibited in sport by WADA.",
+    sideEffects: [
+      "Increased hunger",
+      "Water retention, swelling and joint pain",
+      "Higher blood sugar and reduced insulin sensitivity",
+      "A heart failure signal was reported in one trial in older adults",
+    ],
+    route: "By mouth (capsule or liquid), once daily",
+    halfLife: "About 24 hours of effect",
+  },
+  {
+    id: "mgf",
+    name: "MGF",
+    aliases: ["Mechano growth factor", "PEG-MGF"],
+    category: "Muscle & performance",
+    status: "research-only",
+    summary: "Peptide from a variant of IGF-1 made by muscle after exercise or injury, sold as a research chemical.",
+    commonUses: ["Muscle repair and growth (popular use)", "Muscle and nerve repair (animal research)"],
+    mechanism:
+      "When muscle is stretched or damaged, it produces a variant of IGF-1 whose tail peptide, called MGF, appears to activate muscle stem cells. PEG-MGF has a polyethylene glycol chain attached so it lasts longer in the body.",
+    evidence: "Very weak: cell and animal studies only, with mixed results; no human trials.",
+    regulatory: "Not approved. Prohibited in sport by WADA (growth factors).",
+    sideEffects: ["Injection-site reactions", "Unknown effects in humans", "Theoretical concern about growth signalling and cancer"],
+    storage: STANDARD_STORAGE,
+    route: "Injection (popular use)",
+    halfLife: "Minutes for MGF; longer for PEG-MGF",
+  },
+  {
+    id: "follistatin-344",
+    name: "Follistatin-344",
+    aliases: ["FS-344"],
+    category: "Muscle & performance",
+    status: "research-only",
+    summary: "Protein that blocks myostatin, the body's brake on muscle growth, sold as a research chemical.",
+    commonUses: ["Muscle growth (popular use)", "Muscular dystrophy (gene therapy research)"],
+    mechanism:
+      "Follistatin binds and neutralises myostatin and activin, proteins that limit muscle growth. In animals, raising follistatin leads to larger muscles. Research has mostly delivered it by gene therapy rather than injecting the protein.",
+    evidence: "Very weak for injected products: animal studies and small early gene therapy trials; no trials of the products sold online.",
+    regulatory: "Not approved. Prohibited in sport by WADA (myostatin inhibitors).",
+    sideEffects: ["Unknown in humans", "Theoretical effects on fertility hormones, because activin helps control FSH", "Injection-site reactions"],
+    storage: STANDARD_STORAGE,
+    route: "Injection (popular use)",
+    halfLife: "Not well established",
+  },
+  {
+    id: "thymosin-beta-4",
+    name: "Thymosin Beta-4",
+    aliases: ["Tβ4"],
+    category: "Tissue repair",
+    status: "investigational",
+    summary: "The full natural protein that TB-500 is based on, tested in clinical trials for eye and wound healing.",
+    commonUses: ["Dry eye and corneal healing (clinical trials, as eye drops)", "Wound and heart repair (research)"],
+    mechanism:
+      "A 43-amino-acid protein found in most cells. It binds actin, helping cells move to and repair injured tissue, and has been linked to blood-vessel growth and reduced inflammation.",
+    evidence: "Limited to moderate: small human trials of eye-drop and gel formulations showed some benefits; injected use is not established.",
+    regulatory: "Not approved; prescription formulations are in clinical development. Prohibited in sport by WADA.",
+    sideEffects: ["Eye irritation (eye drops)", "Injection-site reactions (injected, unofficial use)", "Unknown long-term effects of injection"],
+    storage: STANDARD_STORAGE,
+    route: "Eye drops or gel in trials; injection in unofficial use",
+    halfLife: "Short; not well established",
+  },
+  {
+    id: "afamelanotide",
+    name: "Afamelanotide",
+    aliases: ["Scenesse"],
+    category: "Skin & cosmetic",
+    status: "approved",
+    summary: "Melanocortin-1 receptor agonist implant approved to protect people with a rare light sensitivity disorder.",
+    commonUses: ["Erythropoietic protoporphyria (EPP), to increase pain-free time in light (approved use)", "Vitiligo (research)"],
+    mechanism:
+      "A long-lasting version of alpha-MSH, the hormone that stimulates skin pigment. It activates the MC1R receptor on pigment cells, increasing eumelanin, which helps protect the skin from light.",
+    evidence: "Moderate: randomised trials in EPP showed more pain-free time in sunlight.",
+    regulatory: "Approved as Scenesse in the EU (2014) and the US (2019) for adults with EPP, given by trained clinicians.",
+    sideEffects: ["Nausea, headache", "Implant-site reactions", "Darkening of skin and moles; skin checks are advised"],
+    route: "Dissolving implant placed under the skin by a clinician, about every 2 months",
+    halfLife: "Released slowly from the implant over weeks",
+  },
+  {
+    id: "pe-22-28",
+    name: "PE-22-28",
+    aliases: ["Mini-spadin"],
+    category: "Cognitive & mood",
+    status: "research-only",
+    summary: "Experimental peptide studied in mice for fast-acting antidepressant effects.",
+    commonUses: ["Mood and depression (popular use)", "Depression and brain-cell growth (animal research)"],
+    mechanism:
+      "A shortened, more stable version of spadin, a natural peptide that blocks the TREK-1 potassium channel in the brain. Blocking TREK-1 produced antidepressant-like effects and new neuron growth in mice.",
+    evidence: "Very weak: mouse studies only; no human trials.",
+    regulatory: "Not approved.",
+    sideEffects: ["Unknown in humans", "Nasal irritation (nasal use)"],
+    storage: STANDARD_STORAGE,
+    route: "Nasal spray or injection (popular use)",
+    halfLife: "Not established in humans",
+  },
+  {
+    id: "teriparatide",
+    name: "Teriparatide",
+    aliases: ["Forteo", "Forsteo"],
+    category: "Bone health",
+    status: "approved",
+    summary: "Bone-building form of parathyroid hormone approved for severe osteoporosis.",
+    commonUses: ["Osteoporosis with high fracture risk (approved use)", "Steroid-induced osteoporosis (approved use)"],
+    mechanism:
+      "The active first 34 amino acids of parathyroid hormone. Given in a short daily pulse, it stimulates bone-building cells more than bone-removing cells, increasing bone density and strength.",
+    evidence: "Strong: randomised trials showed fewer spine and other fractures.",
+    regulatory: "Approved as Forteo (US) and Forsteo (UK/EU), plus biosimilars. Treatment length has traditionally been limited, typically to 2 years.",
+    sideEffects: ["Dizziness or light-headedness after injection", "Leg cramps, nausea", "Raised blood calcium", "Bone cancer (osteosarcoma) in rats; caution in people with bone conditions or past bone radiation"],
+    storage: "Pens: refrigerate; follow the patient leaflet.",
+    route: "Prefilled pen, injection under the skin once daily",
+    halfLife: "About 1 hour",
+  },
+  {
+    id: "pinealon",
+    name: "Pinealon",
+    aliases: ["EDR peptide", "Glu-Asp-Arg"],
+    category: "Cognitive & mood",
+    status: "research-only",
+    summary: "Three-amino-acid 'bioregulator' peptide from Russian research, promoted for brain health.",
+    commonUses: ["Memory, focus and brain ageing (popular use)", "Protecting brain cells (cell and animal research)"],
+    mechanism:
+      "Part of a family of short peptides developed in Russia that are proposed to enter cells and influence gene activity. Lab studies suggest it may protect brain cells from oxidative stress.",
+    evidence: "Very weak: cell and animal studies, mostly from one research group; no rigorous human trials.",
+    regulatory: "Not approved as a medicine in the US, UK or EU.",
+    sideEffects: ["Unknown; little safety data", "Injection-site reactions (injected)"],
+    storage: STANDARD_STORAGE,
+    route: "Capsules, nasal spray or injection (popular use)",
+    halfLife: "Not established",
+  },
+  {
+    id: "cerebrolysin",
+    name: "Cerebrolysin",
+    aliases: [],
+    category: "Cognitive & mood",
+    status: "approved-elsewhere",
+    summary: "Mixture of peptides from pig brain, used in some countries after stroke and brain injury.",
+    commonUses: ["Stroke recovery (approved in some countries)", "Traumatic brain injury and dementia (approved in some countries)", "Cognition (popular use)"],
+    mechanism:
+      "A mixture of small peptides and amino acids from purified pig brain protein. It is proposed to act like the brain's own growth factors, supporting nerve-cell survival and repair.",
+    evidence: "Mixed: some trials suggest benefits after stroke or brain injury, but systematic reviews have not found clear evidence of improved recovery.",
+    regulatory: "Approved in a number of countries in Europe and Asia; not approved in the US or UK.",
+    sideEffects: ["Dizziness, headache", "Agitation or sleep problems", "Allergic reactions", "Not for people with epilepsy or severe kidney problems"],
+    route: "Injection into a vein or muscle, often as a course",
+    halfLife: "Not well defined (it is a mixture)",
+  },
+  {
+    id: "humanin",
+    name: "Humanin",
+    aliases: [],
+    category: "Longevity & cellular health",
+    status: "research-only",
+    summary: "Small peptide made by mitochondria, studied in the lab for protecting cells from age-related damage.",
+    commonUses: ["Longevity and healthy ageing (popular interest)", "Alzheimer's, metabolic and heart disease (animal research)"],
+    mechanism:
+      "Encoded by mitochondrial DNA, like MOTS-c. It helps cells resist stress and programmed cell death, and in animals it improved insulin sensitivity and protected brain and heart cells. Blood levels fall with age.",
+    evidence: "Very weak: cell and animal studies plus observational human data; no treatment trials.",
+    regulatory: "Not approved.",
+    sideEffects: ["Unknown in humans"],
+    storage: STANDARD_STORAGE,
+    route: "Injection (popular use)",
+    halfLife: "Not established in humans",
+  },
+  {
+    id: "foxo4-dri",
+    name: "FOXO4-DRI",
+    aliases: ["Proxofim"],
+    category: "Longevity & cellular health",
+    status: "research-only",
+    summary: "Experimental 'senolytic' peptide that cleared ageing cells in mice.",
+    commonUses: ["Clearing senescent ('zombie') cells for longevity (popular interest)", "Age-related decline (mouse research)"],
+    mechanism:
+      "Senescent cells stop dividing but don't die, and release inflammatory signals. FOXO4-DRI disrupts a protein interaction (FOXO4 and p53) that keeps them alive, pushing them to self-destruct. It is made of mirror-image amino acids so it resists breakdown.",
+    evidence: "Very weak: one influential mouse study plus lab work; no human trials.",
+    regulatory: "Not approved.",
+    sideEffects: ["Unknown in humans", "Theoretical risk of harming healthy cells, as it acts on the p53 pathway"],
+    storage: STANDARD_STORAGE,
+    route: "Injection (popular use)",
+    halfLife: "Not established in humans",
+  },
+  {
+    id: "ara-290",
+    name: "ARA-290",
+    aliases: ["Cibinetide"],
+    category: "Immune & inflammation",
+    status: "investigational",
+    summary: "Peptide derived from erythropoietin (EPO), studied for nerve pain and inflammation without raising red blood cells.",
+    commonUses: ["Small-fibre neuropathy, e.g. in sarcoidosis or diabetes (clinical trials)", "Nerve pain and inflammation (popular use)"],
+    mechanism:
+      "Mimics the part of EPO that protects tissue. It activates a 'tissue repair' receptor that reduces inflammation and supports nerve repair, without stimulating red blood cell production like EPO does.",
+    evidence: "Limited: small phase 2 trials showed improvements in nerve-fibre measures and symptoms in some patients.",
+    regulatory: "Not approved; investigational.",
+    sideEffects: ["Generally well tolerated in small trials", "Injection-site reactions", "Long-term safety unknown"],
+    storage: STANDARD_STORAGE,
+    route: "Injection under the skin, daily in trials",
+    halfLife: "Minutes, though effects outlast it",
+  },
+  {
+    id: "glutathione",
+    name: "Glutathione",
+    aliases: ["GSH", "L-glutathione"],
+    category: "Longevity & cellular health",
+    status: "supplement",
+    summary: "The body's main antioxidant, a tripeptide sold as a supplement and given by injection for skin lightening.",
+    commonUses: ["Antioxidant and 'detox' (popular use)", "Skin lightening (popular use, mainly injected)", "Liver health (research)"],
+    mechanism:
+      "A three-amino-acid peptide (glutamate, cysteine and glycine) made by every cell. It neutralises reactive molecules, helps the liver process toxins and drugs, and shifts melanin production towards lighter pigment.",
+    evidence: "Weak: small trials of oral and topical forms show modest effects; little good evidence for injected skin lightening or 'detox' claims.",
+    regulatory: "Sold as a dietary supplement (oral). Injectable skin-lightening products are not approved, and regulators in several countries have warned against them.",
+    sideEffects: ["Bloating or cramps (oral)", "Allergic reactions and rash", "Serious reactions reported with unregulated injectable products", "Possible wheezing when inhaled by people with asthma"],
+    route: "By mouth, under the tongue, injection or IV drip",
+    halfLife: "About 10–15 minutes in the blood",
+  },
 ];
 
 const CATEGORY_ORDER: Category[] = [
   "Metabolic & weight",
   "Growth hormone axis",
   "Tissue repair",
+  "Muscle & performance",
   "Skin & cosmetic",
   "Sexual health",
   "Hormonal & fertility",
@@ -580,6 +936,7 @@ const CATEGORY_ORDER: Category[] = [
   "Sleep",
   "Immune & inflammation",
   "Longevity & cellular health",
+  "Bone health",
 ];
 
 /** Categories that have at least one peptide, in display order. */

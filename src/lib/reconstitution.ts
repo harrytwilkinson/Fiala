@@ -126,3 +126,58 @@ export function fmt(n: number, maxDecimals = 2): string {
   if (!Number.isFinite(n)) return "—";
   return n.toLocaleString(undefined, { maximumFractionDigits: maxDecimals });
 }
+
+// ---------- Blends (several peptides mixed in one vial) ----------
+
+export interface BlendComponent {
+  name: string;
+  /** Amount of this peptide in the vial, in mg. */
+  mg: number;
+}
+
+export interface BlendInput {
+  components: BlendComponent[];
+  waterMl: number;
+  /** Index of the component the prescribed dose refers to. */
+  basis: number;
+  /** Prescribed dose of the basis component, in mg. */
+  doseMg: number;
+  syringe: Syringe;
+}
+
+export interface BlendResult {
+  /** The single-peptide result for the basis component (units to draw, warnings…). */
+  basis: ReconstitutionResult;
+  /** What the rounded draw delivers of every component, in mg. */
+  perDraw: { name: string; mg: number; mgPerMl: number }[];
+}
+
+export type BlendError = { field: "components" | "waterMl" | "doseMg"; message: string };
+
+export function validateBlend(input: BlendInput): BlendError[] {
+  const errors: BlendError[] = [];
+  if (input.components.length < 2) errors.push({ field: "components", message: "Add at least two peptides" });
+  else if (input.components.some((c) => !c.name.trim() || !Number.isFinite(c.mg) || c.mg <= 0))
+    errors.push({ field: "components", message: "Give every peptide a name and an amount greater than 0" });
+  if (!Number.isFinite(input.waterMl) || input.waterMl <= 0) errors.push({ field: "waterMl", message: "Water volume must be greater than 0" });
+  const basis = input.components[input.basis];
+  if (!Number.isFinite(input.doseMg) || input.doseMg <= 0) errors.push({ field: "doseMg", message: "Dose must be greater than 0" });
+  else if (basis && Number.isFinite(basis.mg) && input.doseMg > basis.mg)
+    errors.push({ field: "doseMg", message: `Dose is larger than the ${basis.name.trim() || "peptide"} in the vial` });
+  return errors;
+}
+
+/**
+ * Units to draw for a prescribed dose of one peptide in a blend, and how much of
+ * each other peptide comes with that draw. Every peptide shares the same water,
+ * so each one's concentration is its own mg ÷ the water volume.
+ */
+export function calculateBlend(input: BlendInput): BlendResult {
+  const { components, waterMl, basis: i, doseMg, syringe } = input;
+  const basis = calculate({ vialMg: components[i].mg, waterMl, doseMg, syringe });
+  const drawMl = basis.doseUnitsRounded / UNITS_PER_ML;
+  return {
+    basis,
+    perDraw: components.map((c) => ({ name: c.name.trim(), mgPerMl: c.mg / waterMl, mg: (c.mg / waterMl) * drawMl })),
+  };
+}

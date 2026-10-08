@@ -22,6 +22,11 @@ export const EXCLUDED_TERMS = new Set([
   "ACTH(4-10) analog",
   "α-MSH (11-13)",
   "Metastin (45-54)",
+  // Glutathione is in tens of thousands of unrelated papers; MGF is also an unrelated acronym.
+  "Glutathione",
+  "GSH",
+  "L-glutathione",
+  "MGF",
 ]);
 
 export function newsTerms(peptides: { id: string; name: string; aliases: string[] }[]): PeptideTerms[] {
@@ -32,7 +37,7 @@ export function newsTerms(peptides: { id: string; name: string; aliases: string[
       .map((t) => t.replace(/\s*\([^)]*\)\s*/g, " ").trim())
       .filter((t) => t.length >= 3);
     return { id: p.id, terms: [...new Set(terms)] };
-  });
+  }).filter((p) => p.terms.length > 0); // peptides with no usable search terms are left out of the news
 }
 
 /** Short all-caps codes (VIP, KPV, DSIP) are matched case-sensitively so "vip" or "Kpv" in prose don't count. */

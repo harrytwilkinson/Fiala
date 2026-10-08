@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SYRINGES, calculate, roundToTick, toMg, validate, waterForTargetUnits } from "./reconstitution";
+import { SYRINGES, calculate, calculateBlend, roundToTick, toMg, validate, validateBlend, waterForTargetUnits } from "./reconstitution";
 
 const [syr30, syr50, syr100] = SYRINGES;
 
@@ -69,5 +69,33 @@ describe("helpers", () => {
   it("computes water needed to land on a target unit mark", () => {
     // 5 mg vial, 250 mcg dose, want 10 units per dose -> 2 mL
     expect(waterForTargetUnits(5, 0.25, 10)).toBeCloseTo(2);
+  });
+});
+
+describe("blends", () => {
+  const syringe = SYRINGES[2];
+  const glow = [
+    { name: "GHK-Cu", mg: 50 },
+    { name: "BPC-157", mg: 10 },
+    { name: "TB-500", mg: 10 },
+  ];
+
+  it("works out the draw from one peptide's dose and what else comes with it", () => {
+    // 3 mL water: BPC-157 is 3.33 mg/mL, so 0.5 mg is 0.15 mL = 15 units.
+    const r = calculateBlend({ components: glow, waterMl: 3, basis: 1, doseMg: 0.5, syringe });
+    expect(r.basis.doseUnits).toBeCloseTo(15);
+    expect(r.basis.doseUnitsRounded).toBe(16); // 1 mL syringe has 2-unit marks
+    const [ghk, bpc, tb] = r.perDraw;
+    expect(bpc.mg).toBeCloseTo((10 / 3) * 0.16);
+    expect(tb.mg).toBeCloseTo(bpc.mg);
+    expect(ghk.mg).toBeCloseTo(bpc.mg * 5);
+  });
+
+  it("validates the blend", () => {
+    expect(validateBlend({ components: glow, waterMl: 3, basis: 1, doseMg: 0.5, syringe })).toEqual([]);
+    expect(validateBlend({ components: [glow[0]], waterMl: 3, basis: 0, doseMg: 1, syringe })[0].field).toBe("components");
+    expect(validateBlend({ components: [...glow, { name: "", mg: 5 }], waterMl: 3, basis: 0, doseMg: 1, syringe })[0].field).toBe("components");
+    expect(validateBlend({ components: glow, waterMl: 0, basis: 0, doseMg: 1, syringe })[0].field).toBe("waterMl");
+    expect(validateBlend({ components: glow, waterMl: 3, basis: 1, doseMg: 20, syringe })[0].message).toContain("BPC-157");
   });
 });

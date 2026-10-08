@@ -4,7 +4,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { PEPTIDES } from "../src/data/peptides.ts";
 import { parseFeed, type NewsItem } from "../src/lib/newsFeed.ts";
-import { libraryIndexPage, peptidePage, robots, sitemap } from "../src/lib/sitePages.ts";
+import { STACKS } from "../src/data/stacks.ts";
+import { libraryIndexPage, peptidePage, robots, sitemap, stackPage } from "../src/lib/sitePages.ts";
 
 const DIST = new URL("../dist/", import.meta.url);
 const NEWS_PER_PAGE = 5;
@@ -26,6 +27,11 @@ for (const p of PEPTIDES) {
   const latest = items.filter((i) => i.kind !== "fiala" && i.peptides.includes(p.id)).slice(0, NEWS_PER_PAGE);
   await writeFile(new URL("index.html", dir), peptidePage(p, PEPTIDES, latest));
 }
+for (const st of STACKS) {
+  const dir = new URL(`stacks/${st.id}/`, DIST);
+  await mkdir(dir, { recursive: true });
+  await writeFile(new URL("index.html", dir), stackPage(st));
+}
 await writeFile(new URL("sitemap.xml", DIST), sitemap(PEPTIDES));
 await writeFile(new URL("robots.txt", DIST), robots());
-console.log(`[pages] wrote ${PEPTIDES.length} peptide pages, the library index, sitemap.xml and robots.txt`);
+console.log(`[pages] wrote ${PEPTIDES.length} peptide pages, ${STACKS.length} stack pages, the library index, sitemap.xml and robots.txt`);
