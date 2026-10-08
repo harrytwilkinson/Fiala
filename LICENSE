@@ -1,0 +1,17 @@
+Copyright (c) 2026 Harry Wilkinson. All rights reserved.
+
+Fiala, including its source code, design, icons and logo, and the written
+content of its peptide library, is proprietary. No licence is granted to
+copy, modify, distribute, publish, host or sell any part of it, or to build
+other products from it, without prior written permission from the copyright
+holder.
+
+The source code is publicly visible on GitHub for transparency only. Viewing
+it, or forking it within GitHub as GitHub's Terms of Service allow, does not
+grant any other rights.
+
+Third-party software that Fiala uses (listed in package.json) remains under
+its own licences. News headlines in the app belong to their original
+publishers and link back to them.
+
+To ask about using any part of Fiala, contact support@getfiala.com.

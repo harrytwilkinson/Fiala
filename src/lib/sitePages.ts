@@ -96,6 +96,7 @@ ${body}
         <p><a href="${root}peptides/">All peptides</a> · <a href="${root}">Open the app</a> · <a href="${root}support.html">Help &amp; support</a> · <a href="${root}privacy.html">Privacy</a>${
           SUPPORT_URL ? ` · <a href="${esc(SUPPORT_URL)}" rel="noopener">Support Fiala ♥</a>` : ""
         }</p>
+        <p>© ${new Date().getUTCFullYear()} Fiala. All rights reserved.</p>
       </footer>
     </main>
   </body>
