@@ -1,4 +1,4 @@
-import { LibraryNav } from "../components/LibraryNav";
+import { GlossaryLink, LibraryNav } from "../components/LibraryNav";
 import { STACKS, STACK_KIND_LABEL, componentName, type Stack } from "../data/stacks";
 import { href } from "../lib/router";
 
@@ -14,7 +14,10 @@ export function StackBadges({ stack }: { stack: Stack }) {
 export function StacksPage() {
   return (
     <div className="page">
-      <h1>Peptide library</h1>
+      <div className="row">
+        <h1>Peptide library</h1>
+        <GlossaryLink />
+      </div>
       <LibraryNav active="stacks" />
       <p className="muted">
         Combinations people take together, what's in them and what the evidence says. Most pre-mixed blends have never

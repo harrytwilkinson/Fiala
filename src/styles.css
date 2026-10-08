@@ -292,3 +292,7 @@ a.news-title:hover { text-decoration: underline; }
 .facts dt { font-size: 0.8rem; color: var(--muted); }
 .facts dd { margin: 0; }
 .component-list { gap: 0.45rem; }
+.avoid { border-color: var(--warn-border); }
+.glossary { display: flex; flex-direction: column; gap: 0.6rem; margin: 0; }
+.glossary dt { font-weight: 700; }
+.glossary dd { margin: 0.25rem 0 0; }

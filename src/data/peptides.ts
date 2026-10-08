@@ -39,11 +39,13 @@ export interface Peptide {
   /** Typical lyophilized-storage / reconstituted-storage notes. */
   storage?: string;
   /** How it's taken, e.g. "Injection under the skin, once weekly". */
-  route?: string;
+  route: string;
   /** How long it lasts in the body, in plain language. */
-  halfLife?: string;
+  halfLife: string;
   /** Not a peptide, but commonly tracked alongside them (e.g. MK-677). */
   notPeptide?: boolean;
+  /** Who should avoid it or take extra care. */
+  avoidIf: string[];
 }
 
 export const STATUS_LABEL: Record<ApprovalStatus, string> = {
@@ -77,6 +79,14 @@ export const PEPTIDES: Peptide[] = [
       "Low blood sugar when combined with insulin or sulfonylureas",
     ],
     storage: "Branded pens: refrigerate before first use. Compounded vials: follow pharmacy guidance.",
+    route: "Injection under the skin once a week (Ozempic, Wegovy), or a daily tablet (Rybelsus)",
+    halfLife: "About 1 week",
+    avoidIf: [
+      "Personal or family history of medullary thyroid cancer or MEN2",
+      "Pregnant, breastfeeding or planning pregnancy (stop well before trying to conceive; ask your doctor)",
+      "Past pancreatitis (talk to your doctor first)",
+      "Type 1 diabetes (it is not a substitute for insulin)",
+    ],
   },
   {
     id: "tirzepatide",
@@ -96,6 +106,14 @@ export const PEPTIDES: Peptide[] = [
       "Boxed warning for thyroid C-cell tumors (same class warning as semaglutide)",
       "May reduce effectiveness of oral contraceptives during dose changes",
     ],
+    route: "Injection under the skin once a week",
+    halfLife: "About 5 days",
+    avoidIf: [
+      "Personal or family history of medullary thyroid cancer or MEN2",
+      "Pregnant, breastfeeding or planning pregnancy",
+      "Past pancreatitis (talk to your doctor first)",
+      "Relying on the contraceptive pill alone in the first weeks and after dose increases (use a backup method)",
+    ],
   },
   {
     id: "retatrutide",
@@ -110,6 +128,13 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Moderate and growing: phase 2 results showed large weight reductions; phase 3 trials are ongoing.",
     regulatory: "Not approved. Products sold online as \"research peptides\" are unregulated.",
     sideEffects: ["Gastrointestinal effects similar to other incretin drugs", "Increased heart rate observed in trials", "Long-term safety not yet established"],
+    route: "Injection under the skin once a week (in trials)",
+    halfLife: "About 6 days",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Anyone outside a clinical trial (not approved; unregulated products vary)",
+      "Personal or family history of medullary thyroid cancer or MEN2 (expected class caution)",
+    ],
   },
   {
     id: "aod-9604",
@@ -125,6 +150,12 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved as a drug in the US.",
     sideEffects: ["Injection-site reactions", "Headache", "Limited long-term human safety data"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin (popular use)",
+    halfLife: "Short; not well established",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+    ],
   },
   {
     id: "tesamorelin",
@@ -139,6 +170,14 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Strong for its approved indication (randomized controlled trials).",
     regulatory: "FDA-approved as Egrifta for HIV-associated lipodystrophy.",
     sideEffects: ["Joint pain, muscle aches, swelling", "Injection-site reactions", "Raised blood sugar", "Not for use in pregnancy"],
+    route: "Injection under the skin once daily",
+    halfLife: "About 30 minutes",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Pituitary surgery, tumour or head radiation",
+      "Active cancer",
+      "Diabetes (it can raise blood sugar; monitoring needed)",
+    ],
   },
   {
     id: "sermorelin",
@@ -154,6 +193,13 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Was FDA-approved (Geref) but the branded product was discontinued by its manufacturer. Now mainly available through compounding pharmacies.",
     sideEffects: ["Injection-site pain, redness or swelling", "Flushing, headache", "Dizziness"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin, usually at night",
+    halfLife: "About 10–20 minutes",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Active cancer",
+      "Under 18 (except under specialist care)",
+    ],
   },
   {
     id: "cjc-1295",
@@ -169,6 +215,14 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved. Prohibited in sport by WADA.",
     sideEffects: ["Injection-site reactions", "Flushing, headache", "Water retention", "Theoretical risks of chronically elevated GH/IGF-1"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin",
+    halfLife: "About 6–8 days with DAC; about 30 minutes without",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Active or past cancer",
+      "Diabetes (raised GH and IGF-1 can increase blood sugar)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "ipamorelin",
@@ -184,6 +238,14 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved. Prohibited in sport by WADA.",
     sideEffects: ["Increased hunger", "Headache, flushing", "Injection-site reactions"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin",
+    halfLife: "About 2 hours",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Active or past cancer",
+      "Diabetes (may raise blood sugar)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "bpc-157",
@@ -199,6 +261,13 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved. FDA has listed it among bulk substances that raise significant safety concerns for compounding. Prohibited in sport by WADA.",
     sideEffects: ["Injection-site reactions", "Unknown long-term effects", "Theoretical concern about promoting blood-vessel growth in existing tumors"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin or into muscle, or by mouth (popular use)",
+    halfLife: "Not established in humans (short in animal studies)",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "tb-500",
@@ -214,6 +283,13 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved. FDA has flagged it for compounding safety concerns. Prohibited in sport by WADA.",
     sideEffects: ["Injection-site reactions", "Fatigue, headache", "Unknown long-term effects"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin or into muscle (popular use)",
+    halfLife: "Not established in humans",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "ghk-cu",
@@ -229,6 +305,13 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Common cosmetic ingredient in topical products. Injectable forms are not approved.",
     sideEffects: ["Skin irritation (topical)", "Injection-site reactions and pain (injected)", "Copper excess is a theoretical concern at high amounts"],
     storage: STANDARD_STORAGE,
+    route: "Creams and serums on the skin; injection in unofficial use",
+    halfLife: "Short in the blood; not well established",
+    avoidIf: [
+      "Wilson's disease or other copper disorders",
+      "Pregnant or breastfeeding (injected use)",
+      "Allergy to any product ingredient (patch test first)",
+    ],
   },
   {
     id: "pt-141",
@@ -243,6 +326,13 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Moderate: phase 3 trials (RECONNECT) showed modest improvements in desire versus placebo.",
     regulatory: "FDA-approved as Vyleesi (as-needed autoinjector) for HSDD in premenopausal women.",
     sideEffects: ["Nausea (common)", "Flushing, headache", "Temporary rise in blood pressure", "Darkening of skin or gums with repeated use"],
+    route: "Autoinjector under the skin, as needed before sexual activity",
+    halfLife: "About 3 hours",
+    avoidIf: [
+      "Uncontrolled high blood pressure or known heart disease",
+      "Pregnant or breastfeeding",
+      "Taking naltrexone by mouth (it can reduce its levels)",
+    ],
   },
   {
     id: "melanotan-ii",
@@ -263,6 +353,13 @@ export const PEPTIDES: Peptide[] = [
       "Unknown long-term skin-cancer risk",
     ],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin or nasal spray (unofficial use)",
+    halfLife: "Not well established",
+    avoidIf: [
+      "History of melanoma, or many or unusual moles",
+      "Pregnant or breastfeeding",
+      "High blood pressure or heart disease",
+    ],
   },
   {
     id: "semax",
@@ -277,6 +374,13 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Limited outside Russia: most studies are Russian-language and small.",
     regulatory: "Approved in Russia and some neighbouring countries (usually as a nasal spray). Not approved in the US or EU.",
     sideEffects: ["Nasal irritation", "Headache", "Limited safety data outside Russian studies"],
+    route: "Nasal drops or spray",
+    halfLife: "Minutes in the blood",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+      "Seizure disorders (limited data; take care)",
+    ],
   },
   {
     id: "selank",
@@ -291,6 +395,12 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Limited: mostly small Russian studies.",
     regulatory: "Approved in Russia. Not approved in the US or EU.",
     sideEffects: ["Nasal irritation", "Fatigue", "Limited long-term data"],
+    route: "Nasal drops or spray",
+    halfLife: "Minutes in the blood",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+    ],
   },
   {
     id: "epitalon",
@@ -306,6 +416,12 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved.",
     sideEffects: ["Injection-site reactions", "Long-term effects unknown"],
     storage: STANDARD_STORAGE,
+    route: "Injection or nasal spray (popular use)",
+    halfLife: "Short; not well established",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+    ],
   },
   {
     id: "mots-c",
@@ -321,6 +437,13 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved. Prohibited in sport by WADA.",
     sideEffects: ["Injection-site reactions", "Long-term effects unknown"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin (popular use)",
+    halfLife: "Not established in humans",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+      "Taking diabetes medicines (possible extra blood-sugar lowering; theoretical)",
+    ],
   },
   {
     id: "thymosin-alpha-1",
@@ -336,6 +459,13 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Approved as Zadaxin in a number of countries outside the US. Not FDA-approved.",
     sideEffects: ["Injection-site discomfort", "Generally well tolerated in trials"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin, usually twice a week",
+    halfLife: "About 2 hours",
+    avoidIf: [
+      "Organ transplant recipients on anti-rejection medicines",
+      "Pregnant or breastfeeding",
+      "Autoimmune disease (talk to your doctor first)",
+    ],
   },
   {
     id: "liraglutide",
@@ -355,6 +485,13 @@ export const PEPTIDES: Peptide[] = [
       "Boxed warning for thyroid C-cell tumors (GLP-1 class warning)",
       "Increased heart rate",
     ],
+    route: "Injection under the skin once daily",
+    halfLife: "About 13 hours",
+    avoidIf: [
+      "Personal or family history of medullary thyroid cancer or MEN2",
+      "Pregnant, breastfeeding or planning pregnancy",
+      "Past pancreatitis (talk to your doctor first)",
+    ],
   },
   {
     id: "cagrilintide",
@@ -369,6 +506,12 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Moderate and growing: phase 2 and phase 3 trials of the semaglutide combination (REDEFINE program) showed large weight reductions.",
     regulatory: "Not approved. Under regulatory review in combination with semaglutide; check current status.",
     sideEffects: ["Nausea, vomiting, constipation, diarrhea", "Fatigue", "Long-term safety still being established"],
+    route: "Injection under the skin once a week (in trials)",
+    halfLife: "About 1 week",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Anyone outside a clinical trial (not approved)",
+    ],
   },
   {
     id: "mazdutide",
@@ -383,6 +526,13 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Moderate: phase 3 trials in China (GLORY, DREAMS programs).",
     regulatory: "Approved in China for weight management and type 2 diabetes. Not approved in the US or EU.",
     sideEffects: ["Nausea, diarrhea, vomiting, reduced appetite", "Increased heart rate", "Limited data outside Chinese populations"],
+    route: "Injection under the skin once a week",
+    halfLife: "Long-acting, designed for weekly dosing",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Personal or family history of medullary thyroid cancer or MEN2 (expected class caution)",
+      "Past pancreatitis (talk to your doctor first)",
+    ],
   },
   {
     id: "hexarelin",
@@ -398,6 +548,14 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved. Prohibited in sport by WADA.",
     sideEffects: ["Raised cortisol and prolactin", "Increased hunger", "Water retention", "Diminishing effect with ongoing use"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin (research and unofficial use)",
+    halfLife: "About 1 hour",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Active or past cancer",
+      "Heart disease (it has effects on the heart; limited data)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "ghrp-2",
@@ -413,6 +571,14 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Approved in Japan as a single-dose diagnostic agent. Not approved in the US. Prohibited in sport by WADA.",
     sideEffects: ["Increased hunger", "Raised cortisol and prolactin", "Flushing", "Water retention"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin (unofficial use)",
+    halfLife: "About 30 minutes",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Active or past cancer",
+      "Diabetes (may raise blood sugar)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "ghrp-6",
@@ -428,6 +594,14 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved. Prohibited in sport by WADA.",
     sideEffects: ["Strong hunger", "Raised cortisol and prolactin", "Water retention", "Possible effects on blood sugar"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin (unofficial use)",
+    halfLife: "About 20 minutes",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Active or past cancer",
+      "Diabetes (may raise blood sugar)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "igf-1-lr3",
@@ -443,6 +617,15 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved. Prohibited in sport by WADA.",
     sideEffects: ["Low blood sugar (hypoglycemia)", "Joint pain, swelling", "Theoretical risk of promoting tumor growth", "Unknown long-term effects"],
     storage: STANDARD_STORAGE,
+    route: "Injection (unofficial use)",
+    halfLife: "About 20–30 hours",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+      "Diabetes or a tendency to low blood sugar",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "kisspeptin-10",
@@ -458,6 +641,12 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved.",
     sideEffects: ["Generally well tolerated in short studies", "Injection-site reactions", "Continuous exposure may blunt its effect"],
     storage: STANDARD_STORAGE,
+    route: "Injection or drip in research settings",
+    halfLife: "Minutes",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Hormone-sensitive cancers (such as breast or prostate)",
+    ],
   },
   {
     id: "gonadorelin",
@@ -473,6 +662,13 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Previously FDA-approved products were discontinued in the US. Mainly available through compounding pharmacies.",
     sideEffects: ["Injection-site reactions", "Headache, flushing", "Rare allergic reactions"],
     storage: STANDARD_STORAGE,
+    route: "Injection under the skin or into a vein",
+    halfLife: "Minutes",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Hormone-sensitive cancers (such as breast or prostate)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "oxytocin",
@@ -487,6 +683,13 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Strong for obstetric uses; mixed and mostly disappointing for psychiatric and social uses in larger trials.",
     regulatory: "FDA-approved as an IV/IM injection for obstetric use in hospitals. Nasal sprays are not approved in the US.",
     sideEffects: ["Excessive uterine contractions (obstetric use)", "Water retention and low sodium at high doses", "Headache, nausea (nasal use)"],
+    route: "Drip or injection in hospital; nasal spray in research and unofficial use",
+    halfLife: "A few minutes",
+    avoidIf: [
+      "Pregnant (outside medical care it can trigger contractions)",
+      "Heart rhythm problems",
+      "Low blood sodium",
+    ],
   },
   {
     id: "dsip",
@@ -502,6 +705,12 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved.",
     sideEffects: ["Headache", "Grogginess", "Injection-site reactions", "Limited safety data"],
     storage: STANDARD_STORAGE,
+    route: "Injection (research and unofficial use)",
+    halfLife: "Minutes in the blood",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+    ],
   },
   {
     id: "ll-37",
@@ -517,6 +726,12 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved.",
     sideEffects: ["Injection-site pain and redness", "Possible worsening of inflammatory skin conditions", "Unknown long-term effects"],
     storage: STANDARD_STORAGE,
+    route: "Injection (unofficial use)",
+    halfLife: "Short; not well established",
+    avoidIf: [
+      "Psoriasis, rosacea or other inflammatory skin or autoimmune disease (LL-37 is linked to these)",
+      "Pregnant or breastfeeding",
+    ],
   },
   {
     id: "kpv",
@@ -532,6 +747,12 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Not approved.",
     sideEffects: ["Limited human safety data"],
     storage: STANDARD_STORAGE,
+    route: "Capsules by mouth, creams, or injection (popular use)",
+    halfLife: "Short; not well established",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+    ],
   },
   {
     id: "vip",
@@ -547,6 +768,12 @@ export const PEPTIDES: Peptide[] = [
     regulatory: "Approved in some European countries in combination with phentolamine for erectile dysfunction. Not approved in the US.",
     sideEffects: ["Flushing", "Low blood pressure, dizziness", "Diarrhea", "Fast heart rate"],
     storage: STANDARD_STORAGE,
+    route: "Drip into a vein, inhaled, or injection",
+    halfLife: "About 1–2 minutes",
+    avoidIf: [
+      "Low blood pressure or heart rhythm problems",
+      "Pregnant or breastfeeding",
+    ],
   },
   {
     id: "elamipretide",
@@ -561,6 +788,12 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Moderate for Barth syndrome (approved on surrogate endpoints); mixed results in other mitochondrial and heart conditions.",
     regulatory: "FDA-approved (accelerated approval) as Forzinity for Barth syndrome. Other uses are not approved.",
     sideEffects: ["Injection-site reactions (very common)", "Headache", "Dizziness"],
+    route: "Injection under the skin once daily",
+    halfLife: "A few hours",
+    avoidIf: [
+      "Pregnant or breastfeeding (limited data)",
+      "Anyone without the approved condition (Barth syndrome) outside a trial",
+    ],
   },
   {
     id: "dihexa",
@@ -575,6 +808,13 @@ export const PEPTIDES: Peptide[] = [
     evidence: "Very weak: animal studies only; no published human trials.",
     regulatory: "Not approved.",
     sideEffects: ["Unknown in humans", "Theoretical cancer concern, because the HGF/c-Met pathway can drive tumor growth"],
+    route: "By mouth, on the skin or injection (unofficial use)",
+    halfLife: "Not established in humans",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+    ],
   },
   // ---- Added October 2026 (pending medical review) ----
   {
@@ -592,6 +832,11 @@ export const PEPTIDES: Peptide[] = [
     sideEffects: ["Nausea, vomiting, diarrhoea and constipation", "Increased heart rate", "Reduced appetite"],
     route: "Injection under the skin, once a week (in trials)",
     halfLife: "Long-acting, designed for weekly dosing",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Anyone outside a clinical trial (not approved)",
+      "Heart rhythm problems (it raises heart rate)",
+    ],
   },
   {
     id: "dulaglutide",
@@ -614,6 +859,12 @@ export const PEPTIDES: Peptide[] = [
     storage: "Pens: refrigerate; may be kept at room temperature for a limited time. Follow the patient leaflet.",
     route: "Prefilled pen, injection under the skin once a week",
     halfLife: "About 5 days",
+    avoidIf: [
+      "Personal or family history of medullary thyroid cancer or MEN2",
+      "Pregnant, breastfeeding or planning pregnancy",
+      "Past pancreatitis (talk to your doctor first)",
+      "Severe stomach-emptying problems (gastroparesis)",
+    ],
   },
   {
     id: "exenatide",
@@ -636,6 +887,12 @@ export const PEPTIDES: Peptide[] = [
     storage: "Pens: refrigerate before first use; follow the patient leaflet.",
     route: "Injection under the skin, twice daily (Byetta) or weekly (Bydureon)",
     halfLife: "About 2–3 hours (short-acting form)",
+    avoidIf: [
+      "Severe kidney problems",
+      "Past pancreatitis (talk to your doctor first)",
+      "Personal or family history of medullary thyroid cancer or MEN2 (extended-release form)",
+      "Pregnant or breastfeeding",
+    ],
   },
   {
     id: "pramlintide",
@@ -657,6 +914,11 @@ export const PEPTIDES: Peptide[] = [
     storage: "Pens: refrigerate before first use; follow the patient leaflet.",
     route: "Injection under the skin before major meals",
     halfLife: "About 50 minutes",
+    avoidIf: [
+      "Frequent low blood sugar, or not noticing low blood sugar",
+      "Gastroparesis (slow stomach emptying)",
+      "Pregnant or breastfeeding",
+    ],
   },
   {
     id: "setmelanotide",
@@ -681,6 +943,11 @@ export const PEPTIDES: Peptide[] = [
     ],
     route: "Injection under the skin, once daily",
     halfLife: "About 11 hours",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "History of depression or suicidal thoughts (needs monitoring)",
+      "Obesity without one of the approved genetic diagnoses",
+    ],
   },
   {
     id: "igf-1-des",
@@ -698,6 +965,13 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Injection (popular use)",
     halfLife: "Minutes (short-acting)",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+      "Diabetes or a tendency to low blood sugar",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "mk-677",
@@ -720,6 +994,13 @@ export const PEPTIDES: Peptide[] = [
     ],
     route: "By mouth (capsule or liquid), once daily",
     halfLife: "About 24 hours of effect",
+    avoidIf: [
+      "Diabetes or prediabetes",
+      "Heart failure",
+      "Pregnant or breastfeeding",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "mgf",
@@ -737,6 +1018,12 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Injection (popular use)",
     halfLife: "Minutes for MGF; longer for PEG-MGF",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "follistatin-344",
@@ -754,6 +1041,12 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Injection (popular use)",
     halfLife: "Not well established",
+    avoidIf: [
+      "Pregnant, breastfeeding or trying to conceive",
+      "Under 18",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "thymosin-beta-4",
@@ -771,6 +1064,11 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Eye drops or gel in trials; injection in unofficial use",
     halfLife: "Short; not well established",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Current or past cancer (it may promote cell growth; theoretical)",
+      "Competitive athletes (prohibited by WADA)",
+    ],
   },
   {
     id: "afamelanotide",
@@ -787,6 +1085,11 @@ export const PEPTIDES: Peptide[] = [
     sideEffects: ["Nausea, headache", "Implant-site reactions", "Darkening of skin and moles; skin checks are advised"],
     route: "Dissolving implant placed under the skin by a clinician, about every 2 months",
     halfLife: "Released slowly from the implant over weeks",
+    avoidIf: [
+      "Pregnant or breastfeeding (contraception advised during treatment)",
+      "History of melanoma or skin cancer",
+      "Severe liver or kidney problems",
+    ],
   },
   {
     id: "pe-22-28",
@@ -804,6 +1107,11 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Nasal spray or injection (popular use)",
     halfLife: "Not established in humans",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+      "Taking antidepressants or other mood medicines (unknown interactions)",
+    ],
   },
   {
     id: "teriparatide",
@@ -821,6 +1129,14 @@ export const PEPTIDES: Peptide[] = [
     storage: "Pens: refrigerate; follow the patient leaflet.",
     route: "Prefilled pen, injection under the skin once daily",
     halfLife: "About 1 hour",
+    avoidIf: [
+      "Paget's disease of bone or unexplained high alkaline phosphatase",
+      "Past radiation therapy involving the bones",
+      "Bone cancer or cancer that has spread to bone",
+      "High blood calcium",
+      "Pregnant or breastfeeding",
+      "Children and young adults whose bones are still growing",
+    ],
   },
   {
     id: "pinealon",
@@ -838,6 +1154,10 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Capsules, nasal spray or injection (popular use)",
     halfLife: "Not established",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+    ],
   },
   {
     id: "cerebrolysin",
@@ -854,6 +1174,12 @@ export const PEPTIDES: Peptide[] = [
     sideEffects: ["Dizziness, headache", "Agitation or sleep problems", "Allergic reactions", "Not for people with epilepsy or severe kidney problems"],
     route: "Injection into a vein or muscle, often as a course",
     halfLife: "Not well defined (it is a mixture)",
+    avoidIf: [
+      "Epilepsy",
+      "Severe kidney problems",
+      "Allergy to pork products",
+      "Pregnant or breastfeeding",
+    ],
   },
   {
     id: "humanin",
@@ -871,6 +1197,10 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Injection (popular use)",
     halfLife: "Not established in humans",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+    ],
   },
   {
     id: "foxo4-dri",
@@ -888,6 +1218,11 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Injection (popular use)",
     halfLife: "Not established in humans",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+      "Anyone having cancer treatment (it acts on the p53 pathway)",
+    ],
   },
   {
     id: "ara-290",
@@ -905,6 +1240,10 @@ export const PEPTIDES: Peptide[] = [
     storage: STANDARD_STORAGE,
     route: "Injection under the skin, daily in trials",
     halfLife: "Minutes, though effects outlast it",
+    avoidIf: [
+      "Pregnant or breastfeeding",
+      "Under 18",
+    ],
   },
   {
     id: "glutathione",
@@ -921,6 +1260,11 @@ export const PEPTIDES: Peptide[] = [
     sideEffects: ["Bloating or cramps (oral)", "Allergic reactions and rash", "Serious reactions reported with unregulated injectable products", "Possible wheezing when inhaled by people with asthma"],
     route: "By mouth, under the tongue, injection or IV drip",
     halfLife: "About 10–15 minutes in the blood",
+    avoidIf: [
+      "Asthma (inhaled forms can trigger wheezing)",
+      "Pregnant or breastfeeding (injected or IV forms)",
+      "IV 'skin-lightening' drips from unlicensed providers",
+    ],
   },
 ];
 

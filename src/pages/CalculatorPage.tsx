@@ -212,6 +212,9 @@ function SingleConverter() {
           Adding more water doesn't change the dose, only how much liquid holds it. More water makes small doses
           easier to measure but means larger injection volumes.
         </p>
+        <p className="muted small">
+          Unfamiliar term? See the <a href={href("glossary")}>glossary</a>.
+        </p>
       </section>
 
       <section className="card tips">

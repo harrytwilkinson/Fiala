@@ -4,6 +4,7 @@ import { findPeptide } from "./data/peptides";
 import { useOnboardingOpen } from "./lib/onboarding";
 import { href, useRoute } from "./lib/router";
 import { BackupPage } from "./pages/BackupPage";
+import { GlossaryPage } from "./pages/GlossaryPage";
 import { HomePage } from "./pages/HomePage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { NewsPage } from "./pages/NewsPage";
@@ -31,7 +32,7 @@ export function App() {
   const onboardingOpen = useOnboardingOpen();
   const [section = "", id] = path;
   // Stacks live under the Library tab.
-  const tab = section === "stacks" ? "library" : section;
+  const tab = section === "stacks" || section === "glossary" ? "library" : section;
   // Remount pages when the query changes so prefilled values are applied.
   const key = `${path.join("/")}?${query.toString()}`;
 
@@ -57,6 +58,9 @@ export function App() {
       else page = <TrackerPage prefill={{ peptide: q("peptide"), amount: q("amount"), unit: q("unit"), schedule: q("schedule") }} />;
       break;
     }
+    case "glossary":
+      page = <GlossaryPage />;
+      break;
     case "news":
       page = <NewsPage peptideId={query.get("peptide") ?? undefined} />;
       break;

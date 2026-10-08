@@ -4,6 +4,8 @@
 // Pure functions only: scripts/build-pages.ts does the file writing.
 
 import { CATEGORIES, STATUS_LABEL, type Peptide } from "../data/peptides.ts";
+import { sortedGlossary } from "../data/glossary.ts";
+import { evidenceLinks } from "./evidenceLinks.ts";
 import { KIND_LABEL, type NewsItem } from "./newsFeed.ts";
 import { BLEND_LABEL_NOTE, STACKS, STACK_KIND_LABEL, componentName, stacksWith, type Stack } from "../data/stacks.ts";
 import { SITE_URL, SUPPORT_URL, peptidePageUrl, stackPageUrl } from "./site.ts";
@@ -94,7 +96,7 @@ function page({ title, description, canonical, root, body, jsonLd = [] }: PageOp
 ${body}
       <footer>
         <p>Fiala is for education and personal record-keeping only and is not medical advice. Many peptides are not approved for human use. Talk to a qualified healthcare professional before using any peptide.</p>
-        <p><a href="${root}peptides/">All peptides</a> · <a href="${root}">Open the app</a> · <a href="${root}support.html">Help &amp; support</a> · <a href="${root}privacy.html">Privacy</a>${
+        <p><a href="${root}peptides/">All peptides</a> · <a href="${root}glossary/">Glossary</a> · <a href="${root}">Open the app</a> · <a href="${root}support.html">Help &amp; support</a> · <a href="${root}privacy.html">Privacy</a>${
           SUPPORT_URL ? ` · <a href="${esc(SUPPORT_URL)}" rel="noopener">Support Fiala ♥</a>` : ""
         }</p>
         <p>© ${new Date().getUTCFullYear()} Fiala. All rights reserved.</p>
@@ -145,7 +147,11 @@ export function peptidePage(p: Peptide, all: Peptide[], news: NewsItem[] = []): 
       <section class="card"><h2>What people use it for</h2>${list(p.commonUses)}</section>
       <section class="card"><h2>What ${esc(p.name)} does in the body</h2><p>${esc(p.mechanism)}</p></section>
       <section class="card"><h2>Strength of evidence</h2><p>${esc(p.evidence)}</p></section>
+      <section class="card"><h2>Look up the evidence</h2><ul>${evidenceLinks(p)
+        .map((l) => `<li><a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>: ${esc(l.note)}</li>`)
+        .join("")}</ul><p class="muted" style="font-size:.88rem">Live searches of official databases. New to the terms? See the <a href="${root}glossary/">glossary</a>.</p></section>
       <section class="card"><h2>Reported side effects &amp; risks</h2>${list(p.sideEffects)}</section>
+      <section class="card"><h2>Who should avoid it or take extra care</h2>${list(p.avoidIf)}<p class="muted" style="font-size:.88rem">Not a complete list. Check with a doctor or pharmacist about your own health and medicines.</p></section>
       <section class="card"><h2>Regulatory status</h2><p>${esc(p.regulatory)}</p></section>
       ${
         p.route || p.halfLife
@@ -268,12 +274,35 @@ export function stackPage(st: Stack): string {
   });
 }
 
+export function glossaryPage(): string {
+  const root = "../";
+  const terms = sortedGlossary();
+  const body = `
+      <p class="crumbs"><a href="${root}peptides/">Peptide library</a> › Glossary</p>
+      <h1>Peptide glossary</h1>
+      <p class="lead">Plain-English meanings of ${terms.length} terms you'll meet when reading about peptides, from reconstitution to U-100 syringes.</p>
+${terms
+  .map(
+    (t) =>
+      `      <section class="card" id="${esc(t.id)}"><h2>${esc(t.term)}</h2>${t.aka?.length ? `<p class="muted">Also: ${esc(t.aka.join(", "))}</p>` : ""}<p>${esc(t.definition)}</p></section>`,
+  )
+  .join("\n")}`;
+  return page({
+    title: "Peptide glossary: reconstitution, half-life, U-100 and more · Fiala",
+    description: metaDescription(`Plain-English glossary of ${terms.length} peptide terms: reconstitution, bacteriostatic water, half-life, U-100 insulin syringes, mcg vs mg, clinical trial phases and more.`),
+    canonical: `${SITE_URL}/glossary/`,
+    root,
+    body,
+  });
+}
+
 export function sitemap(all: Peptide[]): string {
   const urls = [
     `${SITE_URL}/`,
     `${SITE_URL}/peptides/`,
     ...all.map((p) => peptidePageUrl(p.id)),
     ...STACKS.map((st) => stackPageUrl(st.id)),
+    `${SITE_URL}/glossary/`,
     `${SITE_URL}/support.html`,
     `${SITE_URL}/privacy.html`,
   ];

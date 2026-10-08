@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Peptide } from "../data/peptides";
 import { stacksWith } from "../data/stacks";
+import { evidenceLinks } from "../lib/evidenceLinks";
 import { shareLink } from "../lib/files";
 import { peptidePageUrl } from "../lib/site";
 import { NewsDisclaimer, NewsList } from "../components/NewsList";
@@ -74,12 +75,39 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
       </section>
 
       <section className="card">
+        <h2>Look up the evidence</h2>
+        <ul className="list component-list">
+          {evidenceLinks(peptide).map((l) => (
+            <li key={l.url}>
+              <a href={l.url} target="_blank" rel="noopener noreferrer">
+                {l.label}
+              </a>
+              <span className="muted small"> · {l.note}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="muted small">
+          Live searches of official databases. New to the terms? See the <a href={href("glossary")}>glossary</a>.
+        </p>
+      </section>
+
+      <section className="card">
         <h2>Reported side effects &amp; risks</h2>
         <ul>
           {peptide.sideEffects.map((s) => (
             <li key={s}>{s}</li>
           ))}
         </ul>
+      </section>
+
+      <section className="card avoid">
+        <h2>Who should avoid it or take extra care</h2>
+        <ul>
+          {peptide.avoidIf.map((a) => (
+            <li key={a}>{a}</li>
+          ))}
+        </ul>
+        <p className="muted small">Not a complete list. Check with a doctor or pharmacist about your own health and medicines.</p>
       </section>
 
       <section className="card">
