@@ -3,13 +3,18 @@ import { BackupError, countRecords, parseBackup, type ParsedBackup } from "../li
 import { canShareFiles, exportBackup, requestPersistentStorage, restoreBackup, useLastBackupAt, type PersistState } from "../lib/backupDevice";
 import { useDoseLog } from "../lib/doseLog";
 import { href } from "../lib/router";
+import { useMeasurements } from "../lib/body";
 import { useSchedules } from "../lib/schedules";
+import { useSymptoms } from "../lib/symptoms";
 import { useVials } from "../lib/vials";
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-function summary(d: { doses: unknown[]; vials: unknown[]; schedules: unknown[] }) {
-  return `${plural(d.doses.length, "dose")}, ${plural(d.vials.length, "vial")}, ${plural(d.schedules.length, "schedule")}`;
+function summary(d: { doses: unknown[]; vials: unknown[]; schedules: unknown[]; measurements: unknown[]; symptoms: unknown[] }) {
+  const parts = [plural(d.doses.length, "dose"), plural(d.vials.length, "vial"), plural(d.schedules.length, "schedule")];
+  if (d.measurements.length) parts.push(plural(d.measurements.length, "measurement"));
+  if (d.symptoms.length) parts.push(plural(d.symptoms.length, "side-effect note"));
+  return parts.join(", ");
 }
 
 function formatWhen(iso: string) {
@@ -20,6 +25,9 @@ export function BackupPage() {
   const doses = useDoseLog();
   const vials = useVials();
   const schedules = useSchedules();
+  const measurements = useMeasurements();
+  const symptomLog = useSymptoms();
+  const all = { doses, vials, schedules, measurements, symptoms: symptomLog };
   const lastBackupAt = useLastBackupAt();
   const [shareable] = useState(canShareFiles);
   const [exportMsg, setExportMsg] = useState("");
@@ -29,7 +37,7 @@ export function BackupPage() {
   const [persist, setPersist] = useState<PersistState | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const total = doses.length + vials.length + schedules.length;
+  const total = countRecords(all);
 
   useEffect(() => {
     requestPersistentStorage().then(setPersist);
@@ -64,7 +72,7 @@ export function BackupPage() {
 
   const apply = (mode: "merge" | "replace") => {
     if (!pending) return;
-    if (mode === "replace" && total > 0 && !confirm(`Replace everything on this device (${summary({ doses, vials, schedules })}) with this backup? This can't be undone.`)) return;
+    if (mode === "replace" && total > 0 && !confirm(`Replace everything on this device (${summary(all)}) with this backup? This can't be undone.`)) return;
     const added = restoreBackup(pending.data, mode);
     setPending(null);
     setRestoreMsg({
@@ -88,7 +96,7 @@ export function BackupPage() {
         <dl className="stats">
           <div>
             <dt>On this device</dt>
-            <dd>{total === 0 ? "Nothing yet" : summary({ doses, vials, schedules })}</dd>
+            <dd>{total === 0 ? "Nothing yet" : summary(all)}</dd>
           </div>
           <div>
             <dt>Last backup</dt>
@@ -101,8 +109,8 @@ export function BackupPage() {
         <h2>Back up</h2>
         <p className="muted small">
           {shareable
-            ? "Saves one file with all your doses, vials and schedules. Choose Save to Files, iCloud Drive or Google Drive, or email it to yourself."
-            : "Downloads one file with all your doses, vials and schedules. Move it somewhere safe, like cloud storage or an email to yourself."}
+            ? "Saves one file with all your doses, vials, schedules, measurements and side-effect notes. Choose Save to Files, iCloud Drive or Google Drive, or email it to yourself."
+            : "Downloads one file with all your doses, vials, schedules, measurements and side-effect notes. Move it somewhere safe, like cloud storage or an email to yourself."}
         </p>
         <button type="button" className="button" onClick={doExport} disabled={busy || total === 0}>
           {busy ? "Preparing…" : shareable ? "Save backup…" : "Download backup"}

@@ -8,6 +8,8 @@ const data: BackupData = {
     { id: "s1", peptideId: null, peptideName: "Custom", amount: 1, unit: "mg", frequency: { kind: "weekly", days: [1, 4] }, time: "08:30", startDate: "2026-10-05", active: true },
     { id: "s2", peptideId: "tb-500", peptideName: "TB-500", amount: 2, unit: "mg", frequency: { kind: "interval", everyDays: 3 }, time: "20:00", startDate: "2026-10-05", endDate: "2026-12-31", active: false },
   ],
+  measurements: [{ id: "m1", date: "2026-10-05", weightKg: 82.4, waistCm: 90 }],
+  symptoms: [{ id: "x1", at: "2026-10-05T10:00:00.000Z", symptom: "Nausea", severity: 2, relatedTo: "Semaglutide" }],
 };
 
 describe("backup round trip", () => {
@@ -60,14 +62,32 @@ describe("parseBackup validation", () => {
     const parsed = parseBackup(JSON.stringify({ app: "fiala", version: 1, data: { doses: data.doses } }));
     expect(parsed.data.vials).toEqual([]);
     expect(parsed.data.schedules).toEqual([]);
+    expect(parsed.data.measurements).toEqual([]); // older backups have no measurements or symptoms
+    expect(parsed.data.symptoms).toEqual([]);
+  });
+
+  it("skips malformed measurements and symptoms", () => {
+    const parsed = parseBackup(
+      JSON.stringify({
+        app: "fiala",
+        version: 1,
+        data: {
+          measurements: [...data.measurements, { id: "m2", date: "2026-10-06" }, { id: "m3", date: "bad", weightKg: 80 }],
+          symptoms: [...data.symptoms, { id: "x2", at: "2026-10-05T10:00:00Z", symptom: "Headache", severity: 5 }],
+        },
+      }),
+    );
+    expect(parsed.data.measurements).toEqual(data.measurements);
+    expect(parsed.data.symptoms).toEqual(data.symptoms);
+    expect(parsed.skipped).toBe(3);
   });
 });
 
 describe("mergeData", () => {
   it("adds only records that aren't already present", () => {
-    const current: BackupData = { doses: [{ ...data.doses[0], amount: 999 }], vials: [], schedules: [] };
+    const current: BackupData = { doses: [{ ...data.doses[0], amount: 999 }], vials: [], schedules: [], measurements: [], symptoms: [] };
     const { data: merged, added } = mergeData(current, data);
-    expect(added).toBe(3); // the vial and both schedules; d1 already exists
+    expect(added).toBe(5); // the vial, both schedules, the measurement and the symptom; d1 already exists
     expect(merged.doses).toHaveLength(1);
     expect(merged.doses[0].amount).toBe(999); // existing record wins
     expect(merged.vials).toHaveLength(1);

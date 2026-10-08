@@ -15,3 +15,12 @@ export function LibraryNav({ active }: { active: "peptides" | "stacks" }) {
     </nav>
   );
 }
+
+/** Small link to the glossary, shown under the library heading. */
+export function GlossaryLink() {
+  return (
+    <a className="small" href={href("glossary")}>
+      Glossary of terms
+    </a>
+  );
+}

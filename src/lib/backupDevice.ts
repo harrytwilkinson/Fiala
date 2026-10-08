@@ -1,8 +1,10 @@
 import { useSyncExternalStore } from "react";
-import { backupFileName, buildBackup, mergeData, type BackupData } from "./backup";
+import { backupFileName, buildBackup, countRecords, mergeData, type BackupData } from "./backup";
 import { doses } from "./doseLog";
 import { canShareFiles, saveFile, type SaveResult } from "./files";
+import { measurements } from "./body";
 import { schedules } from "./schedules";
+import { symptoms } from "./symptoms";
 import { migrateKey } from "./store";
 import { vials } from "./vials";
 
@@ -14,7 +16,7 @@ migrateKey("peptide-compass:last-backup", LAST_BACKUP_KEY);
 const listeners = new Set<() => void>();
 
 export function currentData(): BackupData {
-  return { doses: doses.get(), vials: vials.get(), schedules: schedules.get() };
+  return { doses: doses.get(), vials: vials.get(), schedules: schedules.get(), measurements: measurements.get(), symptoms: symptoms.get() };
 }
 
 function getLastBackupAt(): string | null {
@@ -62,10 +64,12 @@ export async function exportBackup(preferShare: boolean): Promise<ExportResult> 
 export { canShareFiles };
 
 export function restoreBackup(incoming: BackupData, mode: "merge" | "replace"): number {
-  const next = mode === "replace" ? { data: incoming, added: incoming.doses.length + incoming.vials.length + incoming.schedules.length } : mergeData(currentData(), incoming);
+  const next = mode === "replace" ? { data: incoming, added: countRecords(incoming) } : mergeData(currentData(), incoming);
   doses.replaceAll(next.data.doses);
   vials.replaceAll(next.data.vials);
   schedules.replaceAll(next.data.schedules);
+  measurements.replaceAll(next.data.measurements);
+  symptoms.replaceAll(next.data.symptoms);
   return next.added;
 }
 

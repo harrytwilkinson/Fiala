@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LibraryNav } from "../components/LibraryNav";
+import { GlossaryLink, LibraryNav } from "../components/LibraryNav";
 import { CATEGORIES, PEPTIDES, STATUS_LABEL, type Category, type Peptide } from "../data/peptides";
 import { href } from "../lib/router";
 
@@ -28,7 +28,10 @@ export function LibraryPage() {
 
   return (
     <div className="page">
-      <h1>Peptide library</h1>
+      <div className="row">
+        <h1>Peptide library</h1>
+        <GlossaryLink />
+      </div>
       <LibraryNav active="peptides" />
       <p className="muted">What each peptide is, what people use it for, and what it does in the body.</p>
 

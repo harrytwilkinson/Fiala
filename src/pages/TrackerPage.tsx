@@ -2,7 +2,8 @@ import { useState, type FormEvent } from "react";
 import { PeptideField, choiceId, choiceName, emptyChoice, type PeptideChoice } from "../components/PeptideField";
 import { TrackerNav } from "../components/TrackerNav";
 import { formatDateKey, localDateTimeValue } from "../lib/dates";
-import { INJECTION_SITES, doses, lastSiteFor, toCsv, useDoseLog, type DoseEntry, type DoseUnit } from "../lib/doseLog";
+import { doses, lastSiteFor, siteLastUsed, toCsv, useDoseLog, type DoseEntry, type DoseUnit } from "../lib/doseLog";
+import { SiteMap } from "../components/SiteMap";
 import { saveFile } from "../lib/files";
 import { href } from "../lib/router";
 import { schedules } from "../lib/schedules";
@@ -136,18 +137,11 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
           </label>
         )}
 
-        <label>
-          <span>Injection site</span>
-          <select value={site} onChange={(e) => setSite(e.target.value)}>
-            <option value="">—</option>
-            {INJECTION_SITES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-          {previousSite && <small className="hint">Last time: {previousSite}. Rotating sites helps prevent irritation.</small>}
-        </label>
+        <div>
+          <span className="field-label">Injection site</span>
+          <SiteMap value={site} onChange={setSite} lastUsed={siteLastUsed(entries)} />
+          {previousSite && <small className="hint">Last {peptideName} dose: {previousSite}. Rotating sites helps prevent irritation.</small>}
+        </div>
 
         <label>
           <span>When</span>

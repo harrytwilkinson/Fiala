@@ -54,3 +54,14 @@ export function toCsv(entries: DoseEntry[]): string {
   const rows = entries.map((e) => [e.takenAt, e.peptideName, e.amount, e.unit, e.site, e.notes].map(esc).join(","));
   return [header.join(","), ...rows].join("\n");
 }
+
+/** Days since each injection site was last used (sites never used are absent). */
+export function siteLastUsed(entries: DoseEntry[], now = new Date()): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const e of entries) {
+    if (!e.site || out.has(e.site)) continue; // entries are newest first
+    const days = Math.floor((now.getTime() - new Date(e.takenAt).getTime()) / 86_400_000);
+    out.set(e.site, Math.max(0, days));
+  }
+  return out;
+}

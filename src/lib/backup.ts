@@ -1,6 +1,8 @@
 import { daysBetween, localDateKey } from "./dates";
 import type { DoseEntry, DoseUnit } from "./doseLog";
+import type { Measurement } from "./body";
 import type { Schedule } from "./schedules";
+import type { Severity, SymptomEntry } from "./symptoms";
 import type { Vial } from "./vials";
 
 // Backup files are plain JSON so they can be saved anywhere (Files, iCloud,
@@ -17,6 +19,9 @@ export interface BackupData {
   doses: DoseEntry[];
   vials: Vial[];
   schedules: Schedule[];
+  /** Added later: missing from older backups. */
+  measurements: Measurement[];
+  symptoms: SymptomEntry[];
 }
 
 export interface BackupFile {
@@ -44,7 +49,7 @@ export function backupFileName(now = new Date()): string {
 }
 
 export function countRecords(d: BackupData): number {
-  return d.doses.length + d.vials.length + d.schedules.length;
+  return d.doses.length + d.vials.length + d.schedules.length + d.measurements.length + d.symptoms.length;
 }
 
 export function parseBackup(text: string): ParsedBackup {
@@ -75,6 +80,8 @@ export function parseBackup(text: string): ParsedBackup {
       doses: pick(raw.data.doses, isDose),
       vials: pick(raw.data.vials, isVial),
       schedules: pick(raw.data.schedules, isSchedule),
+      measurements: pick(raw.data.measurements, isMeasurement),
+      symptoms: pick(raw.data.symptoms, isSymptom),
     },
     skipped,
   };
@@ -94,6 +101,8 @@ export function mergeData(current: BackupData, incoming: BackupData): { data: Ba
       doses: merge(current.doses, incoming.doses),
       vials: merge(current.vials, incoming.vials),
       schedules: merge(current.schedules, incoming.schedules),
+      measurements: merge(current.measurements, incoming.measurements),
+      symptoms: merge(current.symptoms, incoming.symptoms),
     },
     added,
   };
@@ -173,6 +182,34 @@ function isSchedule(x: unknown): x is Schedule {
     DATE_KEY.test(x.startDate) &&
     (x.endDate === undefined || (typeof x.endDate === "string" && DATE_KEY.test(x.endDate))) &&
     typeof x.active === "boolean" &&
+    optStr(x.notes)
+  );
+}
+
+const optPos = (x: unknown) => x === undefined || pos(x);
+
+function isMeasurement(x: unknown): x is Measurement {
+  return (
+    isObject(x) &&
+    str(x.id) &&
+    typeof x.date === "string" &&
+    DATE_KEY.test(x.date) &&
+    optPos(x.weightKg) &&
+    optPos(x.waistCm) &&
+    (x.weightKg !== undefined || x.waistCm !== undefined) &&
+    optStr(x.notes)
+  );
+}
+
+function isSymptom(x: unknown): x is SymptomEntry {
+  return (
+    isObject(x) &&
+    str(x.id) &&
+    str(x.at) &&
+    !Number.isNaN(Date.parse(x.at)) &&
+    str(x.symptom) &&
+    [1, 2, 3].includes(x.severity as Severity) &&
+    optStr(x.relatedTo) &&
     optStr(x.notes)
   );
 }
