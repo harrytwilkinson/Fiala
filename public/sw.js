@@ -4,7 +4,7 @@
 // - Other same-origin files (hashed JS/CSS, icons): serve from cache, refresh in the background.
 // Bump CACHE when this file's caching strategy changes.
 
-const CACHE = "fiala-v8";
+const CACHE = "fiala-v9";
 // Paths are relative to this file, so the app works under a subpath (GitHub Pages).
 const SHELL = ["./", "manifest.webmanifest", "fiala.svg", "icons/icon-192.png", "icons/apple-touch-icon.png", "privacy.html", "support.html"];
 

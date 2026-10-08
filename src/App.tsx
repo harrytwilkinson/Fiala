@@ -5,7 +5,9 @@ import { useOnboardingOpen } from "./lib/onboarding";
 import { href, useRoute } from "./lib/router";
 import { BackupPage } from "./pages/BackupPage";
 import { GlossaryPage } from "./pages/GlossaryPage";
+import { BodyPage } from "./pages/BodyPage";
 import { HomePage } from "./pages/HomePage";
+import { SymptomsPage } from "./pages/SymptomsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { NewsPage } from "./pages/NewsPage";
 import { PeptideDetailPage } from "./pages/PeptideDetailPage";
@@ -54,6 +56,8 @@ export function App() {
     case "tracker": {
       const q = (k: string) => query.get(k) ?? undefined;
       if (id === "vials") page = <VialsPage prefill={{ peptide: q("peptide"), vialMg: q("vialMg"), waterMl: q("waterMl") }} />;
+      else if (id === "body") page = <BodyPage />;
+      else if (id === "symptoms") page = <SymptomsPage />;
       else if (id === "schedules") page = <SchedulesPage prefill={{ peptide: q("peptide") }} />;
       else page = <TrackerPage prefill={{ peptide: q("peptide"), amount: q("amount"), unit: q("unit"), schedule: q("schedule") }} />;
       break;
