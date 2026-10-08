@@ -10,6 +10,7 @@ const ITEMS = [
 
 export function TrackerNav({ current }: { current: string }) {
   return (
+    <>
     <nav className="segmented wide tracker-nav" aria-label="Tracker sections">
       {ITEMS.map((i) => (
         <a key={i.path} href={href(i.path)} className={current === i.path ? "active" : ""} aria-current={current === i.path ? "page" : undefined}>
@@ -17,5 +18,9 @@ export function TrackerNav({ current }: { current: string }) {
         </a>
       ))}
     </nav>
+    <a className="plus-link small" href={href("plus")}>
+      <span className="plus-badge">✦ Plus</span> Clinician report, insights and spend
+    </a>
+    </>
   );
 }

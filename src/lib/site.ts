@@ -12,3 +12,14 @@ export const peptidePageUrl = (id: string) => `${SITE_URL}/peptides/${id}/`;
 
 /** Public, search-friendly page for a stack or blend. */
 export const stackPageUrl = (id: string) => `${SITE_URL}/stacks/${id}/`;
+
+/**
+ * Fiala Plus (Lemon Squeezy). Leave CHECKOUT_URL empty to show Plus as "coming soon".
+ * STORE_ID and PRODUCT_ID make sure a licence key belongs to Fiala Plus and not another product.
+ */
+export const PLUS = {
+  checkoutUrl: "",
+  storeId: 0,
+  productId: 0,
+  price: "£12.99",
+};

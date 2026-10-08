@@ -305,6 +305,7 @@ export function sitemap(all: Peptide[]): string {
     `${SITE_URL}/glossary/`,
     `${SITE_URL}/support.html`,
     `${SITE_URL}/privacy.html`,
+    `${SITE_URL}/terms.html`,
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

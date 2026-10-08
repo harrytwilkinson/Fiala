@@ -170,6 +170,7 @@ export function HomePage() {
         </button>
         <a href={href("backup")}>Backup &amp; restore</a>
         <a href="support.html">Help &amp; support</a>
+        <a href={href("plus")}>Fiala Plus ✦</a>
         <a href="privacy.html">Privacy</a>
         {/* Tip jar on the website only: app stores require their own payment systems for tips. */}
         {SUPPORT_URL && !isNative && (

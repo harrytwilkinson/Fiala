@@ -159,7 +159,8 @@ function isVial(x: unknown): x is Vial {
     DATE_KEY.test(x.mixedOn) &&
     pos(x.discardAfterDays) &&
     typeof x.finished === "boolean" &&
-    optStr(x.notes)
+    optStr(x.notes) &&
+    (x.cost === undefined || pos(x.cost))
   );
 }
 

@@ -18,6 +18,8 @@ export interface Vial {
   discardAfterDays: number;
   finished: boolean;
   notes?: string;
+  /** What the vial cost, in the user's chosen currency (Fiala Plus spend tracking). */
+  cost?: number;
 }
 
 export const DEFAULT_DISCARD_DAYS = 28;

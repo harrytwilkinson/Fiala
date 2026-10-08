@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import { startReminderSync } from "./lib/nativeReminders";
 import { isNative } from "./lib/platform";
+import { revalidatePlus } from "./lib/plus";
 import "./styles.css";
 
 createRoot(document.getElementById("root")!).render(
@@ -22,3 +23,6 @@ if (isNative) {
     });
   });
 }
+
+// Re-check a Fiala Plus licence about once a week (no-op without one, or offline).
+void revalidatePlus();

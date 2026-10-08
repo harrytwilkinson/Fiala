@@ -43,6 +43,12 @@ syringe units         = dose volume × 100   (U-100: 100 units = 1 mL)
 
 Delete an entry to remove the post. GitHub pauses scheduled workflows after 60 days without any commits; if the feed stops updating, re-enable the workflow from the **Actions** tab.
 
+## Fiala Plus
+
+A one-off upgrade (sold through Lemon Squeezy as merchant of record) that adds a **clinician report** (print or save as PDF), **insights** (adherence, streaks, missed days, side effects after dose changes) and **spend tracking** (monthly spend and cost per dose from vial costs). Everything else stays free. Plus pages live under `#/plus`; the licence code is in [`src/lib/plus.ts`](src/lib/plus.ts).
+
+To go live, fill in `PLUS` in [`src/lib/site.ts`](src/lib/site.ts): the Lemon Squeezy checkout URL, store ID, product ID and the display price. With `checkoutUrl` empty, Plus shows as "coming soon". The licence key is checked against Lemon Squeezy's licence API when entered and about weekly after; being offline never locks anyone out. Terms of sale: `public/terms.html`.
+
 ## Tip jar
 
 Set `SUPPORT_URL` in [`src/lib/site.ts`](src/lib/site.ts) (e.g. a Ko-fi page) to show "Support Fiala ♥" links on the home screen (website only, not the native apps) and on the library pages. Leave it empty to hide them.
