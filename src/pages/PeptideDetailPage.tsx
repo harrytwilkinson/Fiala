@@ -1,4 +1,7 @@
+import { useState } from "react";
 import type { Peptide } from "../data/peptides";
+import { shareLink } from "../lib/files";
+import { peptidePageUrl } from "../lib/site";
 import { NewsDisclaimer, NewsList } from "../components/NewsList";
 import { filterNews, toggleFollow, useFollowing, useNews } from "../lib/news";
 import { href } from "../lib/router";
@@ -11,6 +14,12 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
   const followed = useFollowing();
   const isFollowing = followed.includes(peptide.id);
   const news = filterNews(feed?.items ?? [], "all", followed, peptide.id);
+  const [shareMsg, setShareMsg] = useState("");
+
+  const share = async () => {
+    const result = await shareLink(peptidePageUrl(peptide.id), `${peptide.name} · Fiala`);
+    setShareMsg(result === "copied" ? "Link copied." : result === "failed" ? "Couldn't share this page." : "");
+  };
 
   return (
     <div className="page">
@@ -23,14 +32,24 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
         <StatusBadge peptide={peptide} />
         <span className="badge">{peptide.category}</span>
       </div>
-      <button
-        type="button"
-        className={isFollowing ? "button small follow" : "button secondary small follow"}
-        aria-pressed={isFollowing}
-        onClick={() => toggleFollow(peptide.id)}
-      >
-        {isFollowing ? "✓ Following" : "+ Follow news"}
-      </button>
+      <div className="actions">
+        <button
+          type="button"
+          className={isFollowing ? "button small follow" : "button secondary small follow"}
+          aria-pressed={isFollowing}
+          onClick={() => toggleFollow(peptide.id)}
+        >
+          {isFollowing ? "✓ Following" : "+ Follow news"}
+        </button>
+        <button type="button" className="button secondary small" onClick={share}>
+          Share
+        </button>
+        {shareMsg && (
+          <span className="muted small" role="status">
+            {shareMsg}
+          </span>
+        )}
+      </div>
 
       <p className="lead">{peptide.summary}</p>
 
