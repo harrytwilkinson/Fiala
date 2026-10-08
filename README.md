@@ -69,6 +69,10 @@ The custom domain is set in **Settings → Pages → Custom domain** (an Actions
 One-time setup: in the repo go to **Settings → Pages → Build and deployment → Source** and pick **GitHub Actions**.
 Pull requests run the tests and build via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
+## Copyright
+
+Copyright © 2026 Harry Wilkinson. All rights reserved. The code is public for transparency, but it is not open source: see [LICENSE](LICENSE). No part of Fiala may be copied, reused or redistributed without written permission.
+
 ## Disclaimer
 
 Fiala is for education and personal record-keeping only and is not medical advice. Many peptides are not approved for human use. Talk to a qualified healthcare professional before using any peptide.
