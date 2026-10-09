@@ -1,0 +1,51 @@
+name: Deploy Fiala Plus unlock service
+
+# Publishes worker/ (the Cloudflare Worker that turns a Stripe payment into a
+# Fiala Plus unlock code) to plus.getfiala.com. Needs these repository secrets:
+#   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID  - to deploy
+#   STRIPE_SECRET_KEY    - Stripe restricted key (Checkout Sessions: read)
+#   STRIPE_PRODUCT_ID    - the Fiala Plus product id (prod_…)
+#   PLUS_SIGNING_SECRET  - long random secret; also used by the website build
+# Until CLOUDFLARE_API_TOKEN is set the deploy step is skipped.
+
+on:
+  push:
+    branches: [main]
+    paths: ["worker/**", "src/lib/plusToken.ts", ".github/workflows/worker.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run src/lib/plus.test.ts
+      - name: Deploy worker
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          secrets: |
+            STRIPE_SECRET_KEY
+            STRIPE_PRODUCT_ID
+            PLUS_SIGNING_SECRET
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_PRODUCT_ID: ${{ secrets.STRIPE_PRODUCT_ID }}
+          PLUS_SIGNING_SECRET: ${{ secrets.PLUS_SIGNING_SECRET }}
+      - name: Not configured yet
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "CLOUDFLARE_API_TOKEN isn't set, so the unlock service wasn't deployed. See README (Fiala Plus)."

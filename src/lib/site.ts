@@ -12,3 +12,13 @@ export const peptidePageUrl = (id: string) => `${SITE_URL}/peptides/${id}/`;
 
 /** Public, search-friendly page for a stack or blend. */
 export const stackPageUrl = (id: string) => `${SITE_URL}/stacks/${id}/`;
+
+/**
+ * Fiala Plus (Stripe). Leave checkoutUrl empty to show Plus as "coming soon".
+ * checkoutUrl is the Stripe Payment Link; set its "After payment" redirect to
+ * https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}
+ */
+export const PLUS = {
+  checkoutUrl: "",
+  price: "£12.99",
+};

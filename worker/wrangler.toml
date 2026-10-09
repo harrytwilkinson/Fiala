@@ -1,0 +1,7 @@
+# Fiala Plus unlock service. Deployed by .github/workflows/worker.yml.
+name = "fiala-plus"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+# Serve it at plus.getfiala.com (Cloudflare creates the DNS record).
+routes = [{ pattern = "plus.getfiala.com", custom_domain = true }]

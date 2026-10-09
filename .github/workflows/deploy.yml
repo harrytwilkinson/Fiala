@@ -31,6 +31,10 @@ jobs:
       - run: npm test
       - name: Build news feed
         run: npm run news
+      - name: Fiala Plus public key
+        env:
+          PLUS_SIGNING_SECRET: ${{ secrets.PLUS_SIGNING_SECRET }}
+        run: echo "VITE_PLUS_PUBLIC_KEY=$(npm run -s plus-key)" >> "$GITHUB_ENV"
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

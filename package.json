@@ -16,7 +16,8 @@
     "ios": "cap open ios",
     "android": "cap open android",
     "news": "node --experimental-strip-types --no-warnings scripts/build-news.ts",
-    "pages": "node --experimental-strip-types --no-warnings scripts/build-pages.ts"
+    "pages": "node --experimental-strip-types --no-warnings scripts/build-pages.ts",
+    "plus-key": "node --experimental-strip-types --no-warnings scripts/plus-public-key.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
@@ -26,6 +27,8 @@
     "@capacitor/local-notifications": "^8.3.1",
     "@capacitor/share": "^8.0.3",
     "@capacitor/splash-screen": "^8.0.2",
+    "@noble/ed25519": "^2.3.0",
+    "@noble/hashes": "^1.8.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

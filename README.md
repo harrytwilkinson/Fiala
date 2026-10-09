@@ -43,6 +43,27 @@ syringe units         = dose volume × 100   (U-100: 100 units = 1 mL)
 
 Delete an entry to remove the post. GitHub pauses scheduled workflows after 60 days without any commits; if the feed stops updating, re-enable the workflow from the **Actions** tab.
 
+## Fiala Plus
+
+A one-off upgrade that adds a **clinician report** (print or save as PDF), **insights** (adherence, streaks, missed days, side effects after dose changes) and **spend tracking** (monthly spend and cost per dose from vial costs). Everything else stays free. Plus pages live under `#/plus`.
+
+How unlocking works:
+
+1. The buyer pays on a **Stripe Payment Link** (`PLUS.checkoutUrl` in [`src/lib/site.ts`](src/lib/site.ts)), whose "After payment" redirect is `https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}`.
+2. The app sends that session id to the **unlock service** ([`worker/`](worker/), a Cloudflare Worker at `plus.getfiala.com`). It asks Stripe whether the session is paid and for the Fiala Plus product, then returns an **unlock code** signed with Ed25519 ([`src/lib/plusToken.ts`](src/lib/plusToken.ts)). It stores nothing.
+3. The app checks the code against the public key built into it and keeps Plus unlocked offline. Buyers can copy or email the code to unlock other devices. To re-issue a lost code, find the Checkout session (`cs_…`) in Stripe and send the buyer `https://getfiala.com/#/plus?session_id=cs_…`.
+
+Setup (repository **Settings → Secrets and variables → Actions**):
+
+| Secret | What |
+| --- | --- |
+| `PLUS_SIGNING_SECRET` | A long random password (32+ characters). The worker signs with it; the website and native builds derive the public key from it. Never change it, or existing codes stop working. |
+| `STRIPE_SECRET_KEY` | Stripe **restricted** key with Checkout Sessions: Read |
+| `STRIPE_PRODUCT_ID` | The Fiala Plus product id (`prod_…`) |
+| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | To deploy the worker ([`.github/workflows/worker.yml`](.github/workflows/worker.yml)) |
+
+Plus shows as "coming soon" until both the checkout URL and the signing secret are set. Terms of sale: `public/terms.html`.
+
 ## Tip jar
 
 Set `SUPPORT_URL` in [`src/lib/site.ts`](src/lib/site.ts) (e.g. a Ko-fi page) to show "Support Fiala ♥" links on the home screen (website only, not the native apps) and on the library pages. Leave it empty to hide them.

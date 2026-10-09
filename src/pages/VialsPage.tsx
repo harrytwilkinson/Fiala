@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from "react";
+import { useCurrency } from "../lib/currency";
+import { formatMoney } from "../lib/insights";
 import { PeptideField, choiceId, choiceName, emptyChoice, type PeptideChoice } from "../components/PeptideField";
 import { TrackerNav } from "../components/TrackerNav";
 import { formatDateKey, localDateKey } from "../lib/dates";
@@ -71,6 +73,7 @@ export function VialsPage({ prefill }: { prefill: VialPrefill }) {
 }
 
 function VialCard({ vial, status }: { vial: Vial; status: VialStatus }) {
+  const currency = useCurrency();
   const alert = vial.finished ? undefined : vialAlert(status);
   const pct = Math.round(status.remainingFraction * 100);
   return (
@@ -115,6 +118,7 @@ function VialCard({ vial, status }: { vial: Vial; status: VialStatus }) {
 
       {alert && <p className={`alert ${alert.tone}`}>{alert.text}</p>}
       {vial.notes && <p className="small">{vial.notes}</p>}
+      {vial.cost && <p className="muted small">Cost: {formatMoney(vial.cost, currency)}</p>}
 
       <div className="actions">
         {!vial.finished && (
@@ -146,6 +150,8 @@ function VialForm({ prefill, onDone, canCancel }: { prefill: VialPrefill; onDone
   const [mixedOn, setMixedOn] = useState(localDateKey());
   const [discardAfterDays, setDiscardAfterDays] = useState(String(DEFAULT_DISCARD_DAYS));
   const [notes, setNotes] = useState("");
+  const [cost, setCost] = useState("");
+  const currency = useCurrency();
   const [error, setError] = useState("");
 
   const submit = (e: FormEvent) => {
@@ -159,7 +165,9 @@ function VialForm({ prefill, onDone, canCancel }: { prefill: VialPrefill; onDone
     if (!(ml > 0)) return setError("Enter how much water you added.");
     if (!(days > 0)) return setError("Enter how many days to keep the vial after mixing.");
     if (!mixedOn) return setError("Enter the date you mixed the vial.");
-    vials.add({ peptideId: choiceId(peptide), peptideName: name, vialMg: mg, waterMl: ml, mixedOn, discardAfterDays: days, finished: false, notes: notes.trim() || undefined });
+    const price = cost.trim() ? parseFloat(cost) : undefined;
+    if (price !== undefined && !(price > 0)) return setError("Enter a cost greater than 0, or leave it blank.");
+    vials.add({ peptideId: choiceId(peptide), peptideName: name, vialMg: mg, waterMl: ml, mixedOn, discardAfterDays: days, finished: false, notes: notes.trim() || undefined, cost: price });
     onDone();
   };
 
@@ -200,6 +208,14 @@ function VialForm({ prefill, onDone, canCancel }: { prefill: VialPrefill; onDone
         Many suppliers suggest using a mixed vial within about 4 weeks when refrigerated. Follow the guidance for your
         product.
       </small>
+      <label>
+        <span>Cost (optional)</span>
+        <div className="input-suffix">
+          <input inputMode="decimal" value={cost} onChange={(e) => setCost(e.target.value)} />
+          <em>{currency}</em>
+        </div>
+        <small className="hint">What you paid for this vial. Fiala Plus turns this into spend and cost-per-dose insights.</small>
+      </label>
       <label>
         <span>Notes</span>
         <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Batch number, supplier, etc." />

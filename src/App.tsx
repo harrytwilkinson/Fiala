@@ -7,6 +7,10 @@ import { BackupPage } from "./pages/BackupPage";
 import { GlossaryPage } from "./pages/GlossaryPage";
 import { BodyPage } from "./pages/BodyPage";
 import { HomePage } from "./pages/HomePage";
+import { InsightsPage } from "./pages/InsightsPage";
+import { PlusPage } from "./pages/PlusPage";
+import { ReportPage } from "./pages/ReportPage";
+import { SpendPage } from "./pages/SpendPage";
 import { SymptomsPage } from "./pages/SymptomsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { NewsPage } from "./pages/NewsPage";
@@ -34,7 +38,7 @@ export function App() {
   const onboardingOpen = useOnboardingOpen();
   const [section = "", id] = path;
   // Stacks live under the Library tab.
-  const tab = section === "stacks" || section === "glossary" ? "library" : section;
+  const tab = section === "stacks" || section === "glossary" ? "library" : section === "plus" ? "tracker" : section;
   // Remount pages when the query changes so prefilled values are applied.
   const key = `${path.join("/")}?${query.toString()}`;
 
@@ -62,6 +66,9 @@ export function App() {
       else page = <TrackerPage prefill={{ peptide: q("peptide"), amount: q("amount"), unit: q("unit"), schedule: q("schedule") }} />;
       break;
     }
+    case "plus":
+      page = id === "report" ? <ReportPage /> : id === "insights" ? <InsightsPage /> : id === "spend" ? <SpendPage /> : <PlusPage sessionId={query.get("session_id") ?? undefined} />;
+      break;
     case "glossary":
       page = <GlossaryPage />;
       break;
@@ -81,7 +88,7 @@ export function App() {
       <main key={key} inert={onboardingOpen}>
         <Suspense fallback={null}>{page}</Suspense>
       </main>
-      <nav className="tabbar" aria-label="Main" inert={onboardingOpen}>
+      <nav className="tabbar no-print" aria-label="Main" inert={onboardingOpen}>
         {TABS.map((t) => (
           <a key={t.path} href={href(t.path)} className={tab === t.path ? "active" : ""} aria-current={tab === t.path ? "page" : undefined}>
             <span aria-hidden>{t.icon}</span>
