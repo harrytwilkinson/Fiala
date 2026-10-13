@@ -10,6 +10,9 @@ export const SUPPORT_URL = "https://buymeacoffee.com/htwilkinson";
 /** Public, search-friendly page for a peptide. */
 export const peptidePageUrl = (id: string) => `${SITE_URL}/peptides/${id}/`;
 
+/** Public, search-friendly mixing guide for one peptide and vial size. */
+export const vialGuidePageUrl = (id: string) => `${SITE_URL}/vial-guides/${id}/`;
+
 /** Public, search-friendly page for a stack or blend. */
 export const stackPageUrl = (id: string) => `${SITE_URL}/stacks/${id}/`;
 

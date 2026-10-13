@@ -24,6 +24,8 @@ import { VialsPage } from "./pages/VialsPage";
 
 // Loaded lazily, and compiled out completely in store builds (__CONVERTER__ is a build-time constant).
 const CalculatorPage = __CONVERTER__ ? lazy(() => import("./pages/CalculatorPage").then((m) => ({ default: m.CalculatorPage }))) : null;
+const VialGuidesPage = __CONVERTER__ ? lazy(() => import("./pages/VialGuidesPage").then((m) => ({ default: m.VialGuidesPage }))) : null;
+const VialGuideRoute = __CONVERTER__ ? lazy(() => import("./pages/VialGuideRoute").then((m) => ({ default: m.VialGuideRoute }))) : null;
 
 const TABS = [
   { path: "", label: "Home", icon: "🏠" },
@@ -38,7 +40,8 @@ export function App() {
   const onboardingOpen = useOnboardingOpen();
   const [section = "", id] = path;
   // Stacks live under the Library tab.
-  const tab = section === "stacks" || section === "glossary" ? "library" : section === "plus" ? "tracker" : section;
+  const tab =
+    section === "stacks" || section === "glossary" ? "library" : section === "plus" ? "tracker" : section === "guides" ? "calculator" : section;
   // Remount pages when the query changes so prefilled values are applied.
   const key = `${path.join("/")}?${query.toString()}`;
 
@@ -56,6 +59,10 @@ export function App() {
     }
     case "calculator":
       page = __CONVERTER__ && CalculatorPage ? <CalculatorPage blend={query.get("blend") ?? undefined} /> : <HomePage />;
+      break;
+    case "guides":
+      if (!__CONVERTER__ || !VialGuidesPage || !VialGuideRoute) page = <HomePage />;
+      else page = id ? <VialGuideRoute id={id} /> : <VialGuidesPage />;
       break;
     case "tracker": {
       const q = (k: string) => query.get(k) ?? undefined;
