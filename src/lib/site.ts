@@ -15,10 +15,10 @@ export const stackPageUrl = (id: string) => `${SITE_URL}/stacks/${id}/`;
 
 /**
  * Fiala Plus (Stripe). Leave checkoutUrl empty to show Plus as "coming soon".
- * The unlock service's /buy starts a Stripe Checkout for the Fiala Plus product
- * and sends the buyer back to #/plus?session_id=… once they've paid.
+ * checkoutUrl is the Stripe Payment Link; set its "After payment" redirect to
+ * https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}
  */
 export const PLUS = {
-  checkoutUrl: "https://plus.getfiala.com/buy",
+  checkoutUrl: "",
   price: "£12.99",
 };

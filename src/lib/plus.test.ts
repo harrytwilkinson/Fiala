@@ -61,34 +61,6 @@ describe("unlock service (worker)", () => {
     expect(never).not.toHaveBeenCalled();
   });
 
-  it("starts a Checkout for the product's default price and redirects to it", async () => {
-    const fetchImpl = vi.fn(async (url: string) =>
-      url.includes("/v1/products/")
-        ? new Response(JSON.stringify({ id: "prod_plus", default_price: "price_1299" }))
-        : new Response(JSON.stringify({ id: "cs_test_x", url: "https://checkout.stripe.com/c/pay/cs_test_x" })),
-    );
-    const res = await handle(new Request("https://plus.getfiala.com/buy"), env, fetchImpl as unknown as typeof fetch);
-    expect(res.status).toBe(303);
-    expect(res.headers.get("Location")).toBe("https://checkout.stripe.com/c/pay/cs_test_x");
-    expect(fetchImpl.mock.calls[0][0]).toBe("https://api.stripe.com/v1/products/prod_plus");
-    const [url, init] = fetchImpl.mock.calls[1] as unknown as [string, RequestInit];
-    expect(url).toBe("https://api.stripe.com/v1/checkout/sessions");
-    expect(init.method).toBe("POST");
-    const form = new URLSearchParams(init.body as string);
-    expect(form.get("mode")).toBe("payment");
-    expect(form.get("line_items[0][price]")).toBe("price_1299");
-    expect(form.get("success_url")).toBe("https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}");
-  });
-
-  it("shows an error page when Checkout can't be started", async () => {
-    const buy = (f: typeof fetch, e = env) => handle(new Request("https://plus.getfiala.com/buy"), e, f);
-    expect((await buy(stripe(200, { id: "prod_plus", default_price: null }))).status).toBe(502);
-    expect((await buy(stripe(500, {}))).status).toBe(502);
-    const res = await buy(stripe(200, {}), { ...env, STRIPE_SECRET_KEY: "" });
-    expect(res.status).toBe(503);
-    expect(res.headers.get("Content-Type")).toContain("text/html");
-  });
-
   it("answers CORS preflight and reports missing configuration", async () => {
     expect((await handle(new Request("https://plus.getfiala.com/claim", { method: "OPTIONS" }), env)).status).toBe(204);
     expect((await claim("cs_test_a1b2c3d4e5f6g7h8i9", stripe(200, session()), { ...env, STRIPE_SECRET_KEY: "" })).status).toBe(503);

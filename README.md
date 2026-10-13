@@ -49,8 +49,8 @@ A one-off upgrade that adds a **clinician report** (print or save as PDF), **ins
 
 How unlocking works:
 
-1. The Buy button (`PLUS.checkoutUrl` in [`src/lib/site.ts`](src/lib/site.ts)) opens `plus.getfiala.com/buy`, which starts a **Stripe Checkout** for the Fiala Plus product at its default price (so the price is changed in Stripe) and returns the buyer to `https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}` once they've paid. The product id is in [`worker/wrangler.toml`](worker/wrangler.toml).
-2. The app sends that session id to the **unlock service** ([`worker/`](worker/), a Cloudflare Worker at `plus.getfiala.com`). It asks Stripe whether the session is paid and for the Fiala Plus product, then returns an **unlock code** signed with Ed25519 ([`src/lib/plusToken.ts`](src/lib/plusToken.ts)). It stores nothing.
+1. The buyer pays on a **Stripe Payment Link** (`PLUS.checkoutUrl` in [`src/lib/site.ts`](src/lib/site.ts)), whose "After payment" redirect is `https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}`.
+2. The app sends that session id to the **unlock service** ([`worker/`](worker/), a Cloudflare Worker at `plus.getfiala.com`). It asks Stripe whether the session is paid and for the Fiala Plus product (id in [`worker/wrangler.toml`](worker/wrangler.toml)), then returns an **unlock code** signed with Ed25519 ([`src/lib/plusToken.ts`](src/lib/plusToken.ts)). It stores nothing.
 3. The app checks the code against the public key built into it and keeps Plus unlocked offline. Buyers can copy or email the code to unlock other devices. To re-issue a lost code, find the Checkout session (`cs_…`) in Stripe and send the buyer `https://getfiala.com/#/plus?session_id=cs_…`.
 
 Setup (repository **Settings → Secrets and variables → Actions**):
@@ -58,10 +58,10 @@ Setup (repository **Settings → Secrets and variables → Actions**):
 | Secret | What |
 | --- | --- |
 | `PLUS_SIGNING_SECRET` | A long random password (32+ characters). The worker signs with it; the website and native builds derive the public key from it. Never change it, or existing codes stop working. |
-| `STRIPE_SECRET_KEY` | Stripe **restricted** key with Checkout Sessions: Write, Products: Read, Prices: Read |
+| `STRIPE_SECRET_KEY` | Stripe **restricted** key with Checkout Sessions: Read |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | To deploy the worker ([`.github/workflows/worker.yml`](.github/workflows/worker.yml)) |
 
-Plus shows as "coming soon" until the signing secret is set. Terms of sale: `public/terms.html`.
+Plus shows as "coming soon" until both the checkout URL and the signing secret are set. Terms of sale: `public/terms.html`.
 
 ## Tip jar
 
