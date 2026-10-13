@@ -19,6 +19,6 @@ export const stackPageUrl = (id: string) => `${SITE_URL}/stacks/${id}/`;
  * https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}
  */
 export const PLUS = {
-  checkoutUrl: "",
+  checkoutUrl: "https://buy.stripe.com/test_5kQeVc2P2bZf8w28jA9bO01",
   price: "£12.99",
 };
