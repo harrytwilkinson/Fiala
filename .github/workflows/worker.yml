@@ -1,10 +1,11 @@
 name: Deploy Fiala Plus unlock service
 
 # Publishes worker/ (the Cloudflare Worker that turns a Stripe payment into a
-# Fiala Plus unlock code) to plus.getfiala.com. Needs these repository secrets:
+# Fiala Plus unlock code) to plus.getfiala.com. The product id is in
+# worker/wrangler.toml. Needs these repository secrets:
 #   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID  - to deploy
-#   STRIPE_SECRET_KEY    - Stripe restricted key (Checkout Sessions: read)
-#   STRIPE_PRODUCT_ID    - the Fiala Plus product id (prod_…)
+#   STRIPE_SECRET_KEY    - Stripe restricted key (Checkout Sessions: write,
+#                          Products: read, Prices: read)
 #   PLUS_SIGNING_SECRET  - long random secret; also used by the website build
 # Until CLOUDFLARE_API_TOKEN is set the deploy step is skipped.
 
@@ -40,11 +41,9 @@ jobs:
           workingDirectory: worker
           secrets: |
             STRIPE_SECRET_KEY
-            STRIPE_PRODUCT_ID
             PLUS_SIGNING_SECRET
         env:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_PRODUCT_ID: ${{ secrets.STRIPE_PRODUCT_ID }}
           PLUS_SIGNING_SECRET: ${{ secrets.PLUS_SIGNING_SECRET }}
       - name: Not configured yet
         if: env.CLOUDFLARE_API_TOKEN == ''
