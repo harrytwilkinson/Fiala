@@ -7,6 +7,6 @@ compatibility_date = "2026-10-01"
 routes = [{ pattern = "plus.getfiala.com", custom_domain = true }]
 
 # Not secret. A purchase only unlocks Plus if it came from this Payment Link.
-# This is the Sandbox (test) link; switch to the live link id when going live.
+# This is the live link; STRIPE_SECRET_KEY must be a live-mode restricted key.
 [vars]
-STRIPE_PAYMENT_LINK_ID = "plink_1UPzAOBgMDUpX9F04SOFGazX"
+STRIPE_PAYMENT_LINK_ID = "plink_1UQ26KBgMDUpX9F00JjnhiNi"
