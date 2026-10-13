@@ -12,7 +12,9 @@ export interface Env {
   STRIPE_SECRET_KEY: string;
   /** Long random secret the Ed25519 signing key is derived from. */
   PLUS_SIGNING_SECRET: string;
-  /** Stripe product id for Fiala Plus (prod_…); set in wrangler.toml. Optional, but recommended. */
+  /** Stripe Payment Link id for Fiala Plus (plink_…); set in wrangler.toml. Optional, but recommended. */
+  STRIPE_PAYMENT_LINK_ID?: string;
+  /** Stripe product id for Fiala Plus (prod_…). Optional alternative check. */
   STRIPE_PRODUCT_ID?: string;
 }
 
@@ -31,6 +33,7 @@ interface CheckoutSession {
   id: string;
   status?: string;
   payment_status?: string;
+  payment_link?: string | null;
   customer_details?: { email?: string | null } | null;
   line_items?: { data?: { price?: { product?: string | { id?: string } } | null }[] };
 }
@@ -54,6 +57,8 @@ export async function handle(request: Request, env: Env, fetchImpl: typeof fetch
 
   const paid = session.status === "complete" && (session.payment_status === "paid" || session.payment_status === "no_payment_required");
   if (!paid) return json(402, { error: "unpaid" });
+
+  if (env.STRIPE_PAYMENT_LINK_ID && session.payment_link !== env.STRIPE_PAYMENT_LINK_ID) return json(403, { error: "wrong_product" });
 
   if (env.STRIPE_PRODUCT_ID) {
     const products = (session.line_items?.data ?? []).map((li) => (typeof li.price?.product === "string" ? li.price.product : li.price?.product?.id));

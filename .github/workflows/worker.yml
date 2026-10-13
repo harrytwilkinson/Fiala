@@ -1,7 +1,7 @@
 name: Deploy Fiala Plus unlock service
 
 # Publishes worker/ (the Cloudflare Worker that turns a Stripe payment into a
-# Fiala Plus unlock code) to plus.getfiala.com. The product id is in
+# Fiala Plus unlock code) to plus.getfiala.com. The Payment Link id is in
 # worker/wrangler.toml. Needs these repository secrets:
 #   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID  - to deploy
 #   STRIPE_SECRET_KEY    - Stripe restricted key (Checkout Sessions: read)

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { handle } from "../../worker/src/index";
+import { handle, type Env } from "../../worker/src/index";
 import { publicKeyFor, signClaim, verifyCode } from "./plusToken";
 
 const SECRET = "test-signing-secret-that-is-long-enough-123";
@@ -26,7 +26,7 @@ describe("unlock codes", () => {
 });
 
 describe("unlock service (worker)", () => {
-  const env = { STRIPE_SECRET_KEY: "rk_test_x", PLUS_SIGNING_SECRET: SECRET, STRIPE_PRODUCT_ID: "prod_plus" };
+  const env: Env = { STRIPE_SECRET_KEY: "rk_test_x", PLUS_SIGNING_SECRET: SECRET, STRIPE_PRODUCT_ID: "prod_plus" };
   const session = (over: object = {}) => ({
     id: "cs_test_a1b2c3d4e5f6g7h8i9",
     status: "complete",
@@ -59,6 +59,13 @@ describe("unlock service (worker)", () => {
     const never = vi.fn();
     expect(await statusOf("../../v1/customers", never as unknown as typeof fetch)).toBe(400);
     expect(never).not.toHaveBeenCalled();
+  });
+
+  it("checks the Payment Link when one is configured", async () => {
+    const linked = { ...env, STRIPE_PRODUCT_ID: undefined, STRIPE_PAYMENT_LINK_ID: "plink_plus" };
+    expect((await claim("cs_test_a1b2c3d4e5f6g7h8i9", stripe(200, session({ payment_link: "plink_plus" })), linked)).status).toBe(200);
+    expect((await claim("cs_test_a1b2c3d4e5f6g7h8i9", stripe(200, session({ payment_link: "plink_other" })), linked)).status).toBe(403);
+    expect((await claim("cs_test_a1b2c3d4e5f6g7h8i9", stripe(200, session({ payment_link: null })), linked)).status).toBe(403);
   });
 
   it("answers CORS preflight and reports missing configuration", async () => {

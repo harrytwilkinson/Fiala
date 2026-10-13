@@ -50,7 +50,7 @@ A one-off upgrade that adds a **clinician report** (print or save as PDF), **ins
 How unlocking works:
 
 1. The buyer pays on a **Stripe Payment Link** (`PLUS.checkoutUrl` in [`src/lib/site.ts`](src/lib/site.ts)), whose "After payment" redirect is `https://getfiala.com/#/plus?session_id={CHECKOUT_SESSION_ID}`.
-2. The app sends that session id to the **unlock service** ([`worker/`](worker/), a Cloudflare Worker at `plus.getfiala.com`). It asks Stripe whether the session is paid and for the Fiala Plus product (id in [`worker/wrangler.toml`](worker/wrangler.toml)), then returns an **unlock code** signed with Ed25519 ([`src/lib/plusToken.ts`](src/lib/plusToken.ts)). It stores nothing.
+2. The app sends that session id to the **unlock service** ([`worker/`](worker/), a Cloudflare Worker at `plus.getfiala.com`). It asks Stripe whether the session is paid and came from the Fiala Plus Payment Link (id in [`worker/wrangler.toml`](worker/wrangler.toml)), then returns an **unlock code** signed with Ed25519 ([`src/lib/plusToken.ts`](src/lib/plusToken.ts)). It stores nothing.
 3. The app checks the code against the public key built into it and keeps Plus unlocked offline. Buyers can copy or email the code to unlock other devices. To re-issue a lost code, find the Checkout session (`cs_…`) in Stripe and send the buyer `https://getfiala.com/#/plus?session_id=cs_…`.
 
 Setup (repository **Settings → Secrets and variables → Actions**):
