@@ -12,7 +12,7 @@ export interface Env {
   STRIPE_SECRET_KEY: string;
   /** Long random secret the Ed25519 signing key is derived from. */
   PLUS_SIGNING_SECRET: string;
-  /** Stripe product id for Fiala Plus (prod_…). Optional, but recommended. */
+  /** Stripe product id for Fiala Plus (prod_…); set in wrangler.toml. Optional, but recommended. */
   STRIPE_PRODUCT_ID?: string;
 }
 
