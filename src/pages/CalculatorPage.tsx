@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BlendConverter } from "../components/BlendConverter";
+import { ConverterNav } from "../components/ConverterNav";
 import { SyringeVisual } from "../components/SyringeVisual";
 import {
   SYRINGES,
@@ -21,6 +22,7 @@ export function CalculatorPage({ blend }: { blend?: string }) {
   return (
     <div className="page">
       <h1>Reconstitution &amp; syringe converter</h1>
+      <ConverterNav active="converter" />
       <div className="segmented wide-buttons" role="group" aria-label="Vial type">
         <button type="button" className={mode === "single" ? "active" : ""} aria-pressed={mode === "single"} onClick={() => setMode("single")}>
           Single peptide

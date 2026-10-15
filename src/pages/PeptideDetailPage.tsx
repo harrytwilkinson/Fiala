@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Peptide } from "../data/peptides";
 import { stacksWith } from "../data/stacks";
+import { guidesFor, vialLabel } from "../data/vialGuides";
 import { evidenceLinks } from "../lib/evidenceLinks";
 import { shareLink } from "../lib/files";
 import { peptidePageUrl } from "../lib/site";
@@ -153,6 +154,20 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
         <section className="card">
           <h2>Storage</h2>
           <p>{peptide.storage}</p>
+        </section>
+      )}
+
+      {__CONVERTER__ && guidesFor(peptide.id).length > 0 && (
+        <section className="card">
+          <h2>Mixing guides</h2>
+          <p className="muted small">How to mix a {peptide.name} vial and read the syringe at your dose.</p>
+          <div className="chips">
+            {guidesFor(peptide.id).map((g) => (
+              <a key={g.id} className="chip" href={href(`guides/${g.id}`)}>
+                {vialLabel(g.vialMg)} vial
+              </a>
+            ))}
+          </div>
         </section>
       )}
 

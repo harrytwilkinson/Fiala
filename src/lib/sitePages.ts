@@ -8,7 +8,8 @@ import { sortedGlossary } from "../data/glossary.ts";
 import { evidenceLinks } from "./evidenceLinks.ts";
 import { KIND_LABEL, type NewsItem } from "./newsFeed.ts";
 import { BLEND_LABEL_NOTE, STACKS, STACK_KIND_LABEL, componentName, stacksWith, type Stack } from "../data/stacks.ts";
-import { SITE_URL, SUPPORT_URL, peptidePageUrl, stackPageUrl } from "./site.ts";
+import { SITE_URL, SUPPORT_URL, peptidePageUrl, stackPageUrl, vialGuidePageUrl } from "./site.ts";
+import { VIAL_GUIDES, guidesFor, vialLabel } from "../data/vialGuides.ts";
 
 export const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -53,11 +54,25 @@ h2{font-size:1.15rem;margin:0 0 .5rem}
 .grid a{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.75rem .9rem}
 .grid strong{color:var(--text)}
 .grid span{display:block;font-size:.88rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:.4rem .25rem;border-bottom:1px solid var(--border)}
+thead th{font-size:.78rem;color:var(--muted)}
+.sim label{display:block;margin:.6rem 0}
+.sim label>span{display:block;font-weight:600;font-size:.92rem;margin-bottom:.2rem}
+.sim input,.sim select{font:inherit;padding:.45rem .6rem;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);max-width:100%}
+.sim .row{display:flex;gap:.5rem;flex-wrap:wrap}
+.big{font-size:2.4rem;font-weight:800;color:var(--accent);line-height:1.1;margin:.25rem 0}
+.big small{font-size:1rem;font-weight:600}
+.syr{width:100%;max-width:420px;display:block;margin:.5rem 0}
+.syr .barrel{fill:none;stroke:var(--text);stroke-width:1.5}.syr .liquid{fill:var(--b1);opacity:.7}.syr .liquid.over{fill:#dc2626}.syr .tick{stroke:var(--text);stroke-width:1}.syr text{fill:var(--muted);font-size:10px}.syr .rod{fill:var(--muted)}
+.warnings{color:var(--warn-text);background:var(--warn-bg);border-radius:10px;padding:.5rem .5rem .5rem 1.6rem;margin:.5rem 0}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap;list-style:none;padding:0;margin:.4rem 0}
+.chips a{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:.25rem .75rem;text-decoration:none;background:var(--surface)}
 footer{margin-top:2rem;font-size:.85rem;color:var(--muted)}
 footer a{color:var(--muted)}
 `;
 
-interface PageOptions {
+export interface PageOptions {
   title: string;
   description: string;
   canonical: string;
@@ -67,7 +82,7 @@ interface PageOptions {
   jsonLd?: object[];
 }
 
-function page({ title, description, canonical, root, body, jsonLd = [] }: PageOptions): string {
+export function page({ title, description, canonical, root, body, jsonLd = [] }: PageOptions): string {
   const ld = jsonLd.map((o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, "\\u003c")}</script>`).join("\n    ");
   return `<!doctype html>
 <html lang="en">
@@ -96,7 +111,7 @@ function page({ title, description, canonical, root, body, jsonLd = [] }: PageOp
 ${body}
       <footer>
         <p>Fiala is for education and personal record-keeping only and is not medical advice. Many peptides are not approved for human use. Talk to a qualified healthcare professional before using any peptide.</p>
-        <p><a href="${root}peptides/">All peptides</a> · <a href="${root}glossary/">Glossary</a> · <a href="${root}">Open the app</a> · <a href="${root}support.html">Help &amp; support</a> · <a href="${root}privacy.html">Privacy</a>${
+        <p><a href="${root}peptides/">All peptides</a> · <a href="${root}vial-guides/">Mixing guides</a> · <a href="${root}glossary/">Glossary</a> · <a href="${root}">Open the app</a> · <a href="${root}support.html">Help &amp; support</a> · <a href="${root}privacy.html">Privacy</a>${
           SUPPORT_URL ? ` · <a href="${esc(SUPPORT_URL)}" rel="noopener">Support Fiala ♥</a>` : ""
         }</p>
         <p>© ${new Date().getUTCFullYear()} Fiala. All rights reserved.</p>
@@ -107,7 +122,7 @@ ${body}
 `;
 }
 
-const list = (items: string[]) => `<ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
+export const list = (items: string[]) => `<ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
 
 const fmtDate = (d: string) =>
   new Date(`${d}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
@@ -161,6 +176,13 @@ export function peptidePage(p: Peptide, all: Peptide[], news: NewsItem[] = []): 
           : ""
       }
       ${p.storage ? `<section class="card"><h2>Storage</h2><p>${esc(p.storage)}</p></section>` : ""}
+      ${
+        guidesFor(p.id).length
+          ? `<section class="card"><h2>Mixing guides</h2><p>How much water to add and what each syringe mark holds, worked out for your own dose:</p><ul class="chips">${guidesFor(p.id)
+              .map((g) => `<li><a href="${root}vial-guides/${esc(g.id)}/">${esc(vialLabel(g.vialMg))} vial</a></li>`)
+              .join("")}</ul></section>`
+          : ""
+      }
       ${
         stacksWith(p.id).length
           ? `<section class="card"><h2>Found in these stacks</h2><ul>${stacksWith(p.id)
@@ -222,6 +244,8 @@ export function libraryIndexPage(all: Peptide[]): string {
         <a class="button" href="${root}">Open Fiala</a>
       </section>
 ${sections}
+      <h2 style="margin-top:1.75rem">Mixing guides</h2>
+      <p><a href="${root}vial-guides/">Vial mixing guides</a>: how to mix ${VIAL_GUIDES.length} common vial sizes and read the syringe at your dose.</p>
       <h2 style="margin-top:1.75rem">Stacks &amp; blends</h2>
       <ul class="grid">${STACKS.map((st) => `<li><a href="${root}stacks/${esc(st.id)}/"><strong>${esc(st.name)}</strong><span>${esc(st.summary)}</span></a></li>`).join("")}</ul>`;
   return page({
@@ -302,6 +326,8 @@ export function sitemap(all: Peptide[]): string {
     `${SITE_URL}/peptides/`,
     ...all.map((p) => peptidePageUrl(p.id)),
     ...STACKS.map((st) => stackPageUrl(st.id)),
+    `${SITE_URL}/vial-guides/`,
+    ...VIAL_GUIDES.map((g) => vialGuidePageUrl(g.id)),
     `${SITE_URL}/glossary/`,
     `${SITE_URL}/support.html`,
     `${SITE_URL}/privacy.html`,
