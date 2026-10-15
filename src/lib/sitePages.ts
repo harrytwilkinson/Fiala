@@ -249,7 +249,7 @@ export function libraryIndexPage(all: Peptide[]): string {
       </section>
 ${sections}
       <h2 style="margin-top:1.75rem">Mixing guides</h2>
-      <p><a href="${root}vial-guides/">Vial mixing guides</a>: how to mix ${VIAL_GUIDES.length} common vial sizes and read the syringe at your dose.</p>
+      <p><a href="${root}vial-guides/">Vial mixing guides</a>: how to mix ${VIAL_GUIDES.length} common vial sizes of ${new Set(VIAL_GUIDES.map((g) => g.peptide.id)).size} peptides and read the syringe at your dose.</p>
       <h2 style="margin-top:1.75rem">Stacks &amp; blends</h2>
       <ul class="grid">${STACKS.map((st) => `<li><a href="${root}stacks/${esc(st.id)}/"><strong>${esc(st.name)}</strong><span>${esc(st.summary)}</span></a></li>`).join("")}</ul>`;
   return page({

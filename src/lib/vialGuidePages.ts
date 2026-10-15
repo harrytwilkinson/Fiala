@@ -176,7 +176,7 @@ ${groups
   return page({
     title: "Peptide vial mixing guides: water, strength & syringe units · Fiala",
     description: metaDescription(
-      `Mixing guides for ${VIAL_GUIDES.length} common peptide vial sizes: how much bacteriostatic water to add, what each U-100 syringe unit holds, and a syringe simulator.`,
+      `Mixing guides for ${VIAL_GUIDES.length} common vial sizes of ${new Set(VIAL_GUIDES.map((g) => g.peptide.id)).size} peptides: how much bacteriostatic water to add, what each U-100 syringe unit holds, and a syringe simulator.`,
     ),
     canonical: `${SITE_URL}/vial-guides/`,
     root,
