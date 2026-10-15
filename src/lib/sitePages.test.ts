@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PEPTIDES, type Peptide } from "../data/peptides";
+import { ANALYTICS_TOKEN } from "./site";
 import { esc, libraryIndexPage, metaDescription, peptidePage, sitemap } from "./sitePages";
 
 describe("static library pages", () => {
@@ -52,5 +53,12 @@ describe("static library pages", () => {
       expect(index).toContain(`href="${p.id}/"`);
       expect(map).toContain(`<loc>https://getfiala.com/peptides/${p.id}/</loc>`);
     }
+  });
+
+  it("shows the large share card and only loads analytics when a token is set", () => {
+    const html = peptidePage(PEPTIDES[0], PEPTIDES);
+    expect(html).toContain('<meta property="og:image" content="https://getfiala.com/og-image.png" />');
+    expect(html).toContain('<meta name="twitter:card" content="summary_large_image" />');
+    expect(html.includes("cloudflareinsights")).toBe(ANALYTICS_TOKEN !== "");
   });
 });

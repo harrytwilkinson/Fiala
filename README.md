@@ -64,6 +64,11 @@ Setup (repository **Settings → Secrets and variables → Actions**):
 
 Plus shows as "coming soon" until both the checkout URL and the signing secret are set. Terms of sale: `public/terms.html`.
 
+## Visit stats and link previews
+
+- **Visit stats:** set `ANALYTICS_TOKEN` in [`src/lib/site.ts`](src/lib/site.ts) to a Cloudflare Web Analytics site token. This adds cookie-free page counts to the website and its static pages, but never to the native apps. Leave it empty to turn them off. The privacy policy describes it.
+- **Link previews:** shared links show `public/og-image.png` (1200×630). Its source is [`scripts/og-image.html`](scripts/og-image.html): open it at 1200×630 and screenshot it to regenerate.
+
 ## Tip jar
 
 Set `SUPPORT_URL` in [`src/lib/site.ts`](src/lib/site.ts) (e.g. a Ko-fi page) to show "Support Fiala ♥" links on the home screen (website only, not the native apps) and on the library pages. Leave it empty to hide them.

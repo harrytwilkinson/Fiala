@@ -122,7 +122,7 @@ export function vialGuidePage(g: VialGuide): string {
       }
       <section class="card cta">
         <h2>Track your ${esc(p.name)} vial privately</h2>
-        <p>Fiala is a free app that does this maths for any vial, logs your doses, counts down what's left in each vial and reminds you when a dose is due. Everything stays on your phone: no account, no tracking.</p>
+        <p>Fiala is a free app that does this maths for any vial, logs your doses, counts down what's left in each vial and reminds you when a dose is due. No account, and everything you log stays on your phone.</p>
         <a class="button" href="${root}#/guides/${esc(g.id)}">Open this guide in Fiala</a>
       </section>
 
