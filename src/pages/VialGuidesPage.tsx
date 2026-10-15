@@ -23,6 +23,9 @@ export function VialGuidesPage() {
         Pick your peptide and the amount on the vial label. Each guide shows how much water to add, what every mark on
         the syringe holds, and how long the vial lasts at your dose.
       </p>
+      <p className="muted small">
+        {new Set(VIAL_GUIDES.map((g) => g.peptide.id)).size} peptides · {VIAL_GUIDES.length} vial sizes
+      </p>
       <input type="search" className="search" placeholder="Search peptides" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search vial guides" />
       {groups.length === 0 && <p className="muted">No guides match. The <a href={href("calculator")}>converter</a> works for any vial.</p>}
       <ul className="list">
