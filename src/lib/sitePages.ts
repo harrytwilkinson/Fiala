@@ -8,7 +8,7 @@ import { sortedGlossary } from "../data/glossary.ts";
 import { evidenceLinks } from "./evidenceLinks.ts";
 import { KIND_LABEL, type NewsItem } from "./newsFeed.ts";
 import { BLEND_LABEL_NOTE, STACKS, STACK_KIND_LABEL, componentName, stacksWith, type Stack } from "../data/stacks.ts";
-import { SITE_URL, SUPPORT_URL, peptidePageUrl, stackPageUrl, vialGuidePageUrl } from "./site.ts";
+import { SHARE_IMAGE, SITE_URL, SUPPORT_URL, analyticsTag, peptidePageUrl, stackPageUrl, vialGuidePageUrl } from "./site.ts";
 import { VIAL_GUIDES, guidesFor, vialLabel } from "../data/vialGuides.ts";
 
 export const esc = (s: string) =>
@@ -98,12 +98,16 @@ export function page({ title, description, canonical, root, body, jsonLd = [] }:
     <meta property="og:title" content="${esc(title)}" />
     <meta property="og:description" content="${esc(description)}" />
     <meta property="og:url" content="${esc(canonical)}" />
-    <meta property="og:image" content="${SITE_URL}/icons/icon-512.png" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="${SHARE_IMAGE}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Fiala: peptide library, dose converter and private tracker" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="${root}fiala.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="${root}icons/apple-touch-icon.png" />
     ${ld}
     <style>${STYLE}</style>
+    ${analyticsTag()}
   </head>
   <body>
     <main>
@@ -193,7 +197,7 @@ export function peptidePage(p: Peptide, all: Peptide[], news: NewsItem[] = []): 
 ${newsSection(news)}
       <section class="card cta">
         <h2>Keep track of ${esc(p.name)} privately</h2>
-        <p>Fiala is a free app for logging doses, tracking vials and setting reminders. Everything stays on your phone: no account, no tracking.</p>
+        <p>Fiala is a free app for logging doses, tracking vials and setting reminders. No account, and everything you log stays on your phone.</p>
         <a class="button" href="${root}#/library/${esc(p.id)}">Open ${esc(p.name)} in Fiala</a>
         <a class="button secondary" href="${root}support.html">How to install</a>
       </section>

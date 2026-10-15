@@ -7,6 +7,7 @@ import { parseFeed, type NewsItem } from "../src/lib/newsFeed.ts";
 import { STACKS } from "../src/data/stacks.ts";
 import { glossaryPage, libraryIndexPage, peptidePage, robots, sitemap, stackPage } from "../src/lib/sitePages.ts";
 import { VIAL_GUIDES } from "../src/data/vialGuides.ts";
+import { analyticsTag } from "../src/lib/site.ts";
 import { vialGuidePage, vialGuidesIndexPage } from "../src/lib/vialGuidePages.ts";
 
 const DIST = new URL("../dist/", import.meta.url);
@@ -48,6 +49,15 @@ for (const g of guides) {
 }
 await mkdir(new URL("glossary/", DIST), { recursive: true });
 await writeFile(new URL("glossary/index.html", DIST), glossaryPage());
+// The hand-written pages (privacy, support, terms) get the same analytics tag as the generated ones.
+const tag = analyticsTag();
+if (tag && !STORE) {
+  for (const name of ["privacy.html", "support.html", "terms.html"]) {
+    const file = new URL(name, DIST);
+    const html = await readFile(file, "utf8");
+    if (!html.includes("cloudflareinsights")) await writeFile(file, html.replace("</head>", `    ${tag}\n  </head>`));
+  }
+}
 await writeFile(new URL("sitemap.xml", DIST), sitemap(PEPTIDES));
 await writeFile(new URL("robots.txt", DIST), robots());
 console.log(`[pages] wrote ${PEPTIDES.length} peptide pages, ${STACKS.length} stack pages, ${guides.length} vial guides, the glossary, the library index, sitemap.xml and robots.txt`);

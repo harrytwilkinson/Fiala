@@ -7,6 +7,21 @@ export const SITE_URL = "https://getfiala.com";
 /** Tip jar (e.g. a Ko-fi page). Leave empty to hide every "Support Fiala" link. */
 export const SUPPORT_URL = "https://buymeacoffee.com/htwilkinson";
 
+/** Picture shown when a Fiala link is shared (1200×630, from scripts/og-image.html). */
+export const SHARE_IMAGE = `${SITE_URL}/og-image.png`;
+
+/**
+ * Cloudflare Web Analytics site token: cookie-free, anonymous page counts for the
+ * website only (never the native apps). Not secret. Leave empty to turn it off.
+ */
+export const ANALYTICS_TOKEN: string = "";
+
+/** The Cloudflare Web Analytics script tag, or "" when analytics is off. */
+export const analyticsTag = () =>
+  ANALYTICS_TOKEN
+    ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: ANALYTICS_TOKEN })}'></script>`
+    : "";
+
 /** Public, search-friendly page for a peptide. */
 export const peptidePageUrl = (id: string) => `${SITE_URL}/peptides/${id}/`;
 
