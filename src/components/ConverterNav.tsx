@@ -1,15 +1,20 @@
 import { href } from "../lib/router";
 
-/** Switch between the free-form converter and the per-vial guides. */
-export function ConverterNav({ active }: { active: "converter" | "guides" }) {
+const ITEMS = [
+  { id: "converter", path: "calculator", label: "Converter" },
+  { id: "guides", path: "guides", label: "Vial guides" },
+  { id: "mixing", path: "mixing", label: "How to mix" },
+] as const;
+
+/** Switch between the free-form converter, the per-vial guides and the mixing walkthrough. */
+export function ConverterNav({ active }: { active: (typeof ITEMS)[number]["id"] }) {
   return (
     <nav className="segmented wide" aria-label="Converter sections">
-      <a href={href("calculator")} className={active === "converter" ? "active" : ""} aria-current={active === "converter" ? "page" : undefined}>
-        Converter
-      </a>
-      <a href={href("guides")} className={active === "guides" ? "active" : ""} aria-current={active === "guides" ? "page" : undefined}>
-        Vial guides
-      </a>
+      {ITEMS.map((i) => (
+        <a key={i.id} href={href(i.path)} className={active === i.id ? "active" : ""} aria-current={active === i.id ? "page" : undefined}>
+          {i.label}
+        </a>
+      ))}
     </nav>
   );
 }

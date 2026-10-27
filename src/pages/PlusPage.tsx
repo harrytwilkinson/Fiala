@@ -7,6 +7,7 @@ import { PLUS } from "../lib/site";
 const FEATURES: { path: string; icon: IconName; title: string; text: string }[] = [
   { path: "plus/report", icon: "report", title: "Clinician report", text: "A tidy PDF of your doses, schedules, adherence, side effects and weight for any period, ready to print or share at appointments." },
   { path: "plus/insights", icon: "chart", title: "Insights", text: "How consistently you've kept to each schedule, your streaks and missed days, and which side effects followed a change in dose." },
+  { path: "plus/levels", icon: "pulse", title: "Level curves", text: "An estimated rise-and-fall curve for each peptide from its half-life and the doses you log, with now marked." },
   { path: "plus/spend", icon: "coins", title: "Spend tracker", text: "What you spend each month and the cost of each dose, from the vial costs you enter." },
 ];
 

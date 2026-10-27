@@ -8,6 +8,7 @@ import { useDoseLog } from "../lib/doseLog";
 import { fmt } from "../lib/reconstitution";
 import { href } from "../lib/router";
 import { DEFAULT_DISCARD_DAYS, concentrationMgPerMl, useVials, vialStatus, vials, type Vial, type VialStatus } from "../lib/vials";
+import { DiscardCountdown } from "../components/DoseRing";
 
 export interface VialPrefill {
   peptide?: string;
@@ -94,6 +95,8 @@ function VialCard({ vial, status }: { vial: Vial; status: VialStatus }) {
         </span>
         {status.dosesLeft !== undefined && <span className="muted">≈ {status.dosesLeft} doses</span>}
       </div>
+
+      {!vial.finished && <DiscardCountdown daysLeft={status.daysUntilDiscard} totalDays={vial.discardAfterDays} />}
 
       <dl className="vial-facts small">
         <div>

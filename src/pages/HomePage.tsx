@@ -1,4 +1,4 @@
-import { DoseRing, VialGlyph } from "../components/DoseRing";
+import { DiscardCountdown, DoseRing, VialGlyph } from "../components/DoseRing";
 import { Icon } from "../components/Icon";
 import { backupIsDue } from "../lib/backup";
 import { useLastBackupAt } from "../lib/backupDevice";
@@ -136,6 +136,7 @@ export function HomePage() {
                       {runsOut ? `Runs out around ${formatDateKey(runsOut, { weekday: "short", month: "short", day: "numeric" })}` : `${pct}% left`} · mixed{" "}
                       {status.daysSinceMixed === 0 ? "today" : `${status.daysSinceMixed} day${status.daysSinceMixed === 1 ? "" : "s"} ago`}
                     </span>
+                    <DiscardCountdown daysLeft={status.daysUntilDiscard} totalDays={vial.discardAfterDays} />
                   </div>
                 </li>
               );
