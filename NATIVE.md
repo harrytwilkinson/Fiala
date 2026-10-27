@@ -17,12 +17,10 @@ projects. They're committed to git, as Capacitor recommends.
 
 ## Two build flavours
 
-| Command | What it builds | Where it goes |
-|---|---|---|
-| `npm run native:sync` | **Full** app, including the converter, vial guides, mixing guide and dose steps | **Google Play**, and the first App Store submission |
-| `npm run native:sync:store` | **Cautious** app: those tools are compiled out completely (code and UI) | **App Store only**, as a fallback if App Review rejects the full app under guideline 1.4.2 |
-
-Google Play always gets the full app.
+| Command | What it builds |
+|---|---|
+| `npm run native:sync` | **Full** app, including the dose converter |
+| `npm run native:sync:store` | **Store** app: the converter is compiled out completely (code and UI), in case App Review objects to it under guideline 1.4.2 |
 
 Both commands build the web app and copy it into the native projects. Run one
 of them after every code change before building in Xcode or Android Studio.
@@ -48,7 +46,7 @@ of them after every code change before building in Xcode or Android Studio.
 The **Native apps** workflow (`.github/workflows/native.yml`) runs on every pull
 request and push to `main`, and can be started by hand from the **Actions** tab:
 
-- **Android:** builds an installable debug APK of the full app (the one Google Play gets). Download them
+- **Android:** builds installable debug APKs for both flavours. Download them
   from the workflow run's **Artifacts** section, unzip, and open the `.apk` on an
   Android phone (you'll be asked to allow installs from your browser/files app).
 - **iOS:** compiles the app for the simulator to prove the project builds. iPhone
@@ -99,8 +97,7 @@ Do this on a Mac with Xcode open, alongside the store submission work.
 - [ ] **Google Play**: complete the Health apps declaration and the Data safety form.
 - [ ] **App Review notes (Apple)**: explain that the converter only converts units
       for a dose the user enters, never recommends doses, and keeps all data on
-      the device. If it's rejected under 1.4.2, resubmit the cautious
-      (`native:sync:store`) flavour. Google Play keeps the full app either way.
+      the device. If it's rejected under 1.4.2, resubmit the store flavour.
 - [ ] **Medical review** of the library content.
 
 ## Regenerating icons and splash screens
