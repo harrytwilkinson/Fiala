@@ -4,6 +4,7 @@ import { completeOnboarding, hasCompletedOnboarding } from "../lib/onboarding";
 import { isNative } from "../lib/platform";
 import { SYRINGES } from "../lib/reconstitution";
 import { SyringeVisual } from "./SyringeVisual";
+import { Icon } from "./Icon";
 
 interface Slide {
   title: string;
@@ -90,8 +91,8 @@ const SLIDES: Slide[] = [
       </>
     ),
     art: (
-      <div className="onb-lock" aria-hidden>
-        🔒
+      <div className="onb-lock">
+        <Icon name="lock" className="onb-lock-icon" />
       </div>
     ),
   },

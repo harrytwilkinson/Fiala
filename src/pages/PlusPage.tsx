@@ -1,12 +1,13 @@
+import { Icon, type IconName } from "../components/Icon";
 import { useEffect, useState, type FormEvent } from "react";
 import { LicenceError, claimPurchase, hasPlus, plusAvailable, removePlus, unlockWithCode, usePlus } from "../lib/plus";
 import { href } from "../lib/router";
 import { PLUS } from "../lib/site";
 
-const FEATURES = [
-  { path: "plus/report", icon: "📄", title: "Clinician report", text: "A tidy PDF of your doses, schedules, adherence, side effects and weight for any period, ready to print or share at appointments." },
-  { path: "plus/insights", icon: "📊", title: "Insights", text: "How consistently you've kept to each schedule, your streaks and missed days, and which side effects followed a change in dose." },
-  { path: "plus/spend", icon: "💷", title: "Spend tracker", text: "What you spend each month and the cost of each dose, from the vial costs you enter." },
+const FEATURES: { path: string; icon: IconName; title: string; text: string }[] = [
+  { path: "plus/report", icon: "report", title: "Clinician report", text: "A tidy PDF of your doses, schedules, adherence, side effects and weight for any period, ready to print or share at appointments." },
+  { path: "plus/insights", icon: "chart", title: "Insights", text: "How consistently you've kept to each schedule, your streaks and missed days, and which side effects followed a change in dose." },
+  { path: "plus/spend", icon: "coins", title: "Spend tracker", text: "What you spend each month and the cost of each dose, from the vial costs you enter." },
 ];
 
 export function PlusPage({ sessionId }: { sessionId?: string }) {
@@ -79,9 +80,7 @@ export function PlusPage({ sessionId }: { sessionId?: string }) {
         {FEATURES.map((f) => (
           <li key={f.path}>
             <a className="card link-card plus-feature" href={href(f.path)}>
-              <span className="tile-icon" aria-hidden>
-                {f.icon}
-              </span>
+              <Icon name={f.icon} className="tile-icon" />
               <div>
                 <strong>{f.title}</strong>
                 <p className="small">{f.text}</p>

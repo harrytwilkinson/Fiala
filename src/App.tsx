@@ -21,19 +21,20 @@ import { StacksPage } from "./pages/StacksPage";
 import { findStack } from "./data/stacks";
 import { TrackerPage } from "./pages/TrackerPage";
 import { VialsPage } from "./pages/VialsPage";
+import { Icon, type IconName } from "./components/Icon";
 
 // Loaded lazily, and compiled out completely in store builds (__CONVERTER__ is a build-time constant).
 const CalculatorPage = __CONVERTER__ ? lazy(() => import("./pages/CalculatorPage").then((m) => ({ default: m.CalculatorPage }))) : null;
 const VialGuidesPage = __CONVERTER__ ? lazy(() => import("./pages/VialGuidesPage").then((m) => ({ default: m.VialGuidesPage }))) : null;
 const VialGuideRoute = __CONVERTER__ ? lazy(() => import("./pages/VialGuideRoute").then((m) => ({ default: m.VialGuideRoute }))) : null;
 
-const TABS = [
-  { path: "", label: "Home", icon: "🏠" },
-  { path: "library", label: "Library", icon: "📚" },
-  { path: "calculator", label: "Converter", icon: "🧮" },
-  { path: "news", label: "News", icon: "📰" },
-  { path: "tracker", label: "Tracker", icon: "📈" },
-].filter((t) => t.path !== "calculator" || __CONVERTER__);
+const TABS = ([
+  { path: "", label: "Home", icon: "home" },
+  { path: "library", label: "Library", icon: "library" },
+  { path: "calculator", label: "Converter", icon: "syringe" },
+  { path: "news", label: "News", icon: "news" },
+  { path: "tracker", label: "Tracker", icon: "pulse" },
+] satisfies { path: string; label: string; icon: IconName }[]).filter((t) => t.path !== "calculator" || __CONVERTER__);
 
 export function App() {
   const { path, query } = useRoute();
@@ -98,7 +99,7 @@ export function App() {
       <nav className="tabbar no-print" aria-label="Main" inert={onboardingOpen}>
         {TABS.map((t) => (
           <a key={t.path} href={href(t.path)} className={tab === t.path ? "active" : ""} aria-current={tab === t.path ? "page" : undefined}>
-            <span aria-hidden>{t.icon}</span>
+            <Icon name={t.icon} />
             {t.label}
           </a>
         ))}
