@@ -8,6 +8,7 @@ import { saveFile } from "../lib/files";
 import { href } from "../lib/router";
 import { schedules } from "../lib/schedules";
 import { defaultVialFor, useVials } from "../lib/vials";
+import { tapFeedback } from "../lib/haptics";
 
 const NO_VIAL = "";
 
@@ -71,6 +72,7 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
       vialId: vialId || undefined,
       scheduleId: schedule && schedule.peptideName === peptideName ? schedule.id : undefined,
     });
+    tapFeedback("success");
     setError("");
     setNotes("");
     setSite("");

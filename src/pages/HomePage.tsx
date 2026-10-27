@@ -12,6 +12,7 @@ import { formatTime, isDueOn, takenOn, useSchedules, type Schedule } from "../li
 import { fmt } from "../lib/reconstitution";
 import { defaultVialFor, runsOutOn, useVials, vialStatus, vials } from "../lib/vials";
 import { vialAlert } from "./VialsPage";
+import { tapFeedback } from "../lib/haptics";
 
 const UPCOMING_DAYS = 6;
 const ICON_URL = `${import.meta.env.BASE_URL}fiala.svg`;
@@ -52,6 +53,7 @@ export function HomePage() {
       vialId: vial?.id,
       scheduleId: s.id,
     });
+    tapFeedback("success");
   };
 
   return (

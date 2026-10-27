@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import { BackupError, countRecords, parseBackup, type ParsedBackup } from "../lib/backup";
+import { BackupError, countRecords, parseBackup, type BackupData, type ParsedBackup } from "../lib/backup";
 import { canShareFiles, exportBackup, requestPersistentStorage, restoreBackup, useLastBackupAt, type PersistState } from "../lib/backupDevice";
 import { useDoseLog } from "../lib/doseLog";
 import { href } from "../lib/router";
@@ -7,13 +7,17 @@ import { useMeasurements } from "../lib/body";
 import { useSchedules } from "../lib/schedules";
 import { useSymptoms } from "../lib/symptoms";
 import { useVials } from "../lib/vials";
+import { useCycles } from "../lib/cycles";
+import { useTitrations } from "../lib/titration";
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-function summary(d: { doses: unknown[]; vials: unknown[]; schedules: unknown[]; measurements: unknown[]; symptoms: unknown[] }) {
+function summary(d: BackupData) {
   const parts = [plural(d.doses.length, "dose"), plural(d.vials.length, "vial"), plural(d.schedules.length, "schedule")];
   if (d.measurements.length) parts.push(plural(d.measurements.length, "measurement"));
   if (d.symptoms.length) parts.push(plural(d.symptoms.length, "side-effect note"));
+  if (d.cycles.length) parts.push(plural(d.cycles.length, "cycle plan"));
+  if (d.titrations.length) parts.push(plural(d.titrations.length, "dose-step plan"));
   return parts.join(", ");
 }
 
@@ -27,7 +31,9 @@ export function BackupPage() {
   const schedules = useSchedules();
   const measurements = useMeasurements();
   const symptomLog = useSymptoms();
-  const all = { doses, vials, schedules, measurements, symptoms: symptomLog };
+  const cyclePlans = useCycles();
+  const titrationPlans = useTitrations();
+  const all: BackupData = { doses, vials, schedules, measurements, symptoms: symptomLog, cycles: cyclePlans, titrations: titrationPlans };
   const lastBackupAt = useLastBackupAt();
   const [shareable] = useState(canShareFiles);
   const [exportMsg, setExportMsg] = useState("");

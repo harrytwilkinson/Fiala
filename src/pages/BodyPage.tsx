@@ -19,6 +19,7 @@ import {
 import { formatDateKey, localDateKey } from "../lib/dates";
 import { useDoseLog } from "../lib/doseLog";
 import { href } from "../lib/router";
+import { tapFeedback } from "../lib/haptics";
 
 const RANGES: { value: Range; label: string }[] = [
   { value: "1m", label: "1 month" },
@@ -65,6 +66,7 @@ export function BodyPage() {
     }
     if (weightKg === undefined && waistCm === undefined) return setError("Enter a weight, a waist measurement, or both.");
     measurements.add({ date, weightKg, waistCm, notes: notes.trim() || undefined });
+    tapFeedback();
     setError("");
     setWeight("");
     setPounds("");

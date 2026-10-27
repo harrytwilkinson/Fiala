@@ -4,6 +4,7 @@ import { localDateTimeValue } from "../lib/dates";
 import { useDoseLog } from "../lib/doseLog";
 import { href } from "../lib/router";
 import { COMMON_SYMPTOMS, SEVERITY_LABEL, summarise, symptoms, useSymptoms, type Severity } from "../lib/symptoms";
+import { tapFeedback } from "../lib/haptics";
 
 const OTHER = "__other__";
 const RECENT_DAYS = 14;
@@ -30,6 +31,7 @@ export function SymptomsPage() {
     const symptom = choice === OTHER ? custom.trim() : choice;
     if (!symptom) return setError("Choose what you noticed, or describe it under Other.");
     symptoms.add({ at: new Date(at).toISOString(), symptom, severity, relatedTo: relatedTo || undefined, notes: notes.trim() || undefined });
+    tapFeedback();
     setError("");
     setChoice("");
     setCustom("");

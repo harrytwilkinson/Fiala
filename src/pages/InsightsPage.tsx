@@ -1,4 +1,6 @@
+import { OverlayTimeline } from "../components/OverlayTimeline";
 import { PlusGate } from "../components/PlusGate";
+import { useBodyUnits, useMeasurements } from "../lib/body";
 import { addDays, formatDateKey, localDateKey } from "../lib/dates";
 import { useDoseLog } from "../lib/doseLog";
 import { adherence, doseChanges, dosesByPeptide } from "../lib/insights";
@@ -31,6 +33,8 @@ function Insights() {
   const fromIso = new Date(`${from}T00:00:00`).toISOString();
   const doses = dosesByPeptide(entries, fromIso);
   const changes = doseChanges(entries, symptoms).slice(0, 10);
+  const measurements = useMeasurements();
+  const bodyUnits = useBodyUnits();
 
   return (
     <>
@@ -67,6 +71,12 @@ function Insights() {
             })}
           </ul>
         )}
+      </section>
+
+      <section className="card">
+        <h2>Doses, side effects and weight</h2>
+        <p className="muted small">Everything you've logged on one timeline. Hover or long-press a mark for details.</p>
+        <OverlayTimeline entries={entries} symptoms={symptoms} measurements={measurements} unit={bodyUnits.weight} />
       </section>
 
       <section className="card">

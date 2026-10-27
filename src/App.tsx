@@ -10,6 +10,7 @@ import { BodyPage } from "./pages/BodyPage";
 import { HomePage } from "./pages/HomePage";
 import { InsightsPage } from "./pages/InsightsPage";
 import { LevelsPage } from "./pages/LevelsPage";
+import { CyclesPage } from "./pages/CyclesPage";
 import { PlusPage } from "./pages/PlusPage";
 import { ReportPage } from "./pages/ReportPage";
 import { SpendPage } from "./pages/SpendPage";
@@ -29,6 +30,8 @@ import { Icon, type IconName } from "./components/Icon";
 const CalculatorPage = __CONVERTER__ ? lazy(() => import("./pages/CalculatorPage").then((m) => ({ default: m.CalculatorPage }))) : null;
 const VialGuidesPage = __CONVERTER__ ? lazy(() => import("./pages/VialGuidesPage").then((m) => ({ default: m.VialGuidesPage }))) : null;
 const VialGuideRoute = __CONVERTER__ ? lazy(() => import("./pages/VialGuideRoute").then((m) => ({ default: m.VialGuideRoute }))) : null;
+// Label dose steps show dose amounts, so they stay out of store builds along with the converter.
+const TitrationPage = __CONVERTER__ ? lazy(() => import("./pages/TitrationPage").then((m) => ({ default: m.TitrationPage }))) : null;
 const MixingPage = __CONVERTER__ ? lazy(() => import("./pages/MixingPage").then((m) => ({ default: m.MixingPage }))) : null;
 
 const TABS = ([
@@ -88,7 +91,7 @@ export function App() {
       break;
     }
     case "plus":
-      page = id === "report" ? <ReportPage /> : id === "insights" ? <InsightsPage /> : id === "spend" ? <SpendPage /> : id === "levels" ? <LevelsPage peptideId={query.get("peptide") ?? undefined} /> : <PlusPage sessionId={query.get("session_id") ?? undefined} />;
+      page = id === "report" ? <ReportPage /> : id === "insights" ? <InsightsPage /> : id === "spend" ? <SpendPage /> : id === "levels" ? <LevelsPage peptideId={query.get("peptide") ?? undefined} /> : id === "cycles" ? <CyclesPage /> : id === "steps" && TitrationPage ? <TitrationPage /> : <PlusPage sessionId={query.get("session_id") ?? undefined} />;
       break;
     case "glossary":
       page = <GlossaryPage />;

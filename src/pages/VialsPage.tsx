@@ -9,6 +9,7 @@ import { fmt } from "../lib/reconstitution";
 import { href } from "../lib/router";
 import { DEFAULT_DISCARD_DAYS, concentrationMgPerMl, useVials, vialStatus, vials, type Vial, type VialStatus } from "../lib/vials";
 import { DiscardCountdown } from "../components/DoseRing";
+import { tapFeedback } from "../lib/haptics";
 
 export interface VialPrefill {
   peptide?: string;
@@ -171,6 +172,7 @@ function VialForm({ prefill, onDone, canCancel }: { prefill: VialPrefill; onDone
     const price = cost.trim() ? parseFloat(cost) : undefined;
     if (price !== undefined && !(price > 0)) return setError("Enter a cost greater than 0, or leave it blank.");
     vials.add({ peptideId: choiceId(peptide), peptideName: name, vialMg: mg, waterMl: ml, mixedOn, discardAfterDays: days, finished: false, notes: notes.trim() || undefined, cost: price });
+    tapFeedback();
     onDone();
   };
 
