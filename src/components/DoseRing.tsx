@@ -48,3 +48,21 @@ export function VialGlyph({ fraction, low }: { fraction: number; low?: boolean }
     </svg>
   );
 }
+
+/** Countdown to a vial's discard date: a ring that empties as the date nears, with the days left. */
+export function DiscardCountdown({ daysLeft, totalDays }: { daysLeft: number; totalDays: number }) {
+  const r = 9;
+  const c = 2 * Math.PI * r;
+  const frac = totalDays > 0 ? Math.min(1, Math.max(0, daysLeft / totalDays)) : 0;
+  const tone = daysLeft < 0 ? "over" : daysLeft <= 3 ? "soon" : "ok";
+  const text = daysLeft < 0 ? "Past discard date" : daysLeft === 0 ? "Discard today" : `Discard in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
+  return (
+    <span className={`countdown ${tone}`}>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r={r} className="countdown-track" />
+        <circle cx="12" cy="12" r={r} className="countdown-arc" strokeDasharray={`${c * frac} ${c}`} transform="rotate(-90 12 12)" />
+      </svg>
+      {text}
+    </span>
+  );
+}

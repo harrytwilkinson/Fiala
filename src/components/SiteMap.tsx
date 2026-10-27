@@ -1,3 +1,4 @@
+import { suggestSite } from "../lib/doseLog";
 import type { KeyboardEvent } from "react";
 
 // Tap-to-pick injection sites on a simple body outline, coloured by how recently
@@ -42,11 +43,11 @@ function Silhouette() {
   );
 }
 
-export function recencyClass(days: number | undefined): "recent" | "week" | "" {
+export function recencyClass(days: number | undefined): "recent" | "week" | "rested" | "" {
   if (days === undefined) return "";
   if (days < 3) return "recent";
   if (days < 7) return "week";
-  return "";
+  return "rested";
 }
 
 function describe(days: number | undefined): string {
@@ -63,6 +64,7 @@ interface Props {
 }
 
 export function SiteMap({ value, onChange, lastUsed }: Props) {
+  const suggested = suggestSite(lastUsed);
   const zone = (z: Zone) => {
     const days = lastUsed.get(z.site);
     const selected = value === z.site;
@@ -80,7 +82,7 @@ export function SiteMap({ value, onChange, lastUsed }: Props) {
         tabIndex={0}
         aria-pressed={selected}
         aria-label={`${z.site}, ${describe(days)}`}
-        className={`site-zone ${selected ? "selected" : recencyClass(days)}`}
+        className={`site-zone ${selected ? "selected" : recencyClass(days)}${!value && z.site === suggested ? " suggested" : ""}`}
         onClick={pick}
         onKeyDown={onKey}
       >
@@ -119,12 +121,26 @@ export function SiteMap({ value, onChange, lastUsed }: Props) {
           <i className="swatch week" aria-hidden /> Last week
         </span>
         <span>
+          <i className="swatch rested" aria-hidden /> Rested a week+
+        </span>
+        <span>
           <i className="swatch selected" aria-hidden /> Chosen
         </span>
         <button type="button" className={value === "Other" ? "chip active" : "chip"} onClick={() => onChange(value === "Other" ? "" : "Other")} aria-pressed={value === "Other"}>
           Other site
         </button>
       </div>
+      {suggested && !value && (
+        <div className="site-suggest">
+          <span className="small">
+            <span className="muted">Suggested next:</span> <strong>{suggested}</strong>
+            <span className="muted"> ({describe(lastUsed.get(suggested))})</span>
+          </span>
+          <button type="button" className="button small" onClick={() => onChange(suggested)}>
+            Use this site
+          </button>
+        </div>
+      )}
       <p className="muted small" aria-live="polite">
         {value ? `Chosen: ${value}${value !== "Other" ? ` (${describe(lastUsed.get(value))})` : ""}.` : "Tap where you injected. L and R are your left and right."}
       </p>

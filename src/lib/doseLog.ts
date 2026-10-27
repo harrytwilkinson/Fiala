@@ -65,3 +65,18 @@ export function siteLastUsed(entries: DoseEntry[], now = new Date()): Map<string
   }
   return out;
 }
+
+/**
+ * The most rested standard site to suggest next: never-used sites first, then the one used longest ago.
+ * Ties go to the earlier site in INJECTION_SITES (abdomen first). Undefined until a site has been logged.
+ */
+export function suggestSite(lastUsed: Map<string, number>): string | undefined {
+  if (lastUsed.size === 0) return undefined;
+  const rest = (site: string) => lastUsed.get(site) ?? Number.POSITIVE_INFINITY;
+  let best: string | undefined;
+  for (const site of INJECTION_SITES) {
+    if (site === "Other") continue;
+    if (best === undefined || rest(site) > rest(best)) best = site;
+  }
+  return best;
+}

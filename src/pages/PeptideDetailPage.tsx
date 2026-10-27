@@ -6,6 +6,7 @@ import { SEQUENCES } from "../data/sequences";
 import { stacksWith } from "../data/stacks";
 import { guidesFor, vialLabel } from "../data/vialGuides";
 import { evidenceLinks } from "../lib/evidenceLinks";
+import { HALF_LIFE_HOURS } from "../lib/levels";
 import { shareLink } from "../lib/files";
 import { peptidePageUrl } from "../lib/site";
 import { NewsDisclaimer, NewsList } from "../components/NewsList";
@@ -51,6 +52,9 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
         <button type="button" className="button secondary small" onClick={share}>
           Share
         </button>
+        <a className="button secondary small" href={href("library/compare", { a: peptide.id })}>
+          Compare
+        </a>
         {shareMsg && (
           <span className="muted small" role="status">
             {shareMsg}
@@ -149,7 +153,17 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
             {peptide.halfLife && (
               <div>
                 <dt>How long it lasts (half-life)</dt>
-                <dd>{peptide.halfLife}</dd>
+                <dd>
+                  {peptide.halfLife}
+                  {peptide.id in HALF_LIFE_HOURS && (
+                    <>
+                      {" "}
+                      <a className="small" href={href("plus/levels", { peptide: peptide.id })}>
+                        See your estimated level curve ✦
+                      </a>
+                    </>
+                  )}
+                </dd>
               </div>
             )}
           </dl>

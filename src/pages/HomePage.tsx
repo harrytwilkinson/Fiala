@@ -1,4 +1,4 @@
-import { DoseRing, VialGlyph } from "../components/DoseRing";
+import { DiscardCountdown, DoseRing, VialGlyph } from "../components/DoseRing";
 import { Icon } from "../components/Icon";
 import { backupIsDue } from "../lib/backup";
 import { useLastBackupAt } from "../lib/backupDevice";
@@ -12,6 +12,7 @@ import { formatTime, isDueOn, takenOn, useSchedules, type Schedule } from "../li
 import { fmt } from "../lib/reconstitution";
 import { defaultVialFor, runsOutOn, useVials, vialStatus, vials } from "../lib/vials";
 import { vialAlert } from "./VialsPage";
+import { tapFeedback } from "../lib/haptics";
 
 const UPCOMING_DAYS = 6;
 const ICON_URL = `${import.meta.env.BASE_URL}fiala.svg`;
@@ -52,6 +53,7 @@ export function HomePage() {
       vialId: vial?.id,
       scheduleId: s.id,
     });
+    tapFeedback("success");
   };
 
   return (
@@ -136,6 +138,7 @@ export function HomePage() {
                       {runsOut ? `Runs out around ${formatDateKey(runsOut, { weekday: "short", month: "short", day: "numeric" })}` : `${pct}% left`} · mixed{" "}
                       {status.daysSinceMixed === 0 ? "today" : `${status.daysSinceMixed} day${status.daysSinceMixed === 1 ? "" : "s"} ago`}
                     </span>
+                    <DiscardCountdown daysLeft={status.daysUntilDiscard} totalDays={vial.discardAfterDays} />
                   </div>
                 </li>
               );

@@ -10,6 +10,7 @@ inside a native shell, plus a few native-only features:
 | Backup / CSV export | Download or Web Share | Native share sheet (Save to Files, iCloud, Drive, email…) |
 | Offline | Service worker | Built in (files are bundled in the app) |
 | Icon & splash screen | Web manifest | Native icons, adaptive Android icon, light/dark splash |
+| Haptics | None | A light tap when a dose, vial, measurement or side effect is saved |
 
 The `ios/` and `android/` folders are the real Xcode and Android Studio
 projects. They're committed to git, as Capacitor recommends.
@@ -60,6 +61,17 @@ reopened, so as long as the app is opened at least every couple of weeks,
 reminders keep coming. A reminder for today is skipped once that dose is logged.
 Notification permission is requested the first time you save a schedule, or from
 **Turn on reminders** on the Schedules screen.
+
+## Home-screen widget (planned)
+
+A "next dose" widget needs native code that can't be written or tested from the web build alone:
+
+- **iOS:** a WidgetKit extension target in Xcode, plus an App Group so the app can share the next dose with it.
+- **Android:** an `AppWidgetProvider` with a small layout, reading the same data from `SharedPreferences`.
+- **Both:** a small Capacitor plugin (or `@capacitor/preferences` with a shared group) that the web code calls
+  whenever schedules or doses change, the same moments `nativeReminders.ts` re-plans reminders.
+
+Do this on a Mac with Xcode open, alongside the store submission work.
 
 ## Before publishing to the stores
 

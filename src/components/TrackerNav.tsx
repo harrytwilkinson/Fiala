@@ -19,7 +19,7 @@ export function TrackerNav({ current }: { current: string }) {
       ))}
     </nav>
     <a className="plus-link small" href={href("plus")}>
-      <span className="plus-badge">✦ Plus</span> Clinician report, insights and spend
+      <span className="plus-badge">✦ Plus</span> Reports, insights, level curves and planning
     </a>
     </>
   );

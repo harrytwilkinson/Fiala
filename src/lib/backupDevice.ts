@@ -5,6 +5,8 @@ import { canShareFiles, saveFile, type SaveResult } from "./files";
 import { measurements } from "./body";
 import { schedules } from "./schedules";
 import { symptoms } from "./symptoms";
+import { cycles } from "./cycles";
+import { titrations } from "./titration";
 import { migrateKey } from "./store";
 import { vials } from "./vials";
 
@@ -16,7 +18,15 @@ migrateKey("peptide-compass:last-backup", LAST_BACKUP_KEY);
 const listeners = new Set<() => void>();
 
 export function currentData(): BackupData {
-  return { doses: doses.get(), vials: vials.get(), schedules: schedules.get(), measurements: measurements.get(), symptoms: symptoms.get() };
+  return {
+    doses: doses.get(),
+    vials: vials.get(),
+    schedules: schedules.get(),
+    measurements: measurements.get(),
+    symptoms: symptoms.get(),
+    cycles: cycles.get(),
+    titrations: titrations.get(),
+  };
 }
 
 function getLastBackupAt(): string | null {
@@ -70,6 +80,8 @@ export function restoreBackup(incoming: BackupData, mode: "merge" | "replace"): 
   schedules.replaceAll(next.data.schedules);
   measurements.replaceAll(next.data.measurements);
   symptoms.replaceAll(next.data.symptoms);
+  cycles.replaceAll(next.data.cycles);
+  titrations.replaceAll(next.data.titrations);
   return next.added;
 }
 

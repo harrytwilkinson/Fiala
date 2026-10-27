@@ -4,10 +4,13 @@ import { findPeptide } from "./data/peptides";
 import { useOnboardingOpen } from "./lib/onboarding";
 import { href, useRoute } from "./lib/router";
 import { BackupPage } from "./pages/BackupPage";
+import { ComparePage } from "./pages/ComparePage";
 import { GlossaryPage } from "./pages/GlossaryPage";
 import { BodyPage } from "./pages/BodyPage";
 import { HomePage } from "./pages/HomePage";
 import { InsightsPage } from "./pages/InsightsPage";
+import { LevelsPage } from "./pages/LevelsPage";
+import { CyclesPage } from "./pages/CyclesPage";
 import { PlusPage } from "./pages/PlusPage";
 import { ReportPage } from "./pages/ReportPage";
 import { SpendPage } from "./pages/SpendPage";
@@ -27,6 +30,9 @@ import { Icon, type IconName } from "./components/Icon";
 const CalculatorPage = __CONVERTER__ ? lazy(() => import("./pages/CalculatorPage").then((m) => ({ default: m.CalculatorPage }))) : null;
 const VialGuidesPage = __CONVERTER__ ? lazy(() => import("./pages/VialGuidesPage").then((m) => ({ default: m.VialGuidesPage }))) : null;
 const VialGuideRoute = __CONVERTER__ ? lazy(() => import("./pages/VialGuideRoute").then((m) => ({ default: m.VialGuideRoute }))) : null;
+// Label dose steps show dose amounts, so they stay out of store builds along with the converter.
+const TitrationPage = __CONVERTER__ ? lazy(() => import("./pages/TitrationPage").then((m) => ({ default: m.TitrationPage }))) : null;
+const MixingPage = __CONVERTER__ ? lazy(() => import("./pages/MixingPage").then((m) => ({ default: m.MixingPage }))) : null;
 
 const TABS = ([
   { path: "", label: "Home", icon: "home" },
@@ -42,7 +48,7 @@ export function App() {
   const [section = "", id] = path;
   // Stacks live under the Library tab.
   const tab =
-    section === "stacks" || section === "glossary" ? "library" : section === "plus" ? "tracker" : section === "guides" ? "calculator" : section;
+    section === "stacks" || section === "glossary" ? "library" : section === "plus" ? "tracker" : section === "guides" || section === "mixing" ? "calculator" : section;
   // Remount pages when the query changes so prefilled values are applied.
   const key = `${path.join("/")}?${query.toString()}`;
 
@@ -50,7 +56,14 @@ export function App() {
   switch (section) {
     case "library": {
       const peptide = id ? findPeptide(id) : undefined;
-      page = peptide ? <PeptideDetailPage peptide={peptide} /> : <LibraryPage />;
+      page =
+        id === "compare" ? (
+          <ComparePage a={query.get("a") ?? undefined} b={query.get("b") ?? undefined} />
+        ) : peptide ? (
+          <PeptideDetailPage peptide={peptide} />
+        ) : (
+          <LibraryPage />
+        );
       break;
     }
     case "stacks": {
@@ -60,6 +73,9 @@ export function App() {
     }
     case "calculator":
       page = __CONVERTER__ && CalculatorPage ? <CalculatorPage blend={query.get("blend") ?? undefined} /> : <HomePage />;
+      break;
+    case "mixing":
+      page = __CONVERTER__ && MixingPage ? <MixingPage /> : <HomePage />;
       break;
     case "guides":
       if (!__CONVERTER__ || !VialGuidesPage || !VialGuideRoute) page = <HomePage />;
@@ -75,7 +91,7 @@ export function App() {
       break;
     }
     case "plus":
-      page = id === "report" ? <ReportPage /> : id === "insights" ? <InsightsPage /> : id === "spend" ? <SpendPage /> : <PlusPage sessionId={query.get("session_id") ?? undefined} />;
+      page = id === "report" ? <ReportPage /> : id === "insights" ? <InsightsPage /> : id === "spend" ? <SpendPage /> : id === "levels" ? <LevelsPage peptideId={query.get("peptide") ?? undefined} /> : id === "cycles" ? <CyclesPage /> : id === "steps" && TitrationPage ? <TitrationPage /> : <PlusPage sessionId={query.get("session_id") ?? undefined} />;
       break;
     case "glossary":
       page = <GlossaryPage />;

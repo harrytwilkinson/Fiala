@@ -36,7 +36,10 @@ export function LibraryPage() {
         <GlossaryLink />
       </div>
       <LibraryNav active="peptides" />
-      <p className="muted">What each peptide is, what people use it for, and what it does in the body.</p>
+      <p className="muted">
+        What each peptide is, what people use it for, and what it does in the body.{" "}
+        <a href={href("library/compare")}>Compare two side by side</a>.
+      </p>
 
       <input
         type="search"

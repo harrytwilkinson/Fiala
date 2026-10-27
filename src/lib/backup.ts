@@ -3,6 +3,8 @@ import type { DoseEntry, DoseUnit } from "./doseLog";
 import type { Measurement } from "./body";
 import type { Schedule } from "./schedules";
 import type { Severity, SymptomEntry } from "./symptoms";
+import type { Cycle } from "./cycles";
+import type { TitrationPlan } from "./titration";
 import type { Vial } from "./vials";
 
 // Backup files are plain JSON so they can be saved anywhere (Files, iCloud,
@@ -22,6 +24,9 @@ export interface BackupData {
   /** Added later: missing from older backups. */
   measurements: Measurement[];
   symptoms: SymptomEntry[];
+  /** Added with Fiala Plus planning: missing from older backups. */
+  cycles: Cycle[];
+  titrations: TitrationPlan[];
 }
 
 export interface BackupFile {
@@ -49,7 +54,7 @@ export function backupFileName(now = new Date()): string {
 }
 
 export function countRecords(d: BackupData): number {
-  return d.doses.length + d.vials.length + d.schedules.length + d.measurements.length + d.symptoms.length;
+  return d.doses.length + d.vials.length + d.schedules.length + d.measurements.length + d.symptoms.length + d.cycles.length + d.titrations.length;
 }
 
 export function parseBackup(text: string): ParsedBackup {
@@ -82,6 +87,8 @@ export function parseBackup(text: string): ParsedBackup {
       schedules: pick(raw.data.schedules, isSchedule),
       measurements: pick(raw.data.measurements, isMeasurement),
       symptoms: pick(raw.data.symptoms, isSymptom),
+      cycles: pick(raw.data.cycles, isCycle),
+      titrations: pick(raw.data.titrations, isTitration),
     },
     skipped,
   };
@@ -103,6 +110,8 @@ export function mergeData(current: BackupData, incoming: BackupData): { data: Ba
       schedules: merge(current.schedules, incoming.schedules),
       measurements: merge(current.measurements, incoming.measurements),
       symptoms: merge(current.symptoms, incoming.symptoms),
+      cycles: merge(current.cycles, incoming.cycles),
+      titrations: merge(current.titrations, incoming.titrations),
     },
     added,
   };
@@ -212,5 +221,35 @@ function isSymptom(x: unknown): x is SymptomEntry {
     [1, 2, 3].includes(x.severity as Severity) &&
     optStr(x.relatedTo) &&
     optStr(x.notes)
+  );
+}
+
+const wholeAtLeast = (x: unknown, min: number): x is number => Number.isInteger(x) && (x as number) >= min;
+
+function isCycle(x: unknown): x is Cycle {
+  return (
+    isObject(x) &&
+    str(x.id) &&
+    peptideId(x.peptideId) &&
+    str(x.peptideName) &&
+    typeof x.startDate === "string" &&
+    DATE_KEY.test(x.startDate) &&
+    wholeAtLeast(x.weeksOn, 1) &&
+    wholeAtLeast(x.weeksOff, 0) &&
+    wholeAtLeast(x.repeats, 1) &&
+    optStr(x.notes)
+  );
+}
+
+function isTitration(x: unknown): x is TitrationPlan {
+  return (
+    isObject(x) &&
+    str(x.id) &&
+    str(x.productId) &&
+    wholeAtLeast(x.stepIndex, 0) &&
+    typeof x.stepStartedOn === "string" &&
+    DATE_KEY.test(x.stepStartedOn) &&
+    Array.isArray(x.history) &&
+    x.history.every((h) => isObject(h) && wholeAtLeast(h.stepIndex, 0) && typeof h.startedOn === "string" && DATE_KEY.test(h.startedOn))
   );
 }
