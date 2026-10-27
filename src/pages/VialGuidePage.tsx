@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SyringeVisual } from "../components/SyringeVisual";
 import { guidesFor, vialLabel, waterOptions, type VialGuide } from "../data/vialGuides";
-import { SYRINGES, calculate, fmt, toMg, validate, type MassUnit } from "../lib/reconstitution";
+import { SYRINGES, calculate, doseForUnits, fmt, toMg, validate, type MassUnit } from "../lib/reconstitution";
 import { href } from "../lib/router";
 import { FREQUENCIES, MIXED_SHELF_DAYS, describeDays, mixRow, vialDuration } from "../lib/vialGuide";
 import { StatusBadge } from "./LibraryPage";
@@ -120,7 +120,8 @@ export function VialGuidePage({ guide }: { guide: VialGuide }) {
               = {fmt(result.doseVolumeMl, 3)} mL
               {result.doseUnitsRounded !== result.doseUnits && <> (exact: {fmt(result.doseUnits)} units)</>}
             </p>
-            <SyringeVisual syringe={syringe} units={result.doseUnitsRounded} />
+            <SyringeVisual syringe={syringe} units={result.doseUnitsRounded} onUnitsChange={(u) => setDose(doseForUnits(u, vialMg, water, doseUnit))} />
+            <p className="muted small syringe-hint">Drag the plunger to see the dose at any mark.</p>
             <dl className="stats">
               <div>
                 <dt>Doses in the vial</dt>

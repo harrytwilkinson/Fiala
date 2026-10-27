@@ -5,6 +5,7 @@ import { SyringeVisual } from "../components/SyringeVisual";
 import {
   SYRINGES,
   calculate,
+  doseForUnits,
   fmt,
   toMg,
   validate,
@@ -139,7 +140,12 @@ function SingleConverter() {
             {result.doseUnitsRounded !== result.doseUnits && <> (exact: {fmt(result.doseUnits)} units)</>}
           </p>
 
-          <SyringeVisual syringe={syringe} units={result.doseUnitsRounded} />
+          <SyringeVisual
+            syringe={syringe}
+            units={result.doseUnitsRounded}
+            onUnitsChange={(u) => setDose(doseForUnits(u, input.vialMg, input.waterMl, doseUnit))}
+          />
+          <p className="muted small syringe-hint">Drag the plunger to see the dose at any mark.</p>
 
           <dl className="stats">
             <div>

@@ -122,6 +122,14 @@ export function waterForTargetUnits(vialMg: number, doseMg: number, targetUnits:
   return (targetUnits / UNITS_PER_ML) * (vialMg / doseMg);
 }
 
+/** The dose held by `units` on a U-100 syringe, as a plain number string for a dose input (no grouping). */
+export function doseForUnits(units: number, vialMg: number, waterMl: number, unit: MassUnit): string {
+  const mg = (units / UNITS_PER_ML) * (vialMg / waterMl);
+  const value = unit === "mcg" ? mg * 1000 : mg;
+  const decimals = unit === "mcg" ? (value >= 100 ? 0 : 1) : 3;
+  return String(Number(value.toFixed(decimals)));
+}
+
 export function fmt(n: number, maxDecimals = 2): string {
   if (!Number.isFinite(n)) return "—";
   return n.toLocaleString(undefined, { maximumFractionDigits: maxDecimals });
