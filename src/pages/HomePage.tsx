@@ -1,3 +1,4 @@
+import { Icon } from "../components/Icon";
 import { backupIsDue } from "../lib/backup";
 import { useLastBackupAt } from "../lib/backupDevice";
 import { addDays, formatDateKey, localDateKey } from "../lib/dates";
@@ -130,24 +131,24 @@ export function HomePage() {
 
       <div className="tiles">
         <a className="card tile" href={href("library")}>
-          <span className="tile-icon" aria-hidden>📚</span>
+          <Icon name="library" className="tile-icon" />
           <strong>Library</strong>
           <span className="muted small">What each peptide does and what the evidence says</span>
         </a>
         {__CONVERTER__ && (
           <a className="card tile" href={href("calculator")}>
-            <span className="tile-icon" aria-hidden>🧮</span>
+            <Icon name="syringe" className="tile-icon" />
             <strong>Converter</strong>
             <span className="muted small">Turn a prescribed dose into syringe units</span>
           </a>
         )}
         <a className="card tile" href={href("tracker")}>
-          <span className="tile-icon" aria-hidden>📈</span>
+          <Icon name="pulse" className="tile-icon" />
           <strong>Tracker</strong>
           <span className="muted small">Dose log, vials and schedules</span>
         </a>
         <a className="card tile" href={href("news")}>
-          <span className="tile-icon" aria-hidden>📰</span>
+          <Icon name="news" className="tile-icon" />
           <strong>News</strong>
           <span className="muted small">New research, trials and regulatory updates</span>
         </a>

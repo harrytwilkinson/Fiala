@@ -1,11 +1,11 @@
 // Writes the static library pages, sitemap.xml and robots.txt into dist/ after `vite build`.
 // If the build includes a news feed (dist/news.json), each page also lists that peptide's latest news.
 
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { PEPTIDES } from "../src/data/peptides.ts";
 import { parseFeed, type NewsItem } from "../src/lib/newsFeed.ts";
 import { STACKS } from "../src/data/stacks.ts";
-import { glossaryPage, libraryIndexPage, peptidePage, robots, sitemap, stackPage } from "../src/lib/sitePages.ts";
+import { FONT_FILES, glossaryPage, libraryIndexPage, peptidePage, robots, sitemap, stackPage } from "../src/lib/sitePages.ts";
 import { VIAL_GUIDES } from "../src/data/vialGuides.ts";
 import { analyticsTag } from "../src/lib/site.ts";
 import { vialGuidePage, vialGuidesIndexPage } from "../src/lib/vialGuidePages.ts";
@@ -25,6 +25,9 @@ async function news(): Promise<NewsItem[]> {
 }
 
 const items = await news();
+
+await mkdir(new URL("fonts/", DIST), { recursive: true });
+for (const [from, to] of FONT_FILES) await copyFile(new URL(`../node_modules/${from}`, import.meta.url), new URL(`fonts/${to}`, DIST));
 await mkdir(new URL("peptides/", DIST), { recursive: true });
 await writeFile(new URL("peptides/index.html", DIST), libraryIndexPage(PEPTIDES));
 for (const p of PEPTIDES) {
