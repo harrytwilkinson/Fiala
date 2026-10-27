@@ -21,7 +21,7 @@
 - **Backup & restore**: save every dose, vial, schedule, measurement and side-effect note to one JSON file (via the phone's share sheet where supported, otherwise a download), and restore it on any device. Restores show a preview first, then either merge (keeping existing records) or replace everything. Damaged records are skipped. The home screen nudges you if you haven't backed up in 30 days, and the app requests persistent storage.
 - **Privacy policy and support pages**: standalone pages at `privacy.html` and `support.html` (also used as the App Store / Play URLs), linked from the home screen, walkthrough and backup screen, and available offline.
 - All tracking data stays on the device (localStorage). Data saved before the rename (under `peptide-compass:*` keys) is moved to `fiala:*` automatically, and old backup files still restore.
-- **Native iOS & Android apps** (Capacitor): real dose-reminder notifications, native share sheet for backups and exports, native icons and splash screens, and a cautious App Store fallback build that compiles out the converter (Google Play gets the full app). See [NATIVE.md](NATIVE.md).
+- **Native iOS & Android apps** (Capacitor): real dose-reminder notifications, native share sheet for backups and exports, native icons and splash screens, and a store build that compiles out the converter. See [NATIVE.md](NATIVE.md).
 - **Installable and offline-ready**: add it to a phone's home screen as "Fiala" and it runs full-screen like a native app. After the first visit it works without a connection (`public/manifest.webmanifest`, `public/sw.js`).
 
 ## Converter math
@@ -82,7 +82,7 @@ npm test           # unit tests (converter math, vials, schedules, backup, news,
 npm run news       # fetch the news feed into public/news.json
 npm run build      # typecheck + production build to dist/
 npm run native:sync        # build and copy into the iOS/Android projects (see NATIVE.md)
-npm run native:sync:store  # same, without the converter (App Store fallback only)
+npm run native:sync:store  # same, without the dose converter
 ```
 
 Stack: React 19, TypeScript, Vite and Vitest, with no backend; Capacitor 8 for the native apps.
