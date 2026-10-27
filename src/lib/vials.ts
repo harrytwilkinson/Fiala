@@ -1,6 +1,7 @@
 import { addDays, daysBetween, localDateKey } from "./dates";
 import type { DoseEntry } from "./doseLog";
 import { UNITS_PER_ML } from "./reconstitution";
+import { isDueOn, takenOn, type Schedule } from "./schedules";
 import { createCollection } from "./store";
 
 // A reconstituted vial. Remaining peptide is derived from the doses logged
@@ -98,4 +99,32 @@ export function defaultVialFor(all: Vial[], peptideName: string): Vial | undefin
   return all
     .filter((v) => !v.finished && v.peptideName === peptideName)
     .sort((a, b) => a.mixedOn.localeCompare(b.mixedOn))[0];
+}
+
+/**
+ * The day the last dose in this vial is due, following the active schedules for its peptide.
+ * Today's doses count only if they haven't been taken yet. Undefined when nothing is scheduled
+ * or doses left isn't known yet.
+ */
+export function runsOutOn(
+  vial: Pick<Vial, "peptideName">,
+  dosesLeft: number | undefined,
+  allSchedules: Schedule[],
+  entries: DoseEntry[],
+  today = localDateKey(),
+  horizonDays = 365,
+): string | undefined {
+  if (!dosesLeft || dosesLeft <= 0) return undefined;
+  const own = allSchedules.filter((s) => s.active && s.peptideName === vial.peptideName);
+  if (own.length === 0) return undefined;
+  let left = dosesLeft;
+  for (let i = 0; i <= horizonDays; i++) {
+    const day = addDays(today, i);
+    for (const s of own) {
+      if (!isDueOn(s, day) || (i === 0 && takenOn(s, entries, day))) continue;
+      left -= 1;
+      if (left === 0) return day;
+    }
+  }
+  return undefined;
 }

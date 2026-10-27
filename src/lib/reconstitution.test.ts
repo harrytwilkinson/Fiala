@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SYRINGES, calculate, calculateBlend, roundToTick, toMg, validate, validateBlend, waterForTargetUnits } from "./reconstitution";
+import { SYRINGES, calculate, calculateBlend, doseForUnits, roundToTick, toMg, validate, validateBlend, waterForTargetUnits } from "./reconstitution";
 
 const [syr30, syr50, syr100] = SYRINGES;
 
@@ -97,5 +97,15 @@ describe("blends", () => {
     expect(validateBlend({ components: [...glow, { name: "", mg: 5 }], waterMl: 3, basis: 0, doseMg: 1, syringe })[0].field).toBe("components");
     expect(validateBlend({ components: glow, waterMl: 0, basis: 0, doseMg: 1, syringe })[0].field).toBe("waterMl");
     expect(validateBlend({ components: glow, waterMl: 3, basis: 1, doseMg: 20, syringe })[0].message).toContain("BPC-157");
+  });
+});
+
+describe("doseForUnits", () => {
+  it("turns syringe units back into a dose", () => {
+    // 5 mg in 2 mL = 2.5 mg/mL; 10 units = 0.1 mL = 0.25 mg
+    expect(doseForUnits(10, 5, 2, "mg")).toBe("0.25");
+    expect(doseForUnits(10, 5, 2, "mcg")).toBe("250");
+    expect(doseForUnits(1, 5, 3, "mcg")).toBe("16.7");
+    expect(doseForUnits(36, 10, 2, "mcg")).toBe("1800");
   });
 });

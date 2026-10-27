@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DoseEntry } from "./doseLog";
-import { defaultVialFor, doseMg, vialStatus, type Vial } from "./vials";
+import { defaultVialFor, doseMg, runsOutOn, vialStatus, type Vial } from "./vials";
 
 const vial: Vial = {
   id: "v1",
@@ -68,5 +68,39 @@ describe("defaultVialFor", () => {
     const finished = { ...vial, id: "v0", mixedOn: "2026-09-01", finished: true };
     expect(defaultVialFor([newer, vial, finished], "BPC-157")?.id).toBe("v1");
     expect(defaultVialFor([newer], "TB-500")).toBeUndefined();
+  });
+});
+
+describe("runsOutOn", () => {
+  const daily = {
+    id: "s1",
+    peptideId: "bpc-157",
+    peptideName: "BPC-157",
+    amount: 250,
+    unit: "mcg" as const,
+    frequency: { kind: "interval" as const, everyDays: 1 },
+    time: "08:00",
+    startDate: "2026-10-01",
+    active: true,
+  };
+
+  it("counts forward through scheduled days", () => {
+    // 3 doses left, once daily from today: today, tomorrow, the day after
+    expect(runsOutOn(vial, 3, [daily], [], "2026-10-10")).toBe("2026-10-12");
+  });
+
+  it("skips today's dose once it has been taken", () => {
+    const taken = { ...dose(250, "mcg", new Date(2026, 9, 10, 8).toISOString()), scheduleId: "s1" };
+    expect(runsOutOn(vial, 3, [daily], [taken], "2026-10-10")).toBe("2026-10-13");
+  });
+
+  it("counts twice-daily schedules twice", () => {
+    expect(runsOutOn(vial, 4, [daily, { ...daily, id: "s2", time: "20:00" }], [], "2026-10-10")).toBe("2026-10-11");
+  });
+
+  it("is unknown without a schedule or doses left", () => {
+    expect(runsOutOn(vial, 3, [], [], "2026-10-10")).toBeUndefined();
+    expect(runsOutOn(vial, undefined, [daily], [], "2026-10-10")).toBeUndefined();
+    expect(runsOutOn(vial, 3, [{ ...daily, peptideName: "TB-500" }], [], "2026-10-10")).toBeUndefined();
   });
 });

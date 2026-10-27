@@ -1,3 +1,4 @@
+import { DoseRing, VialGlyph } from "../components/DoseRing";
 import { Icon } from "../components/Icon";
 import { backupIsDue } from "../lib/backup";
 import { useLastBackupAt } from "../lib/backupDevice";
@@ -8,7 +9,8 @@ import { isNative } from "../lib/platform";
 import { SUPPORT_URL } from "../lib/site";
 import { href, navigate } from "../lib/router";
 import { formatTime, isDueOn, takenOn, useSchedules, type Schedule } from "../lib/schedules";
-import { defaultVialFor, useVials, vialStatus, vials } from "../lib/vials";
+import { fmt } from "../lib/reconstitution";
+import { defaultVialFor, runsOutOn, useVials, vialStatus, vials } from "../lib/vials";
 import { vialAlert } from "./VialsPage";
 
 const UPCOMING_DAYS = 6;
@@ -28,6 +30,12 @@ export function HomePage() {
     .filter((v) => !v.finished)
     .map((v) => ({ vial: v, alert: vialAlert(vialStatus(v, entries, today)) }))
     .filter((a) => a.alert);
+  const gauges = allVials
+    .filter((v) => !v.finished)
+    .map((vial) => {
+      const status = vialStatus(vial, entries, today);
+      return { vial, status, runsOut: runsOutOn(vial, status.dosesLeft, allSchedules, entries, today) };
+    });
   const last = entries[0];
   const lastBackupAt = useLastBackupAt();
   const showBackupNudge = backupIsDue(lastBackupAt, entries.length + allVials.length + allSchedules.length > 0, today);
@@ -61,6 +69,11 @@ export function HomePage() {
             Nothing scheduled today. <a href={href("tracker/schedules")}>Set up a schedule</a> to see your doses here.
           </p>
         ) : (
+          <>
+          <div className="today-summary">
+            <DoseRing taken={dueToday.map((s) => !!takenOn(s, entries, today))} total={dueToday.length} />
+            <TodaySummary dueToday={dueToday} isTaken={(s) => !!takenOn(s, entries, today)} />
+          </div>
           <ul className="list today">
             {dueToday.map((s) => {
               const taken = takenOn(s, entries, today);
@@ -90,8 +103,46 @@ export function HomePage() {
               );
             })}
           </ul>
+          </>
         )}
       </section>
+
+      {gauges.length > 0 && (
+        <section className="card">
+          <div className="row">
+            <h2>Your vials</h2>
+            <a className="small" href={href("tracker/vials")}>
+              All vials
+            </a>
+          </div>
+          <ul className="list vial-gauges">
+            {gauges.map(({ vial, status, runsOut }) => {
+              const pct = Math.round(status.remainingFraction * 100);
+              const low = status.low || status.empty;
+              return (
+                <li key={vial.id} className="vial-gauge">
+                  <VialGlyph fraction={status.remainingFraction} low={low} />
+                  <div className="vial-gauge-body">
+                    <div className="row">
+                      <strong>{vial.peptideName}</strong>
+                      <span className="muted small mono">
+                        {status.dosesLeft !== undefined ? `${status.dosesLeft} dose${status.dosesLeft === 1 ? "" : "s"} left` : `${fmt(status.remainingMg, 2)} mg left`}
+                      </span>
+                    </div>
+                    <div className="meter" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={`${vial.peptideName} remaining`}>
+                      <div className={`meter-fill${low ? " low" : ""}`} style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="muted small">
+                      {runsOut ? `Runs out around ${formatDateKey(runsOut, { weekday: "short", month: "short", day: "numeric" })}` : `${pct}% left`} · mixed{" "}
+                      {status.daysSinceMixed === 0 ? "today" : `${status.daysSinceMixed} day${status.daysSinceMixed === 1 ? "" : "s"} ago`}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {alerts.length > 0 && (
         <section className="card">
@@ -189,6 +240,25 @@ export function HomePage() {
           healthcare professional before using any peptide, and double-check every calculation before you inject.
         </p>
       </section>
+    </div>
+  );
+}
+
+function TodaySummary({ dueToday, isTaken }: { dueToday: Schedule[]; isTaken: (s: Schedule) => boolean }) {
+  const next = dueToday.find((s) => !isTaken(s));
+  const left = dueToday.filter((s) => !isTaken(s)).length;
+  return (
+    <div>
+      <h3>{left === 0 ? "All done for today" : `${left} still to take`}</h3>
+      <p className="muted small">
+        {next ? (
+          <>
+            Next: <strong>{next.peptideName}</strong> at {formatTime(next.time)}
+          </>
+        ) : (
+          "Every scheduled dose is logged."
+        )}
+      </p>
     </div>
   );
 }

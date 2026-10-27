@@ -1,5 +1,8 @@
 import { useState } from "react";
+import { SequenceExplorer, StageLadder } from "../components/Sequence";
 import type { Peptide } from "../data/peptides";
+import { researchStage } from "../data/researchStage";
+import { SEQUENCES } from "../data/sequences";
 import { stacksWith } from "../data/stacks";
 import { guidesFor, vialLabel } from "../data/vialGuides";
 import { evidenceLinks } from "../lib/evidenceLinks";
@@ -18,6 +21,7 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
   const isFollowing = followed.includes(peptide.id);
   const news = filterNews(feed?.items ?? [], "all", followed, peptide.id);
   const [shareMsg, setShareMsg] = useState("");
+  const sequence = SEQUENCES[peptide.id];
 
   const share = async () => {
     const result = await shareLink(peptidePageUrl(peptide.id), `${peptide.name} · Fiala`);
@@ -70,9 +74,25 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
         <p>{peptide.mechanism}</p>
       </section>
 
+      {sequence && (
+        <section className="card">
+          <div className="row">
+            <h2>Amino-acid sequence</h2>
+            <span className="muted small mono">{sequence.seq.length} aa</span>
+          </div>
+          <SequenceExplorer sequence={sequence} />
+        </section>
+      )}
+
       <section className="card">
         <h2>Strength of evidence</h2>
-        <p>{peptide.evidence}</p>
+        <div className="evidence-grid">
+          <div>
+            <h3>Research stage</h3>
+            <StageLadder stage={researchStage(peptide)} />
+          </div>
+          <p>{peptide.evidence}</p>
+        </div>
       </section>
 
       <section className="card">

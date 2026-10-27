@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { GlossaryLink, LibraryNav } from "../components/LibraryNav";
+import { SequenceBeads, StageMeter } from "../components/Sequence";
 import { CATEGORIES, PEPTIDES, STATUS_LABEL, type Category, type Peptide } from "../data/peptides";
+import { researchStage } from "../data/researchStage";
+import { SEQUENCES } from "../data/sequences";
 import { href } from "../lib/router";
 
 export function StatusBadge({ peptide }: { peptide: Peptide }) {
@@ -64,7 +67,11 @@ export function LibraryPage() {
               </div>
               {p.aliases.length > 0 && <div className="muted small">{p.aliases.join(" · ")}</div>}
               <p>{p.summary}</p>
-              <span className="muted small">{p.category}</span>
+              {SEQUENCES[p.id] && <SequenceBeads sequence={SEQUENCES[p.id]} />}
+              <div className="card-foot">
+                <StageMeter stage={researchStage(p)} />
+                <span className="muted small">{p.category}</span>
+              </div>
             </a>
           </li>
         ))}
