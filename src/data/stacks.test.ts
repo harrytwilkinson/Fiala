@@ -63,6 +63,6 @@ describe("new library entries", () => {
 
   it("flag compounds that aren't peptides", () => {
     expect(findPeptide("mk-677")?.notPeptide).toBe(true);
-    expect(PEPTIDES.filter((p) => p.notPeptide).map((p) => p.id)).toEqual(["mk-677"]);
+    expect(PEPTIDES.filter((p) => p.notPeptide).map((p) => p.id)).toEqual(["mk-677", "5-amino-1mq"]);
   });
 });

@@ -40,7 +40,7 @@ h2{font-size:1.15rem;margin:0 0 .5rem}
 .lead{font-size:1.08rem}
 .badges{display:flex;gap:.4rem;flex-wrap:wrap;margin:.5rem 0 .75rem}
 .badge{font-size:.75rem;font-weight:600;padding:.15rem .55rem;border-radius:999px;background:var(--border);color:var(--text)}
-.s-approved{background:#dcfce7;color:#14532d}.s-approved-elsewhere{background:#dbeafe;color:#1e3a8a}.s-investigational{background:#ede9fe;color:#4c1d95}.s-research-only{background:#fef3c7;color:#78350f}.s-supplement{background:#fce7f3;color:#831843}.s-not-peptide{background:var(--accent-soft);color:var(--text)}
+.s-approved{background:#dcfce7;color:#14532d}.s-approved-elsewhere{background:#dbeafe;color:#1e3a8a}.s-investigational{background:#ede9fe;color:#4c1d95}.s-research-only{background:#fef3c7;color:#78350f}.s-supplement{background:#fce7f3;color:#831843}.s-cosmetic{background:#ccfbf1;color:#134e4a}.s-not-peptide{background:var(--accent-soft);color:var(--text)}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem 1.1rem;margin:1rem 0}
 .card ul{margin:.25rem 0;padding-left:1.2rem}
 .cta{border-color:var(--accent);background:var(--accent-soft)}

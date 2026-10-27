@@ -16,9 +16,14 @@ export type Category =
   | "Immune & inflammation"
   | "Longevity & cellular health"
   | "Muscle & performance"
-  | "Bone health";
+  | "Bone health"
+  | "Digestive health"
+  | "Heart & blood"
+  | "Infections"
+  | "Cancer & imaging"
+  | "Brain & nerves";
 
-export type ApprovalStatus = "approved" | "approved-elsewhere" | "investigational" | "research-only" | "supplement";
+export type ApprovalStatus = "approved" | "approved-elsewhere" | "investigational" | "research-only" | "supplement" | "cosmetic";
 
 export interface Peptide {
   id: string;
@@ -54,10 +59,13 @@ export const STATUS_LABEL: Record<ApprovalStatus, string> = {
   investigational: "In clinical trials",
   "research-only": "Research compound",
   supplement: "Dietary supplement",
+  cosmetic: "Cosmetic ingredient",
 };
 
 const STANDARD_STORAGE =
   "Unreconstituted (powder) vials are usually kept refrigerated or frozen and away from light. Once mixed with bacteriostatic water, keep refrigerated and do not freeze; follow the supplier's stated beyond-use date.";
+
+import { EXTRA_PEPTIDES } from "./peptidesExtra.ts";
 
 export const PEPTIDES: Peptide[] = [
   {
@@ -1266,6 +1274,7 @@ export const PEPTIDES: Peptide[] = [
       "IV 'skin-lightening' drips from unlicensed providers",
     ],
   },
+  ...EXTRA_PEPTIDES,
 ];
 
 const CATEGORY_ORDER: Category[] = [
@@ -1281,6 +1290,11 @@ const CATEGORY_ORDER: Category[] = [
   "Immune & inflammation",
   "Longevity & cellular health",
   "Bone health",
+  "Digestive health",
+  "Heart & blood",
+  "Brain & nerves",
+  "Infections",
+  "Cancer & imaging",
 ];
 
 /** Categories that have at least one peptide, in display order. */
