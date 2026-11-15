@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { UNITS_PER_ML, roundToTick, type Syringe } from "../lib/reconstitution";
 
 interface Props {
@@ -19,6 +19,7 @@ export function SyringeVisual({ syringe, units, onUnitsChange }: Props) {
   // Draw ticks at 1-unit spacing at most so the 100-unit barrel stays readable.
   const tickStep = Math.max(syringe.tickUnits, capacity > 50 ? 2 : 1);
   const [dragging, setDragging] = useState(false);
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, ""); // ids with ":" break url(#…) references
   const shown = useTweened(units, !dragging);
 
   const y = 20;
@@ -50,7 +51,7 @@ export function SyringeVisual({ syringe, units, onUnitsChange }: Props) {
   return (
     <svg
       className={interactive ? "syringe interactive" : "syringe"}
-      viewBox={`0 0 ${VIEW_WIDTH} 90`}
+      viewBox={interactive ? `0 -58 ${VIEW_WIDTH} 148` : `0 0 ${VIEW_WIDTH} 90`}
       {...(interactive
         ? {
             role: "slider",
@@ -81,27 +82,43 @@ export function SyringeVisual({ syringe, units, onUnitsChange }: Props) {
       <rect x={X0} y={y} width={fill} height={h} className={over ? "syringe-fill over" : "syringe-fill"} />
       {/* plunger stopper, with a grip when draggable */}
       <rect x={X0 + fill - 1} y={y} width={6} height={h} className="syringe-stopper" />
-      {interactive && <circle cx={X0 + fill + 2} cy={y + h + 10} r={5} className="syringe-grip" />}
       {/* barrel */}
       <rect x={X0} y={y} width={BARREL} height={h} rx={3} className="syringe-barrel" />
       {/* hub + needle */}
       <path d={`M${X0} ${y + 8} L${X0 - 14} ${y + h / 2 - 3} L${X0 - 14} ${y + h / 2 + 3} L${X0} ${y + h - 8} Z`} className="syringe-hub" />
       <line x1={X0 - 14} y1={y + h / 2} x2={4} y2={y + h / 2} className="syringe-needle" />
       {/* graduations */}
-      {ticks.map((u) => {
-        const major = u % labelEvery === 0;
-        const tx = X0 + u * scale;
-        return (
-          <g key={u}>
-            <line x1={tx} y1={y} x2={tx} y2={y + (major ? 14 : 7)} className="syringe-tick" />
-            {major && (
-              <text x={tx} y={y + h + 16} textAnchor="middle" className="syringe-label">
-                {u}
-              </text>
-            )}
+      <g id={`ticks-${uid}`}>
+        {ticks.map((u) => {
+          const tx = X0 + u * scale;
+          return <line key={u} x1={tx} y1={y} x2={tx} y2={y + (u % labelEvery === 0 ? 14 : 7)} className="syringe-tick" />;
+        })}
+      </g>
+      {ticks
+        .filter((u) => u % labelEvery === 0)
+        .map((u) => (
+          <text key={u} x={X0 + u * scale} y={y + h + 16} textAnchor="middle" className="syringe-label">
+            {u}
+          </text>
+        ))}
+      {/* loupe: a magnified view of the marks around the plunger */}
+      {interactive && (
+        <g transform={`translate(${X0 + fill} 0)`} className="loupe">
+          <clipPath id={`lens-${uid}`}>
+            <circle cx="0" cy="-27" r="24" />
+          </clipPath>
+          <line x1="0" x2="0" y1="-2" y2={y + h} className="loupe-cursor" />
+          <circle cx="0" cy="-27" r="26" className="loupe-body" />
+          <g clipPath={`url(#lens-${uid})`}>
+            <g transform={`translate(0 -27) scale(2.2) translate(${-(X0 + fill)} ${-(y + 7)})`}>
+              <rect x={X0} y={y} width={fill} height={h} className={over ? "syringe-fill over" : "syringe-fill"} />
+              <use href={`#ticks-${uid}`} />
+            </g>
           </g>
-        );
-      })}
+          <circle cx="0" cy="-27" r="25" className="loupe-ring" />
+          <path d="M-16 -41a21 21 0 0 1 19 -8" className="loupe-glint" />
+        </g>
+      )}
     </svg>
   );
 }

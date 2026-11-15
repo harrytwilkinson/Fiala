@@ -764,3 +764,36 @@ main { padding-bottom: 7.5rem; }
 .dial-hand path { fill: var(--amber); }
 .dial-second line { stroke: var(--text); stroke-width: 0.8; opacity: 0.9; } .dial-second circle { fill: var(--text); }
 .dial-cap { fill: var(--surface); stroke: var(--muted); stroke-width: 1; } .dial-pin { fill: var(--text); }
+
+/* Calibre stage 3: converter instruments (rolling counter, loupe on the syringe, thumbwheel). */
+.result-big { display: flex; align-items: flex-end; gap: 0.6rem; word-spacing: 0; }
+.result-big > span:last-child { padding-bottom: 0.7rem; }
+.odo { display: inline-flex; gap: 4px; font-variant-numeric: tabular-nums; line-height: 1; }
+.odo-d { position: relative; height: 1em; width: 0.64em; overflow: hidden; border-radius: 8px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--glass-line); }
+.odo-d::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(rgba(0, 0, 0, 0.3), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.3)); }
+.odo-d.blank { color: var(--border); }
+.odo-strip { display: flex; flex-direction: column; transition: transform 0.55s cubic-bezier(0.2, 0.9, 0.25, 1.08); }
+.odo-strip span { height: 1em; line-height: 1; display: grid; place-items: center; }
+.odo-sep { align-self: flex-end; font-size: 0.6em; line-height: 1.2; color: var(--muted); }
+@media (prefers-color-scheme: light) { .odo-d::after { background: linear-gradient(rgba(14, 23, 23, 0.14), transparent 30%, transparent 70%, rgba(14, 23, 23, 0.14)); } }
+@media (prefers-reduced-motion: reduce) { .odo-strip { transition: none; } }
+.syringe-barrel { stroke: var(--border); stroke-width: 1; }
+.syringe-fill { fill: var(--accent); opacity: 0.32; }
+.syringe-stopper { fill: var(--amber); }
+.syringe-tick { stroke: var(--muted); stroke-width: 0.8; }
+.loupe-cursor { stroke: var(--amber); stroke-width: 1; }
+.loupe-body { fill: var(--surface); }
+.loupe-ring { fill: none; stroke: var(--muted); stroke-width: 2.2; }
+.loupe-glint { fill: none; stroke: rgba(255, 255, 255, 0.45); stroke-width: 1.2; stroke-linecap: round; }
+.wheel { position: relative; height: 44px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--bg); touch-action: pan-y; cursor: ew-resize; -webkit-user-select: none; user-select: none;
+  --rib: linear-gradient(90deg, #8d9997 0 1px, #eef2f1 1px 4px, #cfd7d6 4px 7px); }
+@media (prefers-color-scheme: dark) { .wheel { --rib: linear-gradient(90deg, #3a4747 0 1px, #0d1415 1px 4px, #1c2728 4px 7px); } }
+.wheel i { position: absolute; inset: 0; }
+.wheel-ribs { background: var(--rib) var(--off, 0px) 0 / 7px 100% repeat-x; }
+.wheel-shade { background: linear-gradient(90deg, var(--bg), transparent 24%, transparent 76%, var(--bg)), linear-gradient(rgba(255, 255, 255, 0.14), transparent 32%, rgba(0, 0, 0, 0.3)); }
+.wheel .wheel-index { left: 50%; right: auto; width: 2px; margin-left: -1px; background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+.wheel:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.result-big .odo { font-family: var(--f-display); font-size: 4.6rem; font-weight: 200; letter-spacing: 0; color: var(--text); }
+.result-big .odo span { font: inherit; letter-spacing: 0; text-transform: none; color: inherit; }
+.result-big .odo .blank { color: var(--border); }
+.result-big .odo .odo-sep { font-size: 0.6em; color: var(--muted); }
