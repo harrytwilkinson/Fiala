@@ -809,3 +809,18 @@ main { padding-bottom: 7.5rem; }
 .bezel-read strong { font-weight: 500; font-size: 1rem; line-height: 1.2; }
 .seq-info { min-height: 0; text-align: center; color: var(--muted); }
 .seq-legend { justify-content: center; }
+
+/* Calibre stage 5: the library as an instrument catalogue. */
+.lib-list { list-style: none; margin: 0; padding: 0; }
+.lib-list li { border-bottom: 1px solid var(--glass-line); }
+.lib-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.75rem 0.1rem; color: inherit; text-decoration: none; }
+.lib-row:active { opacity: 0.7; }
+.sigil { width: 46px; height: 46px; flex: none; }
+.sigil-ring { fill: var(--bg-2); stroke: var(--border); }
+.sigil line { stroke: var(--res); stroke-width: 1.1; stroke-linecap: round; }
+.sigil-dot { fill: var(--muted); opacity: 0.6; } .sigil-pin { fill: var(--muted); }
+.lib-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+.lib-main strong { font-family: var(--f-display); font-weight: 400; font-size: 1.22rem; line-height: 1.15; overflow-wrap: anywhere; }
+.lib-alias { font-family: var(--f-mono); font-size: 0.68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lib-side { display: flex; flex-direction: column; align-items: flex-end; gap: 0.45rem; flex: none; }
+.lib-list .lib-empty { padding: 2rem 0; text-align: center; border: 0; }

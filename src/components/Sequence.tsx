@@ -15,6 +15,36 @@ export function SequenceBeads({ sequence }: { sequence: PeptideSequence }) {
   );
 }
 
+// Approximate residue weights (daltons), used only to vary the length of each mark on a sigil.
+const MASS: Record<string, number> = { G: 57, A: 71, S: 87, P: 97, V: 99, T: 101, C: 103, L: 113, I: 113, N: 114, D: 115, Q: 128, K: 128, E: 129, M: 131, H: 137, F: 147, R: 156, Y: 163, W: 186, X: 85 };
+
+/** A peptide's "fingerprint": a small dial with one mark per amino acid, coloured by type and sized by weight. */
+export function SequenceSigil({ sequence }: { sequence?: PeptideSequence }) {
+  const c = 23;
+  const p = (r: number, deg: number) => {
+    const a = ((deg - 90) * Math.PI) / 180;
+    return [c + r * Math.cos(a), c + r * Math.sin(a)];
+  };
+  const residues = sequence ? [...sequence.seq] : [];
+  return (
+    <svg viewBox="0 0 46 46" className="sigil" aria-hidden="true">
+      <circle cx={c} cy={c} r="21.5" className="sigil-ring" />
+      {sequence
+        ? residues.map((r, i) => {
+            const d = (i / residues.length) * 360;
+            const [x1, y1] = p(9.5, d);
+            const [x2, y2] = p(12 + (7 * ((MASS[r] ?? 110) - 57)) / 129, d);
+            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} className={`res-${RESIDUE_CLASS[r]}`} />;
+          })
+        : Array.from({ length: 24 }, (_, i) => {
+            const [x, y] = p(14, i * 15);
+            return <circle key={i} cx={x} cy={y} r="0.8" className="sigil-dot" />;
+          })}
+      <circle cx={c} cy={c} r="1.6" className="sigil-pin" />
+    </svg>
+  );
+}
+
 const C = 160;
 const R = 124;
 const at = (r: number, deg: number): [number, number] => {
@@ -147,7 +177,15 @@ export function SequenceExplorer({ sequence }: { sequence: PeptideSequence }) {
 }
 
 /** Five short bars showing how far research has got, with the stage name. */
-export function StageMeter({ stage }: { stage: ResearchStage }) {
+export function StageMeter({ stage, compact }: { stage: ResearchStage; compact?: boolean }) {
+  if (compact)
+    return (
+      <span className="stage-bars" role="img" aria-label={`Research stage ${stage} of 5: ${STAGE_LABEL[stage]}`}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <i key={n} className={n <= stage ? "on" : ""} />
+        ))}
+      </span>
+    );
   return (
     <span className="stage" title="How far research has got">
       <span className="stage-bars" aria-hidden>
