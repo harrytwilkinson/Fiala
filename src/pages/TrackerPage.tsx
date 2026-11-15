@@ -1,12 +1,16 @@
 import { useState, type FormEvent } from "react";
 import { PeptideField, choiceId, choiceName, emptyChoice, type PeptideChoice } from "../components/PeptideField";
+import { Head } from "../components/Calibre";
+import { Icon } from "../components/Icon";
+import { LogTape } from "../components/LogTape";
 import { TrackerNav } from "../components/TrackerNav";
-import { formatDateKey, localDateTimeValue } from "../lib/dates";
+import { addDays, formatDateKey, localDateKey, localDateTimeValue } from "../lib/dates";
 import { doses, lastSiteFor, siteLastUsed, toCsv, useDoseLog, type DoseEntry, type DoseUnit } from "../lib/doseLog";
 import { SiteMap } from "../components/SiteMap";
 import { saveFile } from "../lib/files";
 import { href } from "../lib/router";
-import { schedules } from "../lib/schedules";
+import { schedules, useSchedules } from "../lib/schedules";
+import { doseStreak } from "../lib/streak";
 import { defaultVialFor, useVials } from "../lib/vials";
 import { tapFeedback } from "../lib/haptics";
 
@@ -81,6 +85,13 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
     setTimeout(() => setSaved(false), 2500);
   };
 
+  const today = localDateKey();
+  const weekStart = addDays(today, -6);
+  const weekCount = entries.filter((e) => localDateKey(new Date(e.takenAt)) >= weekStart).length;
+  const streak = doseStreak(useSchedules(), entries, today);
+  const sinceLast = entries[0] ? (Date.now() - new Date(entries[0].takenAt).getTime()) / 3_600_000 : undefined;
+  const lastAgo = sinceLast === undefined ? "nothing logged yet" : sinceLast < 1 ? "last dose under 1 h ago" : sinceLast < 48 ? `last dose ${Math.round(sinceLast)} h ago` : `last dose ${Math.round(sinceLast / 24)} d ago`;
+
   const vialLabel = (id?: string) => {
     const v = id && allVials.find((x) => x.id === id);
     return v ? `${v.vialMg} mg vial mixed ${formatDateKey(v.mixedOn)}` : undefined;
@@ -88,8 +99,41 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
 
   return (
     <div className="page">
-      <h1>Tracker</h1>
+      <Head label="Tracker" title="Dose log">
+        <div className="cal-count">
+          <b>{entries.length}</b>
+          <span className="cal-label">logged</span>
+        </div>
+      </Head>
       <TrackerNav current="tracker" />
+
+      <section className="readout tape-panel">
+        <div className="readout-row">
+          <span className="cal-label">Last four weeks</span>
+          <span className="cal-label b">{lastAgo}</span>
+        </div>
+        <LogTape entries={entries} />
+        <dl className="stats three flat">
+          <div>
+            <dt>This week</dt>
+            <dd>
+              {weekCount}
+              <i>doses</i>
+            </dd>
+          </div>
+          <div>
+            <dt>Streak</dt>
+            <dd>
+              {streak}
+              <i>{streak === 1 ? "day" : "days"}</i>
+            </dd>
+          </div>
+          <div>
+            <dt>Active vials</dt>
+            <dd>{allVials.filter((v) => !v.finished).length}</dd>
+          </div>
+        </dl>
+      </section>
 
       {schedule && (
         <p className="notice">
@@ -97,6 +141,10 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
         </p>
       )}
 
+      <div className="cal-sec-h log-h">
+        <h2>Log a dose</h2>
+        <i aria-hidden />
+      </div>
       <form className="card form" onSubmit={submit}>
         <PeptideField
           value={peptide}
@@ -161,45 +209,45 @@ export function TrackerPage({ prefill }: { prefill: TrackerPrefill }) {
         </button>
       </form>
 
-      <div className="row">
+      <div className="cal-sec-h log-h">
         <h2>History</h2>
+        <i aria-hidden />
         {entries.length > 0 && (
-          <button type="button" className="button secondary small" onClick={() => saveFile(`fiala-dose-log-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(entries), "text/csv", { title: "Fiala dose log" })}>
+          <button type="button" className="pusher" onClick={() => saveFile(`fiala-dose-log-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(entries), "text/csv", { title: "Fiala dose log" })}>
             Export CSV
           </button>
         )}
       </div>
-      <p className="muted small">
+      <p className="cal-fine">
         Your log is saved only on this device. <a href={href("backup")}>Back it up</a> so you don't lose it.
       </p>
 
-      {entries.length === 0 && <p className="muted">No doses logged yet.</p>}
+      {entries.length === 0 && <p className="cal-empty">No doses logged yet.</p>}
       {groupByDay(entries).map(([day, items]) => (
         <section key={day} className="history-day">
           <h3>{day}</h3>
-          <ul className="list">
+          <ul className="dose-list">
             {items.map((e) => (
-              <li key={e.id} className="card history-item">
-                <div className="row">
+              <li key={e.id} className="log-row">
+                <span className="log-time">{new Date(e.takenAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</span>
+                <span className="dose-main">
                   <strong>{e.peptideName}</strong>
-                  <span>
-                    {e.amount} {e.unit}
-                  </span>
-                </div>
-                <div className="muted small">
-                  {new Date(e.takenAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
-                  {e.site && <> · {e.site}</>}
-                  {vialLabel(e.vialId) && <> · {vialLabel(e.vialId)}</>}
-                </div>
-                {e.notes && <p className="small">{e.notes}</p>}
+                  <span>{[e.site, vialLabel(e.vialId)].filter(Boolean).join(" · ") || "No site recorded"}</span>
+                  {e.notes && <em>{e.notes}</em>}
+                </span>
+                <b className="log-amt">
+                  {e.amount}
+                  <i>{e.unit}</i>
+                </b>
                 <button
                   type="button"
-                  className="link-button"
+                  className="log-del"
+                  aria-label={`Delete this ${e.peptideName} entry`}
                   onClick={() => {
                     if (confirm(`Delete this ${e.peptideName} entry?`)) doses.remove(e.id);
                   }}
                 >
-                  Delete
+                  <Icon name="minus" />
                 </button>
               </li>
             ))}
