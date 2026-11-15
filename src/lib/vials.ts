@@ -58,6 +58,8 @@ export interface VialStatus {
   dosesLogged: number;
   /** Based on the most recent dose from this vial; undefined until one is logged. */
   dosesLeft?: number;
+  /** How many doses of that size a full vial holds. */
+  dosesTotal?: number;
   daysSinceMixed: number;
   discardOn: string;
   daysUntilDiscard: number;
@@ -84,6 +86,7 @@ export function vialStatus(vial: Vial, entries: DoseEntry[], today = localDateKe
     remainingFraction: vial.vialMg > 0 ? remainingMg / vial.vialMg : 0,
     dosesLogged: own.length,
     dosesLeft,
+    dosesTotal: lastDoseMg ? Math.floor(vial.vialMg / lastDoseMg + 1e-9) : undefined,
     daysSinceMixed: daysBetween(vial.mixedOn, today),
     discardOn,
     daysUntilDiscard,

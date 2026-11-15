@@ -32,13 +32,15 @@ export function SyringeVisual({ syringe, units, onUnitsChange }: Props) {
   for (let u = 0; u <= capacity + 1e-9; u += tickStep) ticks.push(Math.round(u * 10) / 10);
 
   const interactive = !!onUnitsChange;
+  // The draggable version is drawn as a measuring scale: no plunger rod, so the barrel can fill the width.
+  const viewWidth = interactive ? X0 + BARREL + 14 : VIEW_WIDTH;
   const set = (u: number) => {
     const snapped = Math.min(capacity, Math.max(syringe.tickUnits, roundToTick(u, syringe.tickUnits)));
     if (snapped !== units) onUnitsChange?.(Math.round(snapped * 10) / 10);
   };
   const fromPointer = (e: PointerEvent<SVGSVGElement>) => {
     const box = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - box.left) / box.width) * VIEW_WIDTH;
+    const x = ((e.clientX - box.left) / box.width) * viewWidth;
     set((x - X0) / scale);
   };
   const onKeyDown = (e: KeyboardEvent<SVGSVGElement>) => {
@@ -51,7 +53,7 @@ export function SyringeVisual({ syringe, units, onUnitsChange }: Props) {
   return (
     <svg
       className={interactive ? "syringe interactive" : "syringe"}
-      viewBox={interactive ? `0 -58 ${VIEW_WIDTH} 148` : `0 0 ${VIEW_WIDTH} 90`}
+      viewBox={interactive ? `0 -58 ${viewWidth} 142` : `0 0 ${VIEW_WIDTH} 90`}
       {...(interactive
         ? {
             role: "slider",
@@ -76,8 +78,13 @@ export function SyringeVisual({ syringe, units, onUnitsChange }: Props) {
         : { role: "img", "aria-label": `Syringe filled to ${units} of ${capacity} units` })}
     >
       {/* plunger rod + thumb press */}
-      <rect x={X0 + fill} y={y + h / 2 - 3} width={BARREL - fill + 30} height={6} className="syringe-rod" />
-      <rect x={X0 + BARREL + 30} y={y - 4} width={6} height={h + 8} rx={2} className="syringe-rod" />
+      {!interactive && (
+        <>
+          <rect x={X0 + fill} y={y + h / 2 - 3} width={BARREL - fill + 30} height={6} className="syringe-rod" />
+          <rect x={X0 + BARREL + 30} y={y - 4} width={6} height={h + 8} rx={2} className="syringe-rod" />
+        </>
+      )}
+      {interactive && <rect x={X0} y={y} width={BARREL} height={h} rx={3} className="syringe-bed" />}
       {/* liquid */}
       <rect x={X0} y={y} width={fill} height={h} className={over ? "syringe-fill over" : "syringe-fill"} />
       {/* plunger stopper, with a grip when draggable */}

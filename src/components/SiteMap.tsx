@@ -10,35 +10,38 @@ interface Zone {
   site: string;
   x: number;
   y: number;
-  w: number;
-  h: number;
   side: "L" | "R";
 }
 
 const FRONT: Zone[] = [
-  { site: "Upper arm – right", x: 22, y: 44, w: 12, h: 30, side: "R" },
-  { site: "Upper arm – left", x: 86, y: 44, w: 12, h: 30, side: "L" },
-  { site: "Abdomen – right", x: 40, y: 78, w: 19, h: 28, side: "R" },
-  { site: "Abdomen – left", x: 61, y: 78, w: 19, h: 28, side: "L" },
-  { site: "Thigh – right", x: 40, y: 126, w: 18, h: 42, side: "R" },
-  { site: "Thigh – left", x: 62, y: 126, w: 18, h: 42, side: "L" },
+  { site: "Upper arm – right", x: 32, y: 60, side: "R" },
+  { site: "Upper arm – left", x: 88, y: 60, side: "L" },
+  { site: "Abdomen – right", x: 50, y: 94, side: "R" },
+  { site: "Abdomen – left", x: 70, y: 94, side: "L" },
+  { site: "Thigh – right", x: 48, y: 150, side: "R" },
+  { site: "Thigh – left", x: 72, y: 150, side: "L" },
 ];
 
 const BACK: Zone[] = [
-  { site: "Glute – left", x: 40, y: 104, w: 19, h: 24, side: "L" },
-  { site: "Glute – right", x: 61, y: 104, w: 19, h: 24, side: "R" },
+  { site: "Glute – left", x: 50, y: 120, side: "L" },
+  { site: "Glute – right", x: 70, y: 120, side: "R" },
 ];
 
-function Silhouette() {
+// One half of the figure, from the centre line outwards; the other half is its mirror image.
+const HALF =
+  "M60 28.5h4.8l.7 5.5c6.5 2 16.5 3 20.5 8c4 4 5 12 5.5 20l2.5 30c.5 6 2 12 3 18c1 4-1 7-3 6c-2-1-3-6-4-12l-5-34c-.5-4-1.5-8-2.5-10l-1 24c-.5 8 1.5 16 2 26c.5 14-1.5 40-3.5 60c-1 12 0 26-1 40c-.5 8 1 14 3 18c1 3-4 4-10 3c-3-.5-2.5-5-2-9c1-14-2-26-2.5-38c-.5-12-2.5-44-5.5-60l-2-2z";
+
+function Silhouette({ back }: { back?: boolean }) {
   return (
     <g className="site-body">
-      <circle cx="60" cy="18" r="12" />
-      <rect x="54" y="28" width="12" height="8" />
-      <rect x="36" y="34" width="48" height="84" rx="10" />
-      <rect x="22" y="38" width="12" height="72" rx="6" />
-      <rect x="86" y="38" width="12" height="72" rx="6" />
-      <rect x="39" y="114" width="20" height="116" rx="8" />
-      <rect x="61" y="114" width="20" height="116" rx="8" />
+      {[40, 80, 120, 160, 200].map((y) => (
+        <line key={y} x1="6" x2="114" y1={y} y2={y} className="site-grid" />
+      ))}
+      <line x1="60" x2="60" y1="2" y2="234" className="site-grid" />
+      <ellipse cx="60" cy="16" rx="9.5" ry="11.5" />
+      <path d={HALF} />
+      <path d={HALF} transform="translate(120 0) scale(-1 1)" />
+      {back ? <path d="M60 36v80M48 118q12 8 24 0" className="site-detail" /> : <path d="M48 52q6 4 12 0q6 4 12 0M60 100v.1M52 118l8 6l8-6" className="site-detail" />}
     </g>
   );
 }
@@ -87,8 +90,10 @@ export function SiteMap({ value, onChange, lastUsed }: Props) {
         onKeyDown={onKey}
       >
         <title>{`${z.site} (${describe(days)})`}</title>
-        <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="4" />
-        <text x={z.x + z.w / 2} y={z.y + z.h / 2} textAnchor="middle" dominantBaseline="central">
+        <circle cx={z.x} cy={z.y} r="12" className="site-hit" />
+        <circle cx={z.x} cy={z.y} r="8.5" className="site-ring" />
+        <path d={`M${z.x - 12} ${z.y}h4M${z.x + 8} ${z.y}h4M${z.x} ${z.y - 12}v4M${z.x} ${z.y + 8}v4`} className="site-cross" />
+        <text x={z.x} y={z.y} textAnchor="middle" dominantBaseline="central">
           {z.side}
         </text>
       </g>
@@ -107,7 +112,7 @@ export function SiteMap({ value, onChange, lastUsed }: Props) {
         </figure>
         <figure>
           <svg viewBox="0 0 120 236" aria-label="Back of body">
-            <Silhouette />
+            <Silhouette back />
             {BACK.map(zone)}
           </svg>
           <figcaption>Back</figcaption>

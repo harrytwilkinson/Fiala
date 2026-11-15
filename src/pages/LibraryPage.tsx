@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { GlossaryLink, LibraryNav } from "../components/LibraryNav";
+import { Head } from "../components/Calibre";
+import { LibraryNav } from "../components/LibraryNav";
 import { SequenceSigil, StageMeter } from "../components/Sequence";
-import { CATEGORIES, PEPTIDES, STATUS_LABEL, type Category, type Peptide } from "../data/peptides";
+import { CATEGORIES, CATEGORY_SHORT, PEPTIDES, STATUS_LABEL, type Category, type Peptide } from "../data/peptides";
 import { researchStage } from "../data/researchStage";
 import { SEQUENCES } from "../data/sequences";
 import { href } from "../lib/router";
 
 /** Short status wording for the compact library rows; the full label is on each peptide's page. */
-const STATUS_SHORT: Record<Peptide["status"], string> = {
+export const STATUS_SHORT: Record<Peptide["status"], string> = {
   approved: "Approved",
   "approved-elsewhere": "Approved abroad",
   investigational: "In trials",
@@ -41,20 +42,23 @@ export function LibraryPage() {
 
   return (
     <div className="page">
-      <div className="row">
-        <h1>Peptide library</h1>
-        <GlossaryLink />
-      </div>
+      <Head label="Library" title="Compounds">
+        <div className="cal-count">
+          <b>{PEPTIDES.length}</b>
+          <span className="cal-label">entries</span>
+        </div>
+      </Head>
       <LibraryNav active="peptides" />
-      <p className="muted">
-        What each peptide is, what people use it for, and what it does in the body.{" "}
-        <a href={href("library/compare")}>Compare two side by side</a>.
+      <p className="cal-links">
+        <a href={href("library/compare")}>Compare two</a>
+        <a href={href("glossary")}>Glossary</a>
       </p>
 
       <input
         type="search"
         className="search"
-        placeholder="Search by name, brand or use (e.g. tendon, weight)"
+        placeholder="Name, brand or use"
+        aria-label="Search the library"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
@@ -64,8 +68,8 @@ export function LibraryPage() {
           All
         </button>
         {CATEGORIES.map((c) => (
-          <button type="button" key={c} className={category === c ? "chip active" : "chip"} onClick={() => setCategory(c)}>
-            {c}
+          <button type="button" key={c} className={category === c ? "chip active" : "chip"} onClick={() => setCategory(c)} aria-label={c}>
+            {CATEGORY_SHORT[c]}
           </button>
         ))}
       </div>

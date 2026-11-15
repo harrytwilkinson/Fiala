@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
+import { ReserveGauge, Sec, VialMark } from "../components/Calibre";
 import { DoseDial } from "../components/DoseDial";
-import { DiscardCountdown, VialGlyph } from "../components/DoseRing";
 import { Icon } from "../components/Icon";
 import { backupIsDue } from "../lib/backup";
 import { useLastBackupAt } from "../lib/backupDevice";
@@ -10,19 +11,24 @@ import { isNative } from "../lib/platform";
 import { SUPPORT_URL } from "../lib/site";
 import { href, navigate } from "../lib/router";
 import { formatTime, isDueOn, takenOn, useSchedules, type Schedule } from "../lib/schedules";
-import { fmt } from "../lib/reconstitution";
+import { doseStreak, weekProgress } from "../lib/streak";
 import { defaultVialFor, runsOutOn, useVials, vialStatus, vials } from "../lib/vials";
 import { vialAlert } from "./VialsPage";
 import { tapFeedback } from "../lib/haptics";
 
 const UPCOMING_DAYS = 6;
-const ICON_URL = `${import.meta.env.BASE_URL}fiala.svg`;
 
 export function HomePage() {
   const entries = useDoseLog();
   const allSchedules = useSchedules();
   const allVials = useVials();
   const today = localDateKey();
+  // Re-render twice a minute so the "next dose" countdown stays current.
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => setTick((n) => n + 1), 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   const dueToday = allSchedules.filter((s) => isDueOn(s, today)).sort((a, b) => a.time.localeCompare(b.time));
   const upcoming = Array.from({ length: UPCOMING_DAYS }, (_, i) => addDays(today, i + 1))
@@ -58,104 +64,142 @@ export function HomePage() {
     tapFeedback("success");
   };
 
+  const todayItems = dueToday.map((s) => ({ s, taken: takenOn(s, entries, today) }));
+  const pending = todayItems.filter((t) => !t.taken);
+  const nowDate = new Date();
+  const nowHour = nowDate.getHours() + nowDate.getMinutes() / 60;
+  const hourOf = (s: Schedule) => Number(s.time.slice(0, 2)) + Number(s.time.slice(3, 5)) / 60;
+  let nextTone = "idle";
+  let nextText = "Nothing scheduled today";
+  if (todayItems.length > 0 && pending.length === 0) {
+    nextTone = "ok";
+    nextText = "All doses logged today";
+  } else if (pending.length > 0) {
+    const next = pending[0].s;
+    const mins = Math.round((hourOf(next) - nowHour) * 60);
+    nextTone = "due";
+    nextText =
+      mins > 0
+        ? `Next · ${next.peptideName} · in ${mins >= 60 ? `${Math.floor(mins / 60)} h ${String(mins % 60).padStart(2, "0")} m` : `${mins} min`}`
+        : `Due · ${next.peptideName} · since ${formatTime(next.time)}`;
+  }
+  const week = weekProgress(allSchedules, entries, today);
+
   return (
-    <div className="page">
-      <h1 className="brand">
-        <img src={ICON_URL} alt="" />
-        <span>Fiala</span>
-      </h1>
-      <p className="muted">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
+    <div className="page home">
+      <header className="cal-top">
+        <h1 className="brand">
+          <VialMark />
+          <span>Fiala</span>
+        </h1>
+        <div className="date-window" role="img" aria-label={nowDate.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}>
+          <span>{nowDate.toLocaleDateString(undefined, { weekday: "short" })}</span>
+          <b>{String(nowDate.getDate()).padStart(2, "0")}</b>
+        </div>
+      </header>
 
       <DoseDial
-        doses={dueToday.map((s) => ({ hour: Number(s.time.slice(0, 2)) + Number(s.time.slice(3, 5)) / 60, taken: !!takenOn(s, entries, today) }))}
-        reserve={lowest ? { fraction: lowest.status.remainingFraction, label: lowest.vial.peptideName } : undefined}
+        doses={todayItems.map(({ s, taken }) => ({ hour: hourOf(s), taken: !!taken }))}
+        reserve={
+          lowest
+            ? {
+                fraction: lowest.status.remainingFraction,
+                text: lowest.status.dosesLeft !== undefined ? `${lowest.status.dosesLeft} LEFT` : `${Math.round(lowest.status.remainingFraction * 100)}% LEFT`,
+              }
+            : undefined
+        }
+        week={week.days}
+        todayIndex={week.todayIndex}
+        streak={doseStreak(allSchedules, entries, today)}
       />
+      <p className={`dial-next ${nextTone}`}>
+        <i aria-hidden />
+        <span className="cal-label b">{nextText}</span>
+      </p>
 
-      <section className="card">
-        <h2>Today</h2>
-        {dueToday.length === 0 ? (
-          <p className="muted small">
+      <Sec title="Today's doses">
+        {todayItems.length === 0 ? (
+          <p className="cal-empty">
             Nothing scheduled today. <a href={href("tracker/schedules")}>Set up a schedule</a> to see your doses here.
           </p>
         ) : (
-          <>
-          <div className="today-summary">
-            <TodaySummary dueToday={dueToday} isTaken={(s) => !!takenOn(s, entries, today)} />
-          </div>
-          <ul className="list today">
-            {dueToday.map((s) => {
-              const taken = takenOn(s, entries, today);
-              return (
-                <li key={s.id} className={taken ? "today-item done" : "today-item"}>
-                  <div>
-                    <strong>{s.peptideName}</strong> · {s.amount} {s.unit}
-                    <div className="muted small">
-                      {taken ? `Taken at ${new Date(taken.takenAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}` : formatTime(s.time)}
-                    </div>
-                  </div>
-                  {taken ? (
-                    <span className="check" aria-label="Taken">
-                      ✓
+          <ul className="dose-list">
+            {todayItems.map(({ s, taken }, i) => (
+              <li key={s.id} className={taken ? "dose-row done" : "dose-row"}>
+                <span className="dose-idx" aria-hidden>
+                  {i + 1}
+                </span>
+                {taken ? (
+                  <span className="dose-main">
+                    <strong>{s.peptideName}</strong>
+                    <span>
+                      {s.amount} {s.unit} · {formatTime(s.time)}
                     </span>
-                  ) : (
-                    <div className="actions">
-                      <button type="button" className="button small" onClick={() => markTaken(s)}>
-                        Mark taken
-                      </button>
-                      <a className="button secondary small" href={href("tracker", { schedule: s.id })} aria-label={`Log ${s.peptideName} with details`}>
-                        Details
-                      </a>
-                    </div>
-                  )}
-                </li>
-              );
-            })}
+                  </span>
+                ) : (
+                  <a className="dose-main" href={href("tracker", { schedule: s.id })} aria-label={`Log ${s.peptideName} with details`}>
+                    <strong>{s.peptideName}</strong>
+                    <span>
+                      {s.amount} {s.unit} · {formatTime(s.time)}
+                    </span>
+                  </a>
+                )}
+                {taken ? (
+                  <span className="dose-took" aria-label={`Taken at ${new Date(taken.takenAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}`}>
+                    <Icon name="check" />
+                    <b>{new Date(taken.takenAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</b>
+                  </span>
+                ) : (
+                  <button type="button" className="pusher" onClick={() => markTaken(s)} aria-label={`Mark ${s.peptideName} taken`}>
+                    Log
+                  </button>
+                )}
+              </li>
+            ))}
           </ul>
-          </>
         )}
-      </section>
+      </Sec>
 
       {gauges.length > 0 && (
-        <section className="card">
-          <div className="row">
-            <h2>Your vials</h2>
-            <a className="small" href={href("tracker/vials")}>
-              All vials
+        <Sec
+          title="Vial reserve"
+          right={
+            <a className="cal-label" href={href("tracker/vials")}>
+              {gauges.length} active
             </a>
-          </div>
-          <ul className="list vial-gauges">
+          }
+        >
+          <div className="reserve-grid">
             {gauges.map(({ vial, status, runsOut }) => {
-              const pct = Math.round(status.remainingFraction * 100);
-              const low = status.low || status.empty;
+              const d = status.daysUntilDiscard;
               return (
-                <li key={vial.id} className="vial-gauge">
-                  <VialGlyph fraction={status.remainingFraction} low={low} />
-                  <div className="vial-gauge-body">
-                    <div className="row">
-                      <strong>{vial.peptideName}</strong>
-                      <span className="muted small mono">
-                        {status.dosesLeft !== undefined ? `${status.dosesLeft} dose${status.dosesLeft === 1 ? "" : "s"} left` : `${fmt(status.remainingMg, 2)} mg left`}
-                      </span>
-                    </div>
-                    <div className="meter" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={`${vial.peptideName} remaining`}>
-                      <div className={`meter-fill${low ? " low" : ""}`} style={{ width: `${pct}%` }} />
-                    </div>
-                    <span className="muted small">
-                      {runsOut ? `Runs out around ${formatDateKey(runsOut, { weekday: "short", month: "short", day: "numeric" })}` : `${pct}% left`} · mixed{" "}
-                      {status.daysSinceMixed === 0 ? "today" : `${status.daysSinceMixed} day${status.daysSinceMixed === 1 ? "" : "s"} ago`}
-                    </span>
-                    <DiscardCountdown daysLeft={status.daysUntilDiscard} totalDays={vial.discardAfterDays} />
-                  </div>
-                </li>
+                <a key={vial.id} className="reserve" href={href("tracker/vials")}>
+                  <ReserveGauge fraction={status.remainingFraction} low={status.low || status.empty} />
+                  <strong>{vial.peptideName}</strong>
+                  <span className="reserve-num">
+                    {status.dosesLeft !== undefined && status.dosesTotal ? (
+                      <>
+                        {status.dosesLeft}
+                        <i> / {status.dosesTotal}</i>
+                      </>
+                    ) : (
+                      <>
+                        {Math.round(status.remainingFraction * 100)}
+                        <i>%</i>
+                      </>
+                    )}
+                  </span>
+                  <span className={d <= 3 ? "cal-label warn" : "cal-label"}>{d < 0 ? "Past discard" : d === 0 ? "Discard today" : `Discard · ${d} d`}</span>
+                  {runsOut && <span className="cal-label">Out · {formatDateKey(runsOut, { month: "short", day: "numeric" })}</span>}
+                </a>
               );
             })}
-          </ul>
-        </section>
+          </div>
+        </Sec>
       )}
 
       {alerts.length > 0 && (
-        <section className="card">
-          <h2>Vials needing attention</h2>
+        <Sec title="Needs attention">
           <ul className="list">
             {alerts.map(({ vial, alert }) => (
               <li key={vial.id}>
@@ -165,7 +209,7 @@ export function HomePage() {
               </li>
             ))}
           </ul>
-        </section>
+        </Sec>
       )}
 
       {showBackupNudge && (
@@ -176,53 +220,29 @@ export function HomePage() {
       )}
 
       {upcoming.length > 0 && (
-        <section className="card">
-          <h2>Coming up</h2>
-          <ul className="list upcoming">
+        <Sec title="Coming up">
+          <dl className="spec">
             {upcoming.map(({ day, items }) => (
-              <li key={day}>
-                <span className="muted small">{formatDateKey(day, { weekday: "short", month: "short", day: "numeric" })}</span>
-                <span>{items.map((s) => `${s.peptideName} ${s.amount} ${s.unit} · ${formatTime(s.time)}`).join("; ")}</span>
-              </li>
+              <div key={day}>
+                <dt>{formatDateKey(day, { weekday: "short", month: "short", day: "numeric" })}</dt>
+                <dd>{items.map((s) => `${s.peptideName} ${s.amount} ${s.unit} · ${formatTime(s.time)}`).join("; ")}</dd>
+              </div>
             ))}
-          </ul>
-        </section>
+          </dl>
+        </Sec>
       )}
 
-      <div className="tiles">
-        <a className="card tile" href={href("library")}>
-          <Icon name="library" className="tile-icon" />
-          <strong>Library</strong>
-          <span className="muted small">What each peptide does and what the evidence says</span>
-        </a>
-        {__CONVERTER__ && (
-          <a className="card tile" href={href("calculator")}>
-            <Icon name="syringe" className="tile-icon" />
-            <strong>Converter</strong>
-            <span className="muted small">Turn a prescribed dose into syringe units</span>
-          </a>
-        )}
-        <a className="card tile" href={href("tracker")}>
-          <Icon name="pulse" className="tile-icon" />
-          <strong>Tracker</strong>
-          <span className="muted small">Dose log, vials and schedules</span>
-        </a>
-        <a className="card tile" href={href("news")}>
-          <Icon name="news" className="tile-icon" />
-          <strong>News</strong>
-          <span className="muted small">New research, trials and regulatory updates</span>
-        </a>
-      </div>
-
       {last && (
-        <section className="card">
-          <h2>Last dose</h2>
-          <p>
-            <strong>{last.peptideName}</strong>: {last.amount} {last.unit}
-            <br />
-            <span className="muted small">{new Date(last.takenAt).toLocaleString()}</span>
-          </p>
-        </section>
+        <Sec title="Last dose">
+          <dl className="spec">
+            <div>
+              <dt>{last.peptideName}</dt>
+              <dd>
+                {last.amount} {last.unit} · {new Date(last.takenAt).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+              </dd>
+            </div>
+          </dl>
+        </Sec>
       )}
 
       <div className="home-links">
@@ -241,32 +261,10 @@ export function HomePage() {
         )}
       </div>
 
-      <section className="card disclaimer">
-        <h2>Important</h2>
-        <p className="small">
-          Fiala is for education and personal record-keeping only and is not medical advice. Many peptides
-          sold online are not approved for human use and may be impure or mislabeled. Always talk to a qualified
-          healthcare professional before using any peptide, and double-check every calculation before you inject.
-        </p>
-      </section>
-    </div>
-  );
-}
-
-function TodaySummary({ dueToday, isTaken }: { dueToday: Schedule[]; isTaken: (s: Schedule) => boolean }) {
-  const next = dueToday.find((s) => !isTaken(s));
-  const left = dueToday.filter((s) => !isTaken(s)).length;
-  return (
-    <div>
-      <h3>{left === 0 ? "All done for today" : `${left} still to take`}</h3>
-      <p className="muted small">
-        {next ? (
-          <>
-            Next: <strong>{next.peptideName}</strong> at {formatTime(next.time)}
-          </>
-        ) : (
-          "Every scheduled dose is logged."
-        )}
+      <p className="cal-note">
+        <strong>Important.</strong> Fiala is for education and personal record-keeping only and is not medical advice. Many
+        peptides sold online are not approved for human use and may be impure or mislabeled. Always talk to a qualified
+        healthcare professional before using any peptide, and double-check every calculation before you inject.
       </p>
     </div>
   );

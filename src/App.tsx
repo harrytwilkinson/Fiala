@@ -35,11 +35,11 @@ const TitrationPage = __CONVERTER__ ? lazy(() => import("./pages/TitrationPage")
 const MixingPage = __CONVERTER__ ? lazy(() => import("./pages/MixingPage").then((m) => ({ default: m.MixingPage }))) : null;
 
 const TABS = ([
-  { path: "", label: "Home", icon: "home" },
+  { path: "", label: "Today", icon: "dial" },
   { path: "library", label: "Library", icon: "library" },
-  { path: "calculator", label: "Converter", icon: "syringe" },
+  { path: "calculator", label: "Convert", icon: "syringe" },
   { path: "news", label: "News", icon: "news" },
-  { path: "tracker", label: "Tracker", icon: "pulse" },
+  { path: "tracker", label: "Track", icon: "pulse" },
 ] satisfies { path: string; label: string; icon: IconName }[]).filter((t) => t.path !== "calculator" || __CONVERTER__);
 
 export function App() {

@@ -8,8 +8,13 @@ export interface DialDose {
 
 interface Props {
   doses: DialDose[];
-  /** Fullest-to-emptiest reading for the reserve subdial: the vial closest to running out. */
-  reserve?: { fraction: number; label: string };
+  /** Reading for the reserve subdial: the vial closest to running out. */
+  reserve?: { fraction: number; text: string };
+  /** Monday-to-Sunday share of doses logged this week; null for days still to come or with nothing scheduled. */
+  week: (number | null)[];
+  todayIndex: number;
+  /** Days in a row with every scheduled dose logged. */
+  streak: number;
 }
 
 const C = 170;
@@ -28,7 +33,7 @@ const arc = (cx: number, cy: number, r: number, a0: number, a1: number) => {
 const angle = (hour: number) => ((hour - 12) / 24) * 360;
 
 /** Today as a 24-hour instrument dial: a marker at each dose time, live hands, and small dials for the day's count and vial reserve. */
-export function DoseDial({ doses, reserve }: Props) {
+export function DoseDial({ doses, reserve, week, todayIndex, streak }: Props) {
   const glow = `dial-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const hourHand = useRef<SVGGElement>(null);
   const secondHand = useRef<SVGGElement>(null);
@@ -57,11 +62,6 @@ export function DoseDial({ doses, reserve }: Props) {
     };
   }, []);
 
-  const now = new Date();
-  const nowHour = now.getHours() + now.getMinutes() / 60;
-  const next = doses.filter((d) => !d.taken && d.hour >= nowHour).sort((a, b) => a.hour - b.hour)[0];
-  const wait = next ? Math.max(0, next.hour - nowHour) : 0;
-  const waitText = !next ? (done === total && total > 0 ? "done" : "none") : wait < 1 ? `${Math.round(wait * 60)} min` : `${Math.floor(wait)} h ${String(Math.round((wait % 1) * 60)).padStart(2, "0")}`;
   const frac = reserve ? Math.min(1, Math.max(0, reserve.fraction)) : 0;
 
   return (
@@ -77,7 +77,15 @@ export function DoseDial({ doses, reserve }: Props) {
         {Array.from({ length: 24 }, (_, h) => {
           const d = angle(h);
           const [x, y] = pol(161.4, d);
-          if (h === 12) return <circle key={h} cx={x} cy={y} r="2.6" className="dial-sun" />;
+          if (h === 12)
+            return (
+              <g key={h} transform={`translate(${x} ${y})`} className="dial-sun">
+                <circle r="2.3" />
+                {[0, 45, 90, 135, 180, 225, 270, 315].map((r) => (
+                  <line key={r} y1="-3.6" y2="-5" transform={`rotate(${r})`} />
+                ))}
+              </g>
+            );
           if (h === 0) return <path key={h} transform={`translate(${x} ${y}) rotate(180)`} d="M1.6 -3.6a4 4 0 1 0 0 7.2a3.2 3.2 0 0 1 0 -7.2z" className="dial-moon" />;
           if (h % 2) return <circle key={h} cx={x} cy={y} r="0.9" className="dial-pip" />;
           return (
@@ -102,36 +110,50 @@ export function DoseDial({ doses, reserve }: Props) {
 
         {/* reserve, at nine */}
         <circle cx="104" cy="176" r="38" className="dial-sub" />
+        {[32, 26, 20, 14, 8].map((r) => (
+          <circle key={r} cx="104" cy="176" r={r} className="dial-az" />
+        ))}
         <path d={arc(104, 176, 27, -120, 120)} className="dial-arc" />
-        {reserve && <path d={arc(104, 176, 27, -120, -120 + 240 * Math.max(frac, 0.001))} className={frac <= 0.25 ? "dial-arc low" : "dial-arc on"} />}
-        <text x="104" y="180" className="dial-num">
-          {reserve ? Math.round(frac * 100) : "–"}
+        {reserve && frac > 0 && <path d={arc(104, 176, 27, -120, -120 + 240 * frac)} className={frac <= 0.25 ? "dial-arc low" : "dial-arc on"} />}
+        {reserve && <line x1="104" y1="176" x2={104 + 23 * Math.sin(((-120 + 240 * frac) * Math.PI) / 180)} y2={176 - 23 * Math.cos(((-120 + 240 * frac) * Math.PI) / 180)} className="dial-needle" />}
+        <circle cx="104" cy="176" r="2" className="dial-pin" />
+        <text x="104" y="196" className="dial-small">
+          {reserve ? reserve.text : "NO VIAL"}
         </text>
-        <text x="104" y="194" className="dial-small">
-          {reserve ? "% LEFT" : "NO VIAL"}
-        </text>
-        <text x="104" y="204" className="dial-small">
+        <text x="104" y="205" className="dial-small">
           RESERVE
         </text>
 
-        {/* next dose, at three */}
+        {/* streak, at three */}
         <circle cx="236" cy="176" r="38" className="dial-sub" />
-        <path d={arc(236, 176, 27, -120, 120)} className="dial-arc" />
-        {next && <path d={arc(236, 176, 27, -120, -120 + 240 * Math.max(0.001, 1 - Math.min(wait, 12) / 12))} className="dial-arc amber" />}
-        <text x="236" y="180" className={waitText.length > 4 ? "dial-num sm" : "dial-num"}>
-          {waitText}
+        {[32, 26, 20, 14, 8].map((r) => (
+          <circle key={r} cx="236" cy="176" r={r} className="dial-az" />
+        ))}
+        {week.map((f, i) => {
+          const a = ((-72 + i * 24 - 90) * Math.PI) / 180;
+          const tone = f === null ? "" : f >= 1 ? " on" : f > 0 ? " part" : " miss";
+          return <circle key={i} cx={236 + 27 * Math.cos(a)} cy={176 + 27 * Math.sin(a)} r="2.3" className={`dial-day${tone}${i === todayIndex ? " now" : ""}`} />;
+        })}
+        <text x="236" y="182" className="dial-num">
+          {streak}
         </text>
-        <text x="236" y="199" className="dial-small">
-          NEXT DOSE
+        <text x="236" y="196" className="dial-small">
+          {streak === 1 ? "DAY" : "DAYS"}
+        </text>
+        <text x="236" y="205" className="dial-small">
+          STREAK
         </text>
 
         {/* today's count, at six */}
         <circle cx={C} cy="240" r="38" className="dial-sub" />
+        {[32, 26, 20, 14, 8].map((r) => (
+          <circle key={r} cx={C} cy="240" r={r} className="dial-az" />
+        ))}
         {doses.map((d, i) => {
           const g = total > 1 ? 14 : 0;
           return <path key={i} d={arc(C, 240, 30, -130 + (260 / total) * i + g / 2, -130 + (260 / total) * (i + 1) - g / 2)} className={d.taken ? "dial-seg on" : "dial-seg"} />;
         })}
-        <text x={C} y="244" className="dial-num">
+        <text x={C} y="246" className="dial-num">
           {done}
           <tspan className="dial-of">/{total}</tspan>
         </text>
