@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BlendConverter } from "../components/BlendConverter";
 import { ConverterNav } from "../components/ConverterNav";
+import { Odometer, Thumbwheel } from "../components/Instrument";
 import { SyringeVisual } from "../components/SyringeVisual";
 import {
   SYRINGES,
@@ -113,7 +114,14 @@ function SingleConverter() {
               ))}
             </div>
           </div>
-          <small className="hint">1 mg = 1,000 mcg.</small>
+          <Thumbwheel
+            label={`Prescribed dose in ${doseUnit}`}
+            value={parseFloat(dose)}
+            step={doseUnit === "mcg" ? 10 : 0.05}
+            min={doseUnit === "mcg" ? 10 : 0.05}
+            onChange={(v) => setDose(String(Math.round(v * 100) / 100))}
+          />
+          <small className="hint">Roll the wheel to fine-tune. 1 mg = 1,000 mcg.</small>
           {errorFor("doseMg") && <small className="error">{errorFor("doseMg")}</small>}
         </label>
 
@@ -133,7 +141,7 @@ function SingleConverter() {
         <section className="card result" aria-live="polite">
           <p className="result-label">Draw the syringe to</p>
           <p className="result-big">
-            {fmt(result.doseUnitsRounded, 1)} <span>units</span>
+            <Odometer value={fmt(result.doseUnitsRounded, 1)} label={`${fmt(result.doseUnitsRounded, 1)} units`} /> <span>units</span>
           </p>
           <p className="muted small">
             = {fmt(result.doseVolumeMl, 3)} mL
@@ -145,7 +153,7 @@ function SingleConverter() {
             units={result.doseUnitsRounded}
             onUnitsChange={(u) => setDose(doseForUnits(u, input.vialMg, input.waterMl, doseUnit))}
           />
-          <p className="muted small syringe-hint">Drag the plunger to see the dose at any mark.</p>
+          <p className="muted small syringe-hint">Drag along the syringe to see the dose at any mark.</p>
 
           <dl className="stats">
             <div>
