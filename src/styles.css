@@ -1,5 +1,5 @@
-/* Fiala "clinical glass": frosted surfaces over a soft brand glow, a characterful display face,
-   and a monospaced face for every dose, unit and time so numbers line up like an instrument. */
+/* Fiala base styles. The Calibre layer at the end of this file sets the current look (tokens, type, controls);
+   the token blocks just below are the earlier defaults it overrides. */
 :root {
   --bg: #edf3f2;
   --bg-2: #e1ebe9;
@@ -132,7 +132,7 @@ main { padding-bottom: 6.5rem; }
   background: var(--accent-soft); box-shadow: 0 0 0 1px var(--glass-line);
 }
 
-.badge { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.01em; padding: 0.2rem 0.6rem; border-radius: 999px; background: var(--bg-2); color: var(--text); white-space: nowrap; }
+.badge { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.01em; padding: 0.2rem 0.6rem; border-radius: 999px; background: transparent; color: var(--muted); white-space: nowrap; }
 .badge-approved { background: var(--b-approved); color: var(--b-approved-text); }
 .badge-approved-elsewhere { background: var(--b-elsewhere); color: var(--b-elsewhere-text); }
 .badge-investigational { background: var(--b-trial); color: var(--b-trial-text); }
@@ -661,3 +661,82 @@ a.news-title:hover { text-decoration: underline; }
 .sev-2 { fill: #fb923c; background: #fb923c; }
 .sev-3 { fill: var(--error); background: var(--error); }
 .swatch.sev-1, .swatch.sev-2, .swatch.sev-3 { border: 0; }
+
+/* ===================================================================================================
+   Calibre (redesign stage 1): the app as a precision instrument. Graphite dial, a single lume accent,
+   thin display numerals and engraved mono labels. This layer re-tunes the tokens and the shared
+   controls; the screens above inherit it.
+   =================================================================================================== */
+:root {
+  --bg: #e4e9e8; --bg-2: #d8dfde; --surface: #fafbfb; --seg-active: #ffffff;
+  --glass: rgba(250, 251, 251, 0.86); --glass-strong: rgba(250, 251, 251, 0.94); --glass-line: rgba(14, 23, 23, 0.12);
+  --text: #0e1717; --muted: #50605d; --border: #bfc9c7;
+  --accent: #0a7f72; --accent-soft: #d6e2e0; --accent-text: #ffffff; --accent-grad: linear-gradient(#0a7f72, #0a7f72);
+  --glow: rgba(10, 127, 114, 0.16); --glow-2: transparent; --fill: #0fa797; --amber: #c9620a;
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 14px 30px -20px rgba(14, 23, 23, 0.4);
+  --radius: 16px;
+  --brand-1: #0a7f72; --brand-2: #0a7f72; --brand-3: #0e1717;
+  --b-approved: transparent; --b-approved-text: #0a7f72;
+  --b-elsewhere: transparent; --b-elsewhere-text: #2f62c4;
+  --b-trial: transparent; --b-trial-text: #b3560a;
+  --b-research: transparent; --b-research-text: #50605d;
+  --b-supplement: transparent; --b-supplement-text: #7c4bb5;
+  --b-cosmetic: transparent; --b-cosmetic-text: #0b8576;
+  --f-display: "Jost Variable", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #070b0c; --bg-2: #0b1213; --surface: #0f1819; --seg-active: #1b2829;
+    --glass: rgba(15, 24, 25, 0.88); --glass-strong: rgba(18, 28, 29, 0.95); --glass-line: rgba(231, 239, 237, 0.1);
+    --text: #e7efed; --muted: #9baca9; --border: #2a3534;
+    --accent: #7cf5e0; --accent-soft: #142524; --accent-text: #04201c; --accent-grad: linear-gradient(#7cf5e0, #7cf5e0);
+    --glow: rgba(124, 245, 224, 0.2); --glow-2: transparent; --fill: #2dd4bf; --amber: #ffb454;
+    --shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 18px 34px -20px rgba(0, 0, 0, 0.9);
+    --brand-1: #7cf5e0; --brand-2: #7cf5e0; --brand-3: #e7efed;
+    --b-approved-text: #7cf5e0; --b-elsewhere-text: #8db4f7; --b-trial-text: #ffb454;
+    --b-research-text: #9baca9; --b-supplement-text: #c9a3ea; --b-cosmetic-text: #5fd9c6;
+  }
+}
+body::before { background: radial-gradient(40rem 22rem at 50% -8%, var(--glow), transparent 64%); }
+h1 { font-weight: 300; font-size: 2.15rem; letter-spacing: -0.01em; }
+h2 { font-weight: 400; font-size: 1.3rem; letter-spacing: 0; }
+h3, .result-label, .field-label, label:not(.onb-agree):not(.check) > span { font-family: var(--f-mono); font-size: 0.62rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+strong, b { font-weight: 600; }
+.card { background: var(--surface); }
+.tile strong { font-weight: 400; font-size: 1.2rem; letter-spacing: 0; }
+.tile-icon { border-radius: 50%; background: var(--bg-2); stroke-width: 1.4; }
+.icon { stroke-width: 1.4; }
+.button { font-family: var(--f-mono); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; padding: 1rem 1.3rem; box-shadow: 0 8px 22px -10px var(--accent); }
+.button.secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+.button.small { padding: 0.6rem 0.95rem; font-size: 0.62rem; }
+.chip { font-family: var(--f-mono); font-size: 0.62rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.55rem 0.8rem; background: transparent; color: var(--muted); border-color: var(--glass-line); }
+.chip.active { box-shadow: none; }
+.segmented { border-radius: 10px; background: var(--bg-2); }
+.segmented button, .segmented.wide a { font-family: var(--f-mono); font-size: 0.62rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 8px; padding-top: 0.6rem; padding-bottom: 0.6rem; }
+.badge { font-family: var(--f-mono); font-size: 0.56rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.2rem 0.4rem; border-radius: 4px; border: 1px solid currentColor; }
+.result-big { font-family: var(--f-display); font-weight: 200; font-size: 4.6rem; letter-spacing: -0.02em; word-spacing: -0.1em; color: var(--text); }
+.result-big span { font-family: var(--f-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+.stats dt { font-family: var(--f-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.stats dd { font-family: var(--f-display); font-weight: 300; font-size: 1.5rem; line-height: 1.1; }
+.ring-count { font-family: var(--f-display); font-weight: 300; font-size: 30px; }
+.stage-bars i { width: 9px; height: 3px; border-radius: 1px; }
+.stage-bars i.on { background: var(--text); }
+.brand img { width: 1.9rem; height: 1.9rem; border-radius: 0.55rem; box-shadow: none; }
+.brand span { font-size: 0.95rem; font-weight: 500; letter-spacing: 0.42em; text-transform: uppercase; background: none; color: var(--text); }
+/* Floating capsule tab bar with a lume index under the active tab. */
+main { padding-bottom: 7.5rem; }
+.tabbar {
+  left: max(14px, env(safe-area-inset-left)); right: max(14px, env(safe-area-inset-right));
+  bottom: calc(12px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom)));
+  max-width: 440px; margin: 0 auto; padding: 0.5rem 0.4rem 0.6rem;
+  border: 1px solid var(--border); border-radius: 32px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  box-shadow: 0 18px 36px -14px rgba(0, 0, 0, 0.55);
+}
+.tabbar a { font-family: var(--f-mono); font-size: 0.5rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; gap: 0.25rem; min-width: 0; flex: 1; }
+.tabbar .icon { width: 1.35rem; height: 1.35rem; }
+.tabbar a.active { color: var(--text); }
+.tabbar a.active .icon { color: var(--accent); transform: none; }
+.tabbar a.active::before { top: auto; bottom: -0.3rem; width: 14px; height: 2px; margin-left: -7px; border-radius: 2px; }

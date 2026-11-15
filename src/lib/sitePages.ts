@@ -24,20 +24,21 @@ export function metaDescription(text: string, max = 158): string {
 
 /** Same fonts as the app, copied into dist/fonts/ by scripts/build-pages.ts. Latin only to keep pages light. */
 export const FONT_FILES = [
-  ["@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2", "bricolage-grotesque.woff2"],
-  ["@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2", "figtree.woff2"],
-  ["@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2", "jetbrains-mono-500.woff2"],
+  ["@fontsource-variable/jost/files/jost-latin-wght-normal.woff2", "jost.woff2"],
+  ["@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2", "ibm-plex-sans-400.woff2"],
+  ["@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2", "ibm-plex-sans-600.woff2"],
+  ["@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2", "ibm-plex-mono-500.woff2"],
 ] as const;
 
 function fontFaces(root: string): string {
   const face = (family: string, file: string, weight: string) =>
     `@font-face{font-family:"${family}";src:url(${root}fonts/${file}) format("woff2");font-weight:${weight};font-display:swap}`;
-  return face("Bricolage Grotesque", "bricolage-grotesque.woff2", "200 800") + face("Figtree", "figtree.woff2", "300 900") + face("JetBrains Mono", "jetbrains-mono-500.woff2", "500") + "\n";
+  return face("Jost", "jost.woff2", "100 900") + face("IBM Plex Sans", "ibm-plex-sans-400.woff2", "400") + face("IBM Plex Sans", "ibm-plex-sans-600.woff2", "600") + face("IBM Plex Mono", "ibm-plex-mono-500.woff2", "500") + "\n";
 }
 
 const STYLE = `
-:root{--bg:#edf3f2;--surface:rgba(255,255,255,.74);--text:#0a1f1d;--muted:#536d67;--border:#d3e1de;--line:rgba(13,148,136,.14);--accent:#0f766e;--accent-soft:#ccfbf1;--warn-bg:#fff4ea;--warn-border:#fdba74;--warn-text:#7c2d12;--b1:#14b8a6;--b2:#0d9488;--b3:#3730a3;--glow:rgba(20,184,166,.24);--fd:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;--fb:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--fm:"JetBrains Mono",ui-monospace,Menlo,monospace;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#061110;--surface:rgba(15,36,34,.72);--text:#e2f2ef;--muted:#8ba9a3;--border:#1e3532;--line:rgba(94,234,212,.12);--accent:#2dd4bf;--accent-soft:#0f3d39;--warn-bg:#2a1a0c;--warn-border:#9a3412;--warn-text:#fed7aa;--b1:#5eead4;--b2:#2dd4bf;--b3:#818cf8;--glow:rgba(45,212,191,.18);color-scheme:dark}}
+:root{--bg:#e4e9e8;--surface:#fafbfb;--text:#0e1717;--muted:#50605d;--border:#bfc9c7;--line:rgba(14,23,23,.12);--accent:#0a7f72;--accent-soft:#d6e2e0;--warn-bg:#fff4ea;--warn-border:#fdba74;--warn-text:#7c2d12;--b1:#14b8a6;--b2:#0d9488;--b3:#3730a3;--glow:rgba(20,184,166,.24);--fd:"Jost","Avenir Next","Segoe UI",system-ui,sans-serif;--fb:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--fm:"IBM Plex Mono",ui-monospace,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#070b0c;--surface:#0f1819;--text:#e7efed;--muted:#9baca9;--border:#2a3534;--line:rgba(231,239,237,.1);--accent:#7cf5e0;--accent-soft:#142524;--warn-bg:#2a1a0c;--warn-border:#9a3412;--warn-text:#fed7aa;--b1:#5eead4;--b2:#2dd4bf;--b3:#818cf8;--glow:rgba(45,212,191,.18);color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:radial-gradient(44rem 26rem at 100% -6%,var(--glow),transparent 62%) no-repeat,var(--bg);color:var(--text);font:16px/1.6 var(--fb);-webkit-font-smoothing:antialiased}
 main{max-width:720px;margin:0 auto;padding:max(1rem,env(safe-area-inset-top)) 16px 3rem}
