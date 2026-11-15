@@ -48,6 +48,22 @@ const PATHS = {
       <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5M12 15v2" />
     </>
   ),
+  dial: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 12l3.4-3.9M12 3.5v1.7M12 18.8v1.7M3.5 12h1.7M18.8 12h1.7" />
+    </>
+  ),
+  back: <path d="M14.5 5 8 12l6.5 7" />,
+  share: (
+    <>
+      <path d="M12 15V4m0 0L8 8m4-4 4 4" />
+      <path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+    </>
+  ),
+  check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;

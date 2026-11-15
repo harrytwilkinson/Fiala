@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { SequenceExplorer, StageLadder } from "../components/Sequence";
-import type { Peptide } from "../data/peptides";
-import { researchStage } from "../data/researchStage";
+import { Sec } from "../components/Calibre";
+import { Icon } from "../components/Icon";
+import { EmptyBezel, SequenceExplorer, StageLadder, StageMeter } from "../components/Sequence";
+import { CATEGORY_SHORT, PEPTIDES, STATUS_LABEL, type Peptide } from "../data/peptides";
+import { STAGE_LABEL, researchStage } from "../data/researchStage";
 import { SEQUENCES } from "../data/sequences";
 import { stacksWith } from "../data/stacks";
 import { guidesFor, vialLabel } from "../data/vialGuides";
@@ -12,9 +14,11 @@ import { peptidePageUrl } from "../lib/site";
 import { NewsDisclaimer, NewsList } from "../components/NewsList";
 import { filterNews, toggleFollow, useFollowing, useNews } from "../lib/news";
 import { href } from "../lib/router";
-import { StatusBadge } from "./LibraryPage";
+import { STATUS_SHORT } from "./LibraryPage";
 
 const NEWS_PREVIEW = 4;
+/** Catalogue number: the entry's place in the A to Z library. */
+const REF = new Map([...PEPTIDES].sort((a, b) => a.name.localeCompare(b.name)).map((p, i) => [p.id, i + 1]));
 
 export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
   const { feed } = useNews();
@@ -29,78 +33,102 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
     setShareMsg(result === "copied" ? "Link copied." : result === "failed" ? "Couldn't share this page." : "");
   };
 
+  const stage = researchStage(peptide);
+  const long = peptide.name.length;
+  const header = (
+    <>
+      <span className={`badge badge-${peptide.status}`}>{peptide.notPeptide ? "Not a peptide" : STATUS_SHORT[peptide.status]}</span>
+      <h1 className={long > 22 ? "xs" : long > 12 ? "sm" : ""}>{peptide.name}</h1>
+      <span className="cal-label b">
+        {CATEGORY_SHORT[peptide.category]}
+        {sequence ? ` · ${sequence.seq.length} amino acids` : ""}
+      </span>
+    </>
+  );
+
   return (
     <div className="page">
-      <a className="back" href={href("library")}>
-        ← Library
-      </a>
-      <h1>{peptide.name}</h1>
-      {peptide.aliases.length > 0 && <p className="muted">Also known as {peptide.aliases.join(", ")}</p>}
-      <div className="row wrap">
-        <StatusBadge peptide={peptide} />
-        <span className="badge">{peptide.category}</span>
-      </div>
-      <div className="actions">
-        <button
-          type="button"
-          className={isFollowing ? "button small follow" : "button secondary small follow"}
-          aria-pressed={isFollowing}
-          onClick={() => toggleFollow(peptide.id)}
-        >
-          {isFollowing ? "✓ Following" : "+ Follow news"}
-        </button>
-        <button type="button" className="button secondary small" onClick={share}>
-          Share
-        </button>
-        <a className="button secondary small" href={href("library/compare", { a: peptide.id })}>
-          Compare
+      <header className="pep-nav">
+        <a className="pep-back" href={href("library")}>
+          <Icon name="back" />
+          Library
         </a>
-        {shareMsg && (
-          <span className="muted small" role="status">
-            {shareMsg}
-          </span>
+        <span className="cal-label">Ref. {String(REF.get(peptide.id) ?? 0).padStart(3, "0")}</span>
+        <button type="button" className="icon-btn" onClick={share} aria-label="Share this page">
+          <Icon name="share" />
+        </button>
+      </header>
+      {shareMsg && (
+        <p className="cal-fine center" role="status">
+          {shareMsg}
+        </p>
+      )}
+
+      {sequence ? <SequenceExplorer sequence={sequence} header={header} /> : <EmptyBezel header={header} />}
+
+      <p className="cal-p lead-in">{peptide.summary}</p>
+
+      <Sec title="Specifications">
+        <dl className="spec">
+          <div>
+            <dt>Status</dt>
+            <dd>{STATUS_LABEL[peptide.status]}</dd>
+          </div>
+          <div>
+            <dt>Research stage</dt>
+            <dd>
+              <StageMeter stage={stage} compact />
+              {STAGE_LABEL[stage]}
+            </dd>
+          </div>
+          <div>
+            <dt>Category</dt>
+            <dd>{peptide.category}</dd>
+          </div>
+          {peptide.halfLife && (
+            <div>
+              <dt>Half-life</dt>
+              <dd>{peptide.halfLife}</dd>
+            </div>
+          )}
+          {peptide.route && (
+            <div>
+              <dt>Taken</dt>
+              <dd>{peptide.route}</dd>
+            </div>
+          )}
+          {peptide.aliases.length > 0 && (
+            <div>
+              <dt>Also known as</dt>
+              <dd>{peptide.aliases.join(", ")}</dd>
+            </div>
+          )}
+        </dl>
+        {peptide.id in HALF_LIFE_HOURS && (
+          <p className="cal-links">
+            <a href={href("plus/levels", { peptide: peptide.id })}>See your estimated level curve ✦</a>
+          </p>
         )}
-      </div>
+      </Sec>
 
-      <p className="lead">{peptide.summary}</p>
-
-      <section className="card">
-        <h2>What people use it for</h2>
-        <ul>
+      <Sec title="What people use it for">
+        <ul className="cal-list">
           {peptide.commonUses.map((u) => (
             <li key={u}>{u}</li>
           ))}
         </ul>
-      </section>
+      </Sec>
 
-      <section className="card">
-        <h2>What it does in the body</h2>
-        <p>{peptide.mechanism}</p>
-      </section>
+      <Sec title="What it does">
+        <p className="cal-p">{peptide.mechanism}</p>
+      </Sec>
 
-      {sequence && (
-        <section className="card">
-          <div className="row">
-            <h2>Amino-acid sequence</h2>
-            <span className="muted small mono">{sequence.seq.length} aa</span>
-          </div>
-          <SequenceExplorer sequence={sequence} />
-        </section>
-      )}
+      <Sec title="Strength of evidence">
+        <p className="cal-p">{peptide.evidence}</p>
+        <StageLadder stage={stage} />
+      </Sec>
 
-      <section className="card">
-        <h2>Strength of evidence</h2>
-        <div className="evidence-grid">
-          <div>
-            <h3>Research stage</h3>
-            <StageLadder stage={researchStage(peptide)} />
-          </div>
-          <p>{peptide.evidence}</p>
-        </div>
-      </section>
-
-      <section className="card">
-        <h2>Look up the evidence</h2>
+      <Sec title="Look up the evidence">
         <ul className="list component-list">
           {evidenceLinks(peptide).map((l) => (
             <li key={l.url}>
@@ -111,68 +139,34 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
             </li>
           ))}
         </ul>
-        <p className="muted small">
+        <p className="cal-fine">
           Live searches of official databases. New to the terms? See the <a href={href("glossary")}>glossary</a>.
         </p>
-      </section>
+      </Sec>
 
-      <section className="card">
-        <h2>Reported side effects &amp; risks</h2>
-        <ul>
+      <Sec title="Reported side effects & risks">
+        <ul className="cal-list">
           {peptide.sideEffects.map((s) => (
             <li key={s}>{s}</li>
           ))}
         </ul>
-      </section>
+      </Sec>
 
-      <section className="card avoid">
-        <h2>Who should avoid it or take extra care</h2>
-        <ul>
+      <Sec title="Who should avoid it or take extra care">
+        <ul className="cal-list">
           {peptide.avoidIf.map((a) => (
             <li key={a}>{a}</li>
           ))}
         </ul>
-        <p className="muted small">Not a complete list. Check with a doctor or pharmacist about your own health and medicines.</p>
-      </section>
+        <p className="cal-note">Not a complete list. Check with a doctor or pharmacist about your own health and medicines.</p>
+      </Sec>
 
-      <section className="card">
-        <h2>Regulatory status</h2>
-        <p>{peptide.regulatory}</p>
-      </section>
-
-      {(peptide.route || peptide.halfLife) && (
-        <section className="card">
-          <h2>How it's taken</h2>
-          <dl className="facts">
-            {peptide.route && (
-              <div>
-                <dt>Route</dt>
-                <dd>{peptide.route}</dd>
-              </div>
-            )}
-            {peptide.halfLife && (
-              <div>
-                <dt>How long it lasts (half-life)</dt>
-                <dd>
-                  {peptide.halfLife}
-                  {peptide.id in HALF_LIFE_HOURS && (
-                    <>
-                      {" "}
-                      <a className="small" href={href("plus/levels", { peptide: peptide.id })}>
-                        See your estimated level curve ✦
-                      </a>
-                    </>
-                  )}
-                </dd>
-              </div>
-            )}
-          </dl>
-        </section>
-      )}
+      <Sec title="Regulatory status">
+        <p className="cal-p">{peptide.regulatory}</p>
+      </Sec>
 
       {stacksWith(peptide.id).length > 0 && (
-        <section className="card">
-          <h2>Found in these stacks</h2>
+        <Sec title="Found in these stacks">
           <ul className="list component-list">
             {stacksWith(peptide.id).map((s) => (
               <li key={s.id}>
@@ -181,20 +175,18 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
               </li>
             ))}
           </ul>
-        </section>
+        </Sec>
       )}
 
       {peptide.storage && (
-        <section className="card">
-          <h2>Storage</h2>
-          <p>{peptide.storage}</p>
-        </section>
+        <Sec title="Storage">
+          <p className="cal-p">{peptide.storage}</p>
+        </Sec>
       )}
 
       {__CONVERTER__ && guidesFor(peptide.id).length > 0 && (
-        <section className="card">
-          <h2>Mixing guides</h2>
-          <p className="muted small">How to mix a {peptide.name} vial and read the syringe at your dose.</p>
+        <Sec title="Mixing guides">
+          <p className="cal-fine">How to mix a {peptide.name} vial and read the syringe at your dose.</p>
           <div className="chips">
             {guidesFor(peptide.id).map((g) => (
               <a key={g.id} className="chip" href={href(`guides/${g.id}`)}>
@@ -202,38 +194,45 @@ export function PeptideDetailPage({ peptide }: { peptide: Peptide }) {
               </a>
             ))}
           </div>
-        </section>
+        </Sec>
       )}
 
-      <section className="card">
-        <div className="row">
-          <h2>Latest research &amp; news</h2>
-          {news.length > NEWS_PREVIEW && (
-            <a className="small" href={href("news", { peptide: peptide.id })}>
-              See all {news.length}
-            </a>
-          )}
-        </div>
+      <Sec
+        title="Latest research & news"
+        right={
+          <button type="button" className={isFollowing ? "pusher on" : "pusher"} aria-pressed={isFollowing} onClick={() => toggleFollow(peptide.id)}>
+            {isFollowing ? "Following" : "Follow"}
+          </button>
+        }
+      >
         {news.length > 0 ? (
           <>
             <NewsList items={news.slice(0, NEWS_PREVIEW)} showPeptides={false} />
+            {news.length > NEWS_PREVIEW && (
+              <p className="cal-links">
+                <a href={href("news", { peptide: peptide.id })}>See all {news.length}</a>
+              </p>
+            )}
             <NewsDisclaimer />
           </>
         ) : (
-          <p className="muted small">{feed ? "No recent stories about this peptide." : "News will appear here once it has loaded."}</p>
+          <p className="cal-fine">{feed ? "No recent stories about this peptide." : "News will appear here once it has loaded."}</p>
         )}
-      </section>
+      </Sec>
 
-      <div className="actions">
+      <div className="cal-cta">
         <a className="button" href={href("tracker", { peptide: peptide.id })}>
           Log a dose
         </a>
-        <a className="button secondary" href={href("tracker/schedules", { peptide: peptide.id })}>
+        <a className="button secondary" href={href("library/compare", { a: peptide.id })}>
+          Compare
+        </a>
+        <a className="button secondary wide" href={href("tracker/schedules", { peptide: peptide.id })}>
           Create schedule
         </a>
       </div>
 
-      <p className="muted small">
+      <p className="cal-fine">
         Educational information only, not medical advice. Talk to a qualified clinician before starting, stopping or
         changing any treatment.
       </p>

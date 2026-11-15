@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { STAGE_LABEL, type ResearchStage } from "../data/researchStage";
 import { AMINO_ACID, CLASS_LABEL, RESIDUE_CLASS, type PeptideSequence, type ResidueClass } from "../data/sequences";
 
@@ -53,7 +53,7 @@ const at = (r: number, deg: number): [number, number] => {
 };
 
 /** The sequence as a rotating bezel: spin it (drag, tap a bead or use the arrow keys) to bring any amino acid under the index mark. */
-export function SequenceExplorer({ sequence }: { sequence: PeptideSequence }) {
+export function SequenceExplorer({ sequence, header }: { sequence: PeptideSequence; header?: ReactNode }) {
   const residues = [...sequence.seq];
   const n = residues.length;
   const step = 360 / n;
@@ -156,21 +156,47 @@ export function SequenceExplorer({ sequence }: { sequence: PeptideSequence }) {
           <path d={`M${C - 5} -6h10l-5 8z`} className="bezel-index" />
           <circle cx={C} cy={C - R} r={bead + 3.5} className="bezel-sel" />
         </svg>
-        <div className="bezel-read" aria-live="polite">
-          <span className="result-label">Position</span>
-          <b>{picked + 1}</b>
-          <strong>{name(c)}</strong>
-          <span className="muted small">{CLASS_LABEL[RESIDUE_CLASS[c]]}</span>
+        <div className="bezel-read">
+          {header}
+          <p className="bezel-pos" aria-live="polite">
+            <b>{picked + 1}</b>
+            <span>
+              <strong>{name(c)}</strong>
+              {CLASS_LABEL[RESIDUE_CLASS[c]]}
+            </span>
+          </p>
         </div>
       </div>
-      <p className="seq-info small">{sequence.note ?? "Spin the ring, or tap a bead, to read the chain one amino acid at a time."}</p>
-      <div className="seq-legend small">
+      <div className="seq-legend">
         {present.map((k) => (
           <span key={k}>
             <i className={`res-${k}`} />
             {CLASS_LABEL[k]}
           </span>
         ))}
+      </div>
+      {sequence.note ? <p className="cal-note">{sequence.note}</p> : <p className="cal-fine center">Spin the ring, or tap a bead, to read the chain one amino acid at a time.</p>}
+    </div>
+  );
+}
+
+/** The same dial for entries with no sequence on file: a plain dotted ring around the heading. */
+export function EmptyBezel({ header }: { header?: ReactNode }) {
+  return (
+    <div className="sequence">
+      <div className="bezel">
+        <svg viewBox="0 0 320 320" aria-hidden="true">
+          <circle cx={C} cy={C} r="136.5" className="bezel-track" />
+          <circle cx={C} cy={C} r="111" className="bezel-track" />
+          {Array.from({ length: 60 }, (_, i) => {
+            const [x, y] = at(R, i * 6);
+            return <circle key={i} cx={x} cy={y} r="1.2" className="bezel-dot" />;
+          })}
+        </svg>
+        <div className="bezel-read">
+          {header}
+          <p className="bezel-pos none">Sequence not shown for this entry</p>
+        </div>
       </div>
     </div>
   );

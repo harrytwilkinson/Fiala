@@ -1,4 +1,5 @@
 import { useRef, type KeyboardEvent, type PointerEvent } from "react";
+import { Icon } from "./Icon";
 
 const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -71,6 +72,48 @@ export function Thumbwheel({ value, step, min, label, onChange }: WheelProps) {
       <i className="wheel-ribs" />
       <i className="wheel-shade" />
       <i className="wheel-index" />
+    </div>
+  );
+}
+
+interface StepperProps {
+  label: string;
+  unit: string;
+  /** The field's text, so anything can still be typed in. */
+  value: string;
+  onChange: (value: string) => void;
+  /** Fixed stops to step through (e.g. common vial sizes); otherwise `step` is added or taken away. */
+  presets?: number[];
+  step?: number;
+  min?: number;
+  invalid?: boolean;
+}
+
+/** A number you can type or nudge with round minus and plus buttons. */
+export function Stepper({ label, unit, value, onChange, presets, step = 1, min = 0, invalid }: StepperProps) {
+  const n = parseFloat(value);
+  const move = (dir: 1 | -1) => {
+    const from = Number.isFinite(n) ? n : min;
+    let next: number;
+    if (presets) next = dir > 0 ? (presets.find((p) => p > from + 1e-9) ?? from) : ([...presets].reverse().find((p) => p < from - 1e-9) ?? from);
+    else next = Math.max(min, Math.round((from + dir * step) / step) * step);
+    onChange(String(Math.round(next * 100) / 100));
+  };
+  return (
+    <div className="stepper">
+      <span className="cal-label">{label}</span>
+      <div>
+        <button type="button" onClick={() => move(-1)} aria-label={`Less: ${label}`}>
+          <Icon name="minus" />
+        </button>
+        <span className="val">
+          <input inputMode="decimal" value={value} onChange={(e) => onChange(e.target.value)} aria-label={`${label} (${unit})`} aria-invalid={invalid} />
+          <i>{unit}</i>
+        </span>
+        <button type="button" onClick={() => move(1)} aria-label={`More: ${label}`}>
+          <Icon name="plus" />
+        </button>
+      </div>
     </div>
   );
 }

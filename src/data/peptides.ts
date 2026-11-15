@@ -1297,6 +1297,27 @@ const CATEGORY_ORDER: Category[] = [
   "Cancer & imaging",
 ];
 
+/** One-word category names for chips and compact labels. */
+export const CATEGORY_SHORT: Record<Category, string> = {
+  "Metabolic & weight": "Metabolic",
+  "Growth hormone axis": "Growth",
+  "Tissue repair": "Repair",
+  "Muscle & performance": "Muscle",
+  "Skin & cosmetic": "Skin",
+  "Sexual health": "Sexual",
+  "Hormonal & fertility": "Hormonal",
+  "Cognitive & mood": "Cognitive",
+  Sleep: "Sleep",
+  "Immune & inflammation": "Immune",
+  "Longevity & cellular health": "Longevity",
+  "Bone health": "Bone",
+  "Digestive health": "Digestive",
+  "Heart & blood": "Heart",
+  "Brain & nerves": "Brain",
+  Infections: "Infections",
+  "Cancer & imaging": "Cancer",
+};
+
 /** Categories that have at least one peptide, in display order. */
 export const CATEGORIES: Category[] = CATEGORY_ORDER.filter((c) => PEPTIDES.some((p) => p.category === c));
 
