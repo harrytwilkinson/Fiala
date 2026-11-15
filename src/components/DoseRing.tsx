@@ -1,35 +1,5 @@
 import { useId } from "react";
 
-/** Ring split into one arc per dose due today; taken doses are filled. */
-export function DoseRing({ taken, total }: { taken: boolean[]; total: number }) {
-  const r = 46;
-  const c = 2 * Math.PI * r;
-  const gap = total > 1 ? 10 : 0; // px of circumference between arcs
-  const arc = c / total - gap;
-  const done = taken.filter(Boolean).length;
-  return (
-    <svg className="dose-ring" viewBox="0 0 120 120" role="img" aria-label={`${done} of ${total} doses taken today`}>
-      {taken.map((t, i) => (
-        <circle
-          key={i}
-          cx="60"
-          cy="60"
-          r={r}
-          className={t ? "ring-arc done" : "ring-arc"}
-          strokeDasharray={`${Math.max(arc, 0.01)} ${c}`}
-          transform={`rotate(${-90 + (360 / total) * i + (gap / c) * 180} 60 60)`}
-        />
-      ))}
-      <text x="60" y="64" textAnchor="middle" className="ring-count">
-        {done}/{total}
-      </text>
-      <text x="60" y="82" textAnchor="middle" className="ring-label">
-        {done === total ? "all done" : "taken"}
-      </text>
-    </svg>
-  );
-}
-
 /** Small vial whose liquid level shows how much is left. */
 export function VialGlyph({ fraction, low }: { fraction: number; low?: boolean }) {
   const top = 22;

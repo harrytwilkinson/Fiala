@@ -511,11 +511,6 @@ a.news-title:hover { text-decoration: underline; }
 .today-summary { display: flex; align-items: center; gap: 1rem; padding: 0.25rem 0 0.5rem; }
 .today-summary h3 { margin: 0 0 0.2rem; }
 .today-summary p { margin: 0; }
-.dose-ring { width: 5.5rem; height: 5.5rem; flex-shrink: 0; }
-.ring-arc { fill: none; stroke: var(--bg-2); stroke-width: 11; stroke-linecap: round; transition: stroke 0.4s ease; }
-.ring-arc.done { stroke: var(--accent); filter: drop-shadow(0 0 4px var(--glow)); }
-.ring-count { font-family: var(--f-mono); font-size: 24px; font-weight: 700; fill: var(--text); }
-.ring-label { font-family: var(--f-body); font-size: 10px; fill: var(--muted); }
 .vial-gauges { gap: 0.85rem; }
 .vial-gauge { display: flex; align-items: center; gap: 0.8rem; }
 .vial-gauge-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.35rem; }
@@ -720,7 +715,6 @@ strong, b { font-weight: 600; }
 .result-big span { font-family: var(--f-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
 .stats dt { font-family: var(--f-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; }
 .stats dd { font-family: var(--f-display); font-weight: 300; font-size: 1.5rem; line-height: 1.1; }
-.ring-count { font-family: var(--f-display); font-weight: 300; font-size: 30px; }
 .stage-bars i { width: 9px; height: 3px; border-radius: 1px; }
 .stage-bars i.on { background: var(--text); }
 .brand img { width: 1.9rem; height: 1.9rem; border-radius: 0.55rem; box-shadow: none; }
@@ -740,3 +734,33 @@ main { padding-bottom: 7.5rem; }
 .tabbar a.active { color: var(--text); }
 .tabbar a.active .icon { color: var(--accent); transform: none; }
 .tabbar a.active::before { top: auto; bottom: -0.3rem; width: 14px; height: 2px; margin-left: -7px; border-radius: 2px; }
+
+/* Calibre stage 2: the 24-hour dose dial on Today. */
+.dial { position: relative; width: min(100%, 340px); aspect-ratio: 1; margin: 0.4rem auto 0.2rem; --dial: #f6f8f7; --dial-2: #ffffff; --dial-sub: #e9eeed; --dial-line: rgba(14, 23, 23, 0.22); --dial-faint: rgba(14, 23, 23, 0.06); --dial-dim: #72817e;
+  --dial-bezel: conic-gradient(from 200deg, #d5dcdb, #f7f9f9 14%, #c3cccb 28%, #fbfcfc 44%, #cdd5d4 60%, #f4f7f6 76%, #c0c9c8 90%, #d5dcdb); --dial-in: inset 0 6px 16px rgba(14, 23, 23, 0.16); --dial-drop: 0 24px 40px -20px rgba(14, 23, 23, 0.45); --dial-glow: 0; }
+@media (prefers-color-scheme: dark) {
+  .dial { --dial: #0b1213; --dial-2: #162224; --dial-sub: #080d0e; --dial-line: rgba(231, 239, 237, 0.2); --dial-faint: rgba(231, 239, 237, 0.045); --dial-dim: #64736f;
+    --dial-bezel: conic-gradient(from 200deg, #222d2e, #0b1112 14%, #2a3637 28%, #0b1112 44%, #243031 60%, #0b1112 76%, #2a3637 90%, #222d2e); --dial-in: inset 0 8px 22px rgba(0, 0, 0, 0.65); --dial-drop: 0 24px 44px -18px rgba(0, 0, 0, 0.85); --dial-glow: 0.85; }
+}
+.dial-bezel, .dial-face, .dial-glass, .dial svg { position: absolute; border-radius: 50%; }
+.dial-bezel { inset: 0; background: var(--dial-bezel); box-shadow: var(--dial-drop), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.5); }
+.dial-face { inset: 5.3%; background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.03) 0deg, transparent 22deg, rgba(255, 255, 255, 0.03) 45deg), radial-gradient(circle at 50% 30%, var(--dial-2), var(--dial) 72%); box-shadow: inset 0 0 0 1px var(--dial-line), var(--dial-in); }
+.dial-glass { inset: 5.3%; pointer-events: none; background: linear-gradient(140deg, rgba(255, 255, 255, 0.09), transparent 36%); }
+.dial svg { inset: 0; width: 100%; height: 100%; border-radius: 0; overflow: visible; }
+.dial text { text-anchor: middle; dominant-baseline: central; }
+.dial-hour { font: 500 8.5px var(--f-mono); fill: var(--muted); }
+.dial-sun { fill: var(--amber); } .dial-moon { fill: var(--muted); } .dial-pip { fill: var(--dial-dim); }
+.dial-tick { stroke: var(--dial-dim); stroke-width: 0.7; } .dial-tick.major { stroke: var(--text); stroke-width: 1.4; }
+.dial-track { fill: none; stroke: var(--dial-faint); stroke-width: 16; }
+.dial-brand { font: 500 11px var(--f-display); letter-spacing: 0.5em; fill: var(--text); }
+.dial-small { font: 500 6.5px var(--f-mono); letter-spacing: 0.16em; fill: var(--dial-dim); }
+.dial-sub { fill: var(--dial-sub); stroke: var(--dial-line); stroke-width: 1; }
+.dial-arc { fill: none; stroke: var(--dial-line); stroke-width: 2.2; stroke-linecap: round; }
+.dial-arc.on { stroke: var(--accent); } .dial-arc.low, .dial-arc.amber { stroke: var(--amber); }
+.dial-num { font: 300 19px var(--f-display); fill: var(--text); } .dial-num.sm { font-size: 14px; } .dial-of { font-size: 11px; fill: var(--dial-dim); }
+.dial-seg { fill: none; stroke: var(--dial-line); stroke-width: 3; stroke-linecap: round; transition: stroke 0.4s ease; } .dial-seg.on { stroke: var(--accent); }
+.dial-baton { fill: var(--dial); stroke: var(--muted); stroke-width: 1; } .dial-baton.on { fill: var(--accent); stroke: none; }
+.dial-baton-glow { fill: var(--accent); opacity: var(--dial-glow); }
+.dial-hand path { fill: var(--amber); }
+.dial-second line { stroke: var(--text); stroke-width: 0.8; opacity: 0.9; } .dial-second circle { fill: var(--text); }
+.dial-cap { fill: var(--surface); stroke: var(--muted); stroke-width: 1; } .dial-pin { fill: var(--text); }

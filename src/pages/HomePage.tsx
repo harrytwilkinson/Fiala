@@ -1,4 +1,5 @@
-import { DiscardCountdown, DoseRing, VialGlyph } from "../components/DoseRing";
+import { DoseDial } from "../components/DoseDial";
+import { DiscardCountdown, VialGlyph } from "../components/DoseRing";
 import { Icon } from "../components/Icon";
 import { backupIsDue } from "../lib/backup";
 import { useLastBackupAt } from "../lib/backupDevice";
@@ -37,6 +38,7 @@ export function HomePage() {
       const status = vialStatus(vial, entries, today);
       return { vial, status, runsOut: runsOutOn(vial, status.dosesLeft, allSchedules, entries, today) };
     });
+  const lowest = [...gauges].sort((a, b) => a.status.remainingFraction - b.status.remainingFraction)[0];
   const last = entries[0];
   const lastBackupAt = useLastBackupAt();
   const showBackupNudge = backupIsDue(lastBackupAt, entries.length + allVials.length + allSchedules.length > 0, today);
@@ -64,6 +66,11 @@ export function HomePage() {
       </h1>
       <p className="muted">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
 
+      <DoseDial
+        doses={dueToday.map((s) => ({ hour: Number(s.time.slice(0, 2)) + Number(s.time.slice(3, 5)) / 60, taken: !!takenOn(s, entries, today) }))}
+        reserve={lowest ? { fraction: lowest.status.remainingFraction, label: lowest.vial.peptideName } : undefined}
+      />
+
       <section className="card">
         <h2>Today</h2>
         {dueToday.length === 0 ? (
@@ -73,7 +80,6 @@ export function HomePage() {
         ) : (
           <>
           <div className="today-summary">
-            <DoseRing taken={dueToday.map((s) => !!takenOn(s, entries, today))} total={dueToday.length} />
             <TodaySummary dueToday={dueToday} isTaken={(s) => !!takenOn(s, entries, today)} />
           </div>
           <ul className="list today">
