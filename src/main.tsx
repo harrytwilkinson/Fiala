@@ -5,10 +5,12 @@ import { startReminderSync } from "./lib/nativeReminders";
 import { isNative } from "./lib/platform";
 import { ANALYTICS_TOKEN } from "./lib/site";
 // Fonts ship with the app (no third-party font requests), so they work offline and keep visits private.
-import "@fontsource-variable/bricolage-grotesque";
-import "@fontsource-variable/figtree";
-import "@fontsource/jetbrains-mono/latin-500.css";
-import "@fontsource/jetbrains-mono/latin-700.css";
+import "@fontsource-variable/jost";
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-500.css";
+import "@fontsource/ibm-plex-sans/latin-600.css";
+import "@fontsource/ibm-plex-mono/latin-400.css";
+import "@fontsource/ibm-plex-mono/latin-500.css";
 import "./styles.css";
 
 createRoot(document.getElementById("root")!).render(
